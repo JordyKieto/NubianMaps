@@ -10,26 +10,43 @@ app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.text({type: 'json'}))
 app.use(express.static('static'))
 
-app.get('/api/businesses/all', function(request, response) {
-    db.collection("businesses").find().toArray().then(allBusinesses =>{
+app.get('/api/businesses', function(request, response) {
+    if (request.query.category === 'all') {
+        db.collection("businesses").find().toArray().then(allBusinesses =>{
+            console.log(allBusinesses)
+            // regular request code, nothing to report
+            response.status(200)
+            response.json(allBusinesses)
+        });
+    }
+    console.log(request.query.category)
+    db.collection("businesses").find(
+        { category: request.query.category }
+    ).toArray().then(allBusinesses =>{
         console.log(allBusinesses)
-        // regular request code, nothing to report
         response.status(200)
         response.json(allBusinesses)
     });
 });
 
-app.get('/api/businesses/:category', function(request, response) {
-    console.log(request.params.category)
+app.get('/api/businesses/:_id', function(request, response){
+    var _id = ObjectID(request.params._id)
     db.collection("businesses").find(
-        { category: request.params.category }
-    ).toArray().then(allBusinesses =>{
-        console.log(allBusinesses)
-        // regular request code, nothing to report
+    { "_id": _id }
+    ).toArray().then(businessInfo =>{
+        console.log(businessInfo)
         response.status(200)
-        response.json(allBusinesses)
+        response.json(businessInfo)
     });
-});
+
+})
+
+app.put('/api/businesses/:_id', function(request, response){
+    var _id = ObjectID(request.params._id)
+    db.collection("businesses").findOneAndUpdate(
+        { "_id": _id }, { "name": request.body.name}
+    )
+})
 
 app.post('/api/businesses', function(request, response){
     var body = request.body
@@ -44,14 +61,14 @@ app.post('/api/businesses', function(request, response){
 });
 
 app.delete('/api/businesses', function(request, response){
-    var idArray = [];
-    JSON.parse(request.body).forEach(function(id) {
-        idArray.push(ObjectID(id))
+    var _idArray = [];
+    JSON.parse(request.body).forEach(function(_id) {
+        _idArray.push(ObjectID(_id))
     })
-    console.log(idArray)
-    db.collection("businesses").remove({ "_id": { $in: idArray }})
+    console.log(_idArray)
+    db.collection("businesses").remove({ "_id": { $in: _idArray }})
 })
-
+// for all other requests, send index. allows react app too handle rest of routing
 app.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname, 'static/index.html'), function(err) {
       if (err) {

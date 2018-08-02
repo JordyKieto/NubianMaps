@@ -8,14 +8,20 @@ var Router = require('react-router-dom').Router
 
 class AdminListView extends React.Component {
 
+    // a simple text representation of the database
+
     componentDidMount() {
-        fetch('/api/businesses/all').then(function(response){
+        fetch('/api/businesses?category=all').then(function(response){
             response.json().then(function(allEntries){
                 allEntries.forEach(function(entry, index, array) {
                     var node = document.createElement("DIV")
+                  //  var editName = document.createElement("INPUT")
+                  //  editName.setAttribute('type', 'text')
+                  //  editname.setAttribute('value', entry.name)
                     var textnode = document.createTextNode(entry.name)
                     var form = document.getElementById("form")
                     var submit = document.getElementById("submitID")
+                  //  node.appendChild(editName)
                     node.appendChild(textnode)
                     var input = document.createElement("INPUT")
                     input.setAttribute('type', 'checkbox')
@@ -23,6 +29,7 @@ class AdminListView extends React.Component {
                     input.setAttribute('value', entry._id)
                     node.appendChild(input)
                     document.getElementById("form").appendChild(node)
+                    // adds the submit button to end of form
                     form.insertBefore(node, submit)
 
         })
@@ -59,6 +66,7 @@ class AdminListView extends React.Component {
 }
 
 class AdminMap extends React.Component {
+    // creates a map with autocomplete search bar
     componentDidMount() {
         GoogleMapsLoader.load(function(google)  {
             var map = new google.maps.Map(document.getElementById('map'), {
@@ -99,6 +107,7 @@ class AdminMap extends React.Component {
                     location: place.geometry.location
                 });
                 marker.setVisible(true);
+                // fills the infowindow with a form to add selected business
                 var infowindowContent = (place.name +'<br>'+ place.formatted_address +'<br><br>'
                 +'<form action="/api/businesses" method="POST">'
                 +'<input type="hidden" name="placeID" value='+place.place_id+'></input>'
@@ -142,12 +151,12 @@ class MainMap extends React.Component {
     constructor(props) {
         super(props)
     }
-
+// displays various groups of businesses based on the URL param supplied in props
     componentDidMount() {
 		var map;
 		var markers = {}
         var infowindows = {}
-        fetch('/api/businesses/' + this.props.category).then(function(response){
+        fetch("/api/businesses?category=" + this.props.category).then(function(response){
             response.json().then(function(allBusinesses){
 
                 allBusinesses.forEach(function(business, index, array) {
@@ -156,7 +165,6 @@ class MainMap extends React.Component {
                         placeId: business.placeID,
                         fields: ['name', 'geometry']
                     };
-                    // creates a map
                     if (!map){
                         GoogleMapsLoader.load(function(google)  {
                             map = new google.maps.Map(document.getElementById('map'), {
@@ -167,14 +175,12 @@ class MainMap extends React.Component {
                     GoogleMapsLoader.load(function(google)  {
                     
                     var bounds = new google.maps.LatLngBounds();
-					// places library
 					var service = new google.maps.places.PlacesService(map);
 					service.getDetails(request, callback);
 					
                     function callback(place, status) {
                         if (status == google.maps.places.PlacesServiceStatus.OK) {
 
-								// creates a marker & adds info box
 
 								var lat = place.geometry.location.lat()
 								var lng = place.geometry.location.lng()
@@ -216,7 +222,7 @@ class MainMap extends React.Component {
         )
     }
 }
-
+// main App
 const App = () => (
  
     <div>
@@ -265,7 +271,6 @@ styles.nav = {
     textAlign: "center",
     flex: 1,
     listStyleType: "none",
-    // change to padding everywhere except top
     padding: "5px",
     backgroundColor: "#e6e6e6",
     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
