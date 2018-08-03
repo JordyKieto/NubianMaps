@@ -1,5 +1,5 @@
 var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.KEY = require('../../keys').googleMaps
+GoogleMapsLoader.KEY = process.env.MAPS_KEY
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places']
 var BrowserRouter = require('react-router-dom').BrowserRouter
 var Route = require('react-router-dom').Route
@@ -8,6 +8,10 @@ var Router = require('react-router-dom').Router
 
 class AdminListView extends React.Component {
 
+    constructor(props){
+        super(props);
+    }
+
     // a simple text representation of the database
 
     componentDidMount() {
@@ -15,19 +19,30 @@ class AdminListView extends React.Component {
             response.json().then(function(allEntries){
                 allEntries.forEach(function(entry, index, array) {
                     var node = document.createElement("DIV")
-                  //  var editName = document.createElement("INPUT")
-                  //  editName.setAttribute('type', 'text')
-                  //  editname.setAttribute('value', entry.name)
-                    var textnode = document.createTextNode(entry.name)
+                    var textnode = document.createElement("INPUT")
+                    var editButton = document.createElement("INPUT")
+                    editButton.onclick  = function(){
+                        fetch('/api/businesses/' + entry._id, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'},
+                        body: JSON.stringify({ "name": textnode.value}),
+                        method: "put",
+                    });
+                }
+                    editButton.setAttribute('value', 'Update')
+                    editButton.setAttribute('type', 'button')
+                    textnode.setAttribute('type', 'text')
+                    textnode.setAttribute('value', entry.name)
                     var form = document.getElementById("form")
                     var submit = document.getElementById("submitID")
-                  //  node.appendChild(editName)
                     node.appendChild(textnode)
                     var input = document.createElement("INPUT")
                     input.setAttribute('type', 'checkbox')
                     input.setAttribute('name', entry.name)
                     input.setAttribute('value', entry._id)
                     node.appendChild(input)
+                    node.appendChild(editButton)
                     document.getElementById("form").appendChild(node)
                     // adds the submit button to end of form
                     form.insertBefore(node, submit)
@@ -54,8 +69,7 @@ class AdminListView extends React.Component {
 
     render () {
         return (
-            <form onSubmit={this.handlesubmit} id="form">
-            <h1>List View</h1>
+            <form onSubmit={this.handlesubmit} id="form" style={styles.admin}>
             <div id="submitID">
             <br/>
             <input  type="submit"  value="Delete"/>
@@ -125,20 +139,17 @@ class AdminMap extends React.Component {
     }
 
     render() {
-        var mapStyle ={
-            width: "100%",
-            height: "400px"
-        }
         return (
         <div>
 
-        <div id="map" style={mapStyle}></div>
+        <div id="map" style={styles.map}></div>
 
         <div id="infowindow-content">
         </div>
 
         <input id="pac-input" className="controls" type="text" style={styles.controls}
         placeholder="Enter a location"/>
+        <AdminListView/>
         </div>
          //   React.createElement("div", {id: "map", style: mapStyle},
          //   React.createElement("input", {id: "pac-input", type: "text", placeholder: "Enter a location"})
@@ -213,12 +224,8 @@ class MainMap extends React.Component {
     }
 
     render() {
-        var mapStyle ={
-            width: "100%",
-            height: "400px"
-        }
         return (
-            React.createElement("div", {id: "map", style: mapStyle})
+            React.createElement("div", {id: "map", style: styles.map})
         )
     }
 }
@@ -245,7 +252,6 @@ const App = () => (
     <Route exact path="/cosmetics" render={(props) => <MainMap {...props} category={'cosmetics'}/>} />
     <Route exact path="/networking" render={(props) => <MainMap {...props} category={'networking'}/>} />
     <Route path="/admin" component={AdminMap}/>
-    <Route path="/listview" component={AdminListView}/>
     </div>
 
 )
@@ -256,6 +262,11 @@ const NavLink = props => (
   );
 
 const styles = {};
+
+styles.map = {
+    width: "100%",
+    height: "400px"
+}
 
 styles.nav = {
     padding: 0,
@@ -312,6 +323,13 @@ styles.nav = {
     left: "70px",
     zIndex: 1,
     position: "absolute"
+  }
+
+  styles.admin = {
+  //    backgroundColor: "black",
+      top: -300,
+      position: "relative",
+      width: "270px",
   }
 
 ReactDOM.render(

@@ -18,7 +18,7 @@ app.get('/api/businesses', function(request, response) {
             response.status(200)
             response.json(allBusinesses)
         });
-    }
+    } else {
     console.log(request.query.category)
     db.collection("businesses").find(
         { category: request.query.category }
@@ -26,7 +26,7 @@ app.get('/api/businesses', function(request, response) {
         console.log(allBusinesses)
         response.status(200)
         response.json(allBusinesses)
-    });
+    })};
 });
 
 app.get('/api/businesses/:_id', function(request, response){
@@ -42,11 +42,13 @@ app.get('/api/businesses/:_id', function(request, response){
 })
 
 app.put('/api/businesses/:_id', function(request, response){
+    console.log(request.body)
+    var body = JSON.parse(request.body)
     var _id = ObjectID(request.params._id)
     db.collection("businesses").findOneAndUpdate(
-        { "_id": _id }, { "name": request.body.name}
-    )
-})
+        { "_id": _id }, { $set: {"name": body.name}}
+    )}
+);
 
 app.post('/api/businesses', function(request, response){
     var body = request.body
