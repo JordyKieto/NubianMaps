@@ -4,10 +4,12 @@ var http = require("http");
 var path = require("path");
 var bodyParser = require('body-parser');
 var ObjectID = require('mongodb').ObjectID;
+var mapsKey = process.env.MAPS_KEY
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.text({type: 'json'}))
+app.use(bodyParser.json());
 app.use(express.static('static'))
 
 app.get('/api/businesses', function(request, response) {
@@ -70,6 +72,11 @@ app.delete('/api/businesses', function(request, response){
     console.log(_idArray)
     db.collection("businesses").remove({ "_id": { $in: _idArray }})
 })
+
+app.get('/api/mapsKey', function(request, response) {
+    response.json(mapsKey)
+})
+
 // for all other requests, send index. allows react app too handle rest of routing
 app.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname, 'static/index.html'), function(err) {
@@ -84,5 +91,6 @@ MongoClient.connect('mongodb://localhost').then(client =>{
     console.log(db);
     http.createServer(app).listen(8080, function(){
     console.log('Nubian Maps on 8080')
+    console.log(mapsKey)
 })
 })

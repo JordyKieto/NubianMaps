@@ -1,10 +1,12 @@
 var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.KEY = process.env.MAPS_KEY
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places']
 var BrowserRouter = require('react-router-dom').BrowserRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 var Router = require('react-router-dom').Router
+
+
+
 
 class AdminListView extends React.Component {
 
@@ -82,6 +84,10 @@ class AdminListView extends React.Component {
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     componentDidMount() {
+
+        fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
+        GoogleMapsLoader.KEY = data
+        }) }).then(function(){
         GoogleMapsLoader.load(function(google)  {
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 43.642567, lng: -79.387054},
@@ -136,7 +142,7 @@ class AdminMap extends React.Component {
                 infowindow.open(map, marker)
             });
         });
-    }
+    })}
 
     render() {
         return (
@@ -167,9 +173,13 @@ class MainMap extends React.Component {
 		var map;
 		var markers = {}
         var infowindows = {}
+       
         fetch("/api/businesses?category=" + this.props.category).then(function(response){
             response.json().then(function(allBusinesses){
-
+                fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
+                GoogleMapsLoader.KEY = data
+                }) }).then(function(){
+                    
                 allBusinesses.forEach(function(business, index, array) {
 
                     var request = {
@@ -182,7 +192,7 @@ class MainMap extends React.Component {
                             });
                         })
                         }
-
+                    
                     GoogleMapsLoader.load(function(google)  {
                     
                     var bounds = new google.maps.LatLngBounds();
@@ -219,9 +229,9 @@ class MainMap extends React.Component {
 
 				});
 			});
-		})
-        })
-    }
+		});
+        });
+    })}
 
     render() {
         return (
