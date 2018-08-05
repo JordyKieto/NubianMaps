@@ -8,7 +8,7 @@ var mapsKey = process.env.MAPS_KEY
 var passport = require('passport')
 var LocalStrategy = require('passport-local').Strategy
 var session = require('express-session')
-nubianKey = process.env.NUBIAN_KEY
+var nubianKey = process.env.NUBIAN_KEY
 
 var admin = {
     username: "admin",
@@ -27,7 +27,7 @@ passport.deserializeUser(function(id, done) {
 
 passport.use('authenticate', new LocalStrategy(
     function(username, password, done) {
-        if(username === 'admin' && password === admin.password) {
+        if(username === admin.username && password === admin.password) {
             console.log("succesful authentication!")
             return done(null, admin)} else {
                 console.log("failed authentication"); 
@@ -46,7 +46,6 @@ app.use(session({ secret: 'black'}))
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 app.get('/api/businesses', function(request, response) {
     if (request.query.category === 'all') {
@@ -125,7 +124,6 @@ app.get('/api/logout', function(request, response) {
     //    request.user = null,
         response.redirect('/admin')
     }
-
 })
 
 app.get('/checkAuthentication', function(request, response) {
@@ -146,8 +144,13 @@ app.get('/*', function(req, res) {
 let db = 'blank'
 MongoClient.connect('mongodb://localhost').then(client =>{
     db = client.db('blackBusinesses');
-    console.log(db);
+    console.log(db.s.databaseName+' on mongo://localhost');
     http.createServer(app).listen(8080, function(){
     console.log('Nubian Maps on 8080')
 })
 })
+
+var server = app.listen(8080, function(){
+    console.log('Nubian Maps on 8080')
+})
+module.exports = (app);
