@@ -5,9 +5,6 @@ var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 var Router = require('react-router-dom').Router
 
-
-
-
 class AdminListView extends React.Component {
 
     constructor(props){
@@ -88,6 +85,7 @@ class AdminMap extends React.Component {
         fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
         GoogleMapsLoader.KEY = data
         }) }).then(function(){
+        console.log(GoogleMapsLoader.KEY);
         GoogleMapsLoader.load(function(google)  {
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 43.642567, lng: -79.387054},
@@ -175,11 +173,11 @@ class MainMap extends React.Component {
         var infowindows = {}
        
         fetch("/api/businesses?category=" + this.props.category).then(function(response){
-            response.json().then(function(allBusinesses){
+                response.json().then(function(allBusinesses){
                 fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
                 GoogleMapsLoader.KEY = data
                 }) }).then(function(){
-                    
+                console.log(GoogleMapsLoader.KEY);
                 allBusinesses.forEach(function(business, index, array) {
 
                     var request = {
@@ -239,6 +237,22 @@ class MainMap extends React.Component {
         )
     }
 }
+
+class Authenticate extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            <div>
+                <form action="/api/authenticate" method="get">
+                    <label htmlFor="password">Password:</label>
+                    <input type="password"  name="password" id="password"/>
+                    <input type="hidden" name="username" value="admin"/>
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+        )
+    }
+}
 // main App
 const App = () => (
  
@@ -262,6 +276,7 @@ const App = () => (
     <Route exact path="/cosmetics" render={(props) => <MainMap {...props} category={'cosmetics'}/>} />
     <Route exact path="/networking" render={(props) => <MainMap {...props} category={'networking'}/>} />
     <Route path="/admin" component={AdminMap}/>
+    <Route path="/authenticate" component={Authenticate}/>
     </div>
 
 )
@@ -348,4 +363,4 @@ ReactDOM.render(
             document.getElementById('root')
 );
 
-// watchify -t reactify index.js -o App.js -v
+// watchify browserify-nodent -t reactify index.js -o App.js -v

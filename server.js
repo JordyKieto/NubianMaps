@@ -5,12 +5,48 @@ var path = require("path");
 var bodyParser = require('body-parser');
 var ObjectID = require('mongodb').ObjectID;
 var mapsKey = process.env.MAPS_KEY
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy
+var session = require('express-session')
+nubianKey = process.env.NUBIAN_KEY
+
+var admin = {
+    username: "admin",
+    password: nubianKey,
+    id: "1234"
+}
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id)
+})
+
+passport.deserializeUser(function(id, done) {
+     var adminDeSerial = Object.assign({password: null}, admin)
+    done(null, adminDeSerial)
+})
+
+passport.use('authenticate', new LocalStrategy(
+    function(username, password, done) {
+        if(username === 'admin' && password === admin.password) {
+            console.log("succesful authentication!")
+            return done(null, admin)} else {
+                console.log("failed authentication"); 
+                return done(null, false)}
+        }
+))
 
 var app = express();
+app.use(bodyParser());
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.text({type: 'json'}))
 app.use(bodyParser.json());
 app.use(express.static('static'))
+// needs to call app.use(session BEFORE app.use(passport.session
+app.use(session({ secret: 'black'}))
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.get('/api/businesses', function(request, response) {
     if (request.query.category === 'all') {
@@ -77,6 +113,28 @@ app.get('/api/mapsKey', function(request, response) {
     response.json(mapsKey)
 })
 
+app.get('/api/authenticate', passport.authenticate('authenticate', {successRedirect: '/admin',
+                                                            failureRedirect: '/authenticate'
+                                                    }));
+
+app.get('/api/logout', function(request, response) {
+    if (request.isAuthenticated()) {
+        console.log('logging out and destroying session');
+     //   request.session = null;
+        request.logout();
+    //    request.user = null,
+        response.redirect('/admin')
+    }
+
+})
+
+app.get('/checkAuthentication', function(request, response) {
+    if (request.isAuthenticated()) {
+        response.send('This session is authenticated')
+    } else {response.send('This session is not authenticated')}
+})
+                                                    
+
 // for all other requests, send index. allows react app too handle rest of routing
 app.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname, 'static/index.html'), function(err) {
@@ -91,6 +149,5 @@ MongoClient.connect('mongodb://localhost').then(client =>{
     console.log(db);
     http.createServer(app).listen(8080, function(){
     console.log('Nubian Maps on 8080')
-    console.log(mapsKey)
 })
 })
