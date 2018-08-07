@@ -60,7 +60,6 @@ class AdminListView extends React.Component {
         var formData = new FormData(event.target)
         for (let entry of formData.entries()) {
             entries.push(entry[1]);
-            console.log(entries);
         }
         fetch('/api/businesses', {
             headers: {
@@ -90,7 +89,6 @@ class AdminMap extends React.Component {
         fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
         GoogleMapsLoader.KEY = data
         }) }).then(function(){
-        console.log(GoogleMapsLoader.KEY);
         GoogleMapsLoader.load(function(google)  {
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 43.642567, lng: -79.387054},
