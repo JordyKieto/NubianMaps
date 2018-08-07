@@ -4,6 +4,10 @@ var BrowserRouter = require('react-router-dom').BrowserRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 var Router = require('react-router-dom').Router
+GoogleMapsLoader.KEY = fetch('/api/mapsKey').then(function(response){ response.json().then(function( data){
+     return data
+    }) })
+
 
 class AdminListView extends React.Component {
 
@@ -28,6 +32,7 @@ class AdminListView extends React.Component {
                         body: JSON.stringify({ "name": textnode.value}),
                         method: "put",
                     });
+    
                 }
                     editButton.setAttribute('value', 'Update')
                     editButton.setAttribute('type', 'button')
@@ -174,12 +179,8 @@ class MainMap extends React.Component {
        
         fetch("/api/businesses?category=" + this.props.category).then(function(response){
                 response.json().then(function(allBusinesses){
-                fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
-                GoogleMapsLoader.KEY = data
-                }) }).then(function(){
-                console.log(GoogleMapsLoader.KEY);
+        
                 allBusinesses.forEach(function(business, index, array) {
-
                     var request = {
                         placeId: business.placeID,
                         fields: ['name', 'geometry']
@@ -224,8 +225,6 @@ class MainMap extends React.Component {
 							map.fitBounds(bounds)
 							map.setZoom(13)
 					}
-
-				});
 			});
 		});
         });
@@ -254,7 +253,16 @@ class Authenticate extends React.Component{
     }
 }
 // main App
-const App = () => (
+class App extends React.Component {
+    componentDidMount(){
+        GoogleMapsLoader.KEY = fetch('/api/mapsKey').then(function(response){ response.json().then(function( data){
+            return data
+           }) })
+    }
+    
+    
+    render() {
+        return(
  
     <div>
     
@@ -280,6 +288,7 @@ const App = () => (
     </div>
 
 )
+}}
 const NavLink = props => (
     <li style={styles.navItem}>
       <Link {...props} style={{ color: "inherit" }} />
@@ -290,7 +299,7 @@ const styles = {};
 
 styles.map = {
     width: "100%",
-    height: "400px"
+    height: "800px"
 }
 
 styles.nav = {
@@ -363,4 +372,4 @@ ReactDOM.render(
             document.getElementById('root')
 );
 
-// watchify browserify-nodent -t reactify index.js -o App.js -v
+// watchify -t reactify index.js -o App.js -v

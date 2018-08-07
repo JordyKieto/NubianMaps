@@ -14,16 +14,16 @@ var admin = {
     username: "admin",
     password: nubianKey,
     id: "1234"
-}
+};
 
 passport.serializeUser(function(user, done) {
     done(null, user.id)
-})
+});
 
 passport.deserializeUser(function(id, done) {
      var adminDeSerial = Object.assign({password: null}, admin)
     done(null, adminDeSerial)
-})
+});
 
 passport.use('authenticate', new LocalStrategy(
     function(username, password, done) {
@@ -52,7 +52,7 @@ app.get('/api/businesses', function(request, response) {
         db.collection("businesses").find().toArray().then(allBusinesses =>{
             console.log(allBusinesses)
             // regular request code, nothing to report
-            response.status(200)
+            response.status(202)
             response.json(allBusinesses)
         });
     } else {
@@ -65,7 +65,6 @@ app.get('/api/businesses', function(request, response) {
         response.json(allBusinesses)
     })};
 });
-
 app.get('/api/businesses/:_id', function(request, response){
     var _id = ObjectID(request.params._id)
     db.collection("businesses").find(
@@ -79,15 +78,17 @@ app.get('/api/businesses/:_id', function(request, response){
 })
 
 app.put('/api/businesses/:_id', function(request, response){
+    if (request.isAuthenticated()) {
     console.log(request.body)
-    var body = JSON.parse(request.body)
+    var body = request.body
     var _id = ObjectID(request.params._id)
     db.collection("businesses").findOneAndUpdate(
         { "_id": _id }, { $set: {"name": body.name}}
-    )}
-);
-
+    ) 
+    } else {response.sendStatus(401)}
+});
 app.post('/api/businesses', function(request, response){
+    if (request.isAuthenticated()) {
     var body = request.body
     console.log(request.body)
     db.collection("businesses").insertOne({ name: request.body.name, 
@@ -96,22 +97,25 @@ app.post('/api/businesses', function(request, response){
                                          });
     // indicates success and "stay on current page"
     response.status(204)
-    response.end()
+    response.redirect('/admin')
+        }
+    else {response.sendStatus(401)}
 });
-
 app.delete('/api/businesses', function(request, response){
+    if (request.isAuthenticated()) {
     var _idArray = [];
     JSON.parse(request.body).forEach(function(_id) {
         _idArray.push(ObjectID(_id))
     })
     console.log(_idArray)
     db.collection("businesses").remove({ "_id": { $in: _idArray }})
+    response.redirect('/admin')
+        }
+    else {response.sendStatus(401)}
 })
-
 app.get('/api/mapsKey', function(request, response) {
     response.json(mapsKey)
 })
-
 app.get('/api/authenticate', passport.authenticate('authenticate', {successRedirect: '/admin',
                                                             failureRedirect: '/authenticate'
                                                     }));
@@ -124,15 +128,12 @@ app.get('/api/logout', function(request, response) {
     //    request.user = null,
         response.redirect('/admin')
     }
-})
-
+});
 app.get('/checkAuthentication', function(request, response) {
     if (request.isAuthenticated()) {
-        response.send('This session is authenticated')
-    } else {response.send('This session is not authenticated')}
-})
-                                                    
-
+        response.json(true)
+    } else {response.json(false)}
+});                                                
 // for all other requests, send index. allows react app too handle rest of routing
 app.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname, 'static/index.html'), function(err) {
@@ -140,17 +141,16 @@ app.get('/*', function(req, res) {
         res.status(500).send(err)
       }
     })
-  })
+});
 let db = 'blank'
-MongoClient.connect('mongodb://localhost').then(client =>{
-    db = client.db('blackBusinesses');
+MongoClient.connect( process.env.MONGOLAB_URI ||'mongodb://localhost').then(client =>{
+     db = client.db('blackBusinesses');
     console.log(db.s.databaseName+' on mongo://localhost');
-    http.createServer(app).listen(8080, function(){
+    app.server = app.listen(8080, function(){
     console.log('Nubian Maps on 8080')
-})
-})
-
-var server = app.listen(8080, function(){
-    console.log('Nubian Maps on 8080')
-})
-module.exports = (app);
+});
+});
+module.exports = {
+    app: app,
+    admin: admin
+}

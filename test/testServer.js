@@ -5,7 +5,7 @@ var mapsKey = process.env.MAPS_KEY
 var request = require('supertest');
 var MongoClient = require("mongodb").MongoClient;
 var admin = require('../server').admin
-let cookiel
+let cookie
 
 describe('API', function () {
     beforeEach( async function() {
@@ -17,7 +17,8 @@ describe('API', function () {
     app.server.close();
     });
     it('sends Maps Key', function(done){
-        request(app).get('/api/mapsKey')
+        request(app)
+            .get('/api/mapsKey')
             .end(function(err, res) {
                 assert.equal(res.body, mapsKey, 'correct maps key is sent')
                 done()
@@ -31,10 +32,16 @@ describe('API', function () {
     });
     });
     it('authenticates base admin', function(done){
-        request(app).get('/api/authenticate').send({username: admin.username, password: admin.password}).then( function(res) {
+        request(app)
+        .get('/api/authenticate')
+        .send({username: admin.username, password: admin.password})
+        .then( function(res) {
             // cookie patch to persist sessions https://github.com/visionmedia/supertest/issues/336
         cookie = res.headers['set-cookie'];
-        request(app).get('/checkAuthentication').set('Cookie', cookie).end(function(err, res) {assert.equal(res.body, true, 'succesful authentication')})
+        request(app)
+        .get('/checkAuthentication')
+        .set('Cookie', cookie)
+        .end(function(err, res) {assert.equal(res.body, true, 'succesful authentication')})
         done();
     });    
     });
