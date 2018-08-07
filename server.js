@@ -10,6 +10,7 @@ var LocalStrategy = require('passport-local').Strategy
 var session = require('express-session')
 var nubianKey = process.env.NUBIAN_KEY
 var uri = process.env.MONGOLAB_URI;
+var port = process.env.PORT || 8000;
 
 var admin = {
     username: "admin",
@@ -146,9 +147,9 @@ app.get('/*', function(req, res) {
 let db = 'blank'
 MongoClient.connect( uri || 'mongodb://localhost').then(client =>{
      db = client.db('heroku_jk2dkbrb');
-    console.log(db.s.databaseName+' on mongo://localhost');
-    app.server = app.listen(8080, function(){
-    console.log('Nubian Maps on 8080')
+    console.log(db.s.databaseName+' started');
+    app.server = app.listen(port, function(){
+    console.log('Nubian Maps on '+ app.server.address().port)
 });
 });
 module.exports = {
