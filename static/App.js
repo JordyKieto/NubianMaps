@@ -4774,10 +4774,6 @@ var BrowserRouter = require('react-router-dom').BrowserRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 var Router = require('react-router-dom').Router
-GoogleMapsLoader.KEY = fetch('/api/mapsKey').then(function(response){ response.json().then(function( data){
-     return data
-    }) })
-
 
 class AdminListView extends React.Component {
 
@@ -4855,10 +4851,6 @@ class AdminListView extends React.Component {
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     componentDidMount() {
-
-        fetch('/api/mapsKey').then(function(response){ response.json().then(function(data){
-        GoogleMapsLoader.KEY = data
-        }) }).then(function(){
         GoogleMapsLoader.load(function(google)  {
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 43.642567, lng: -79.387054},
@@ -4911,7 +4903,6 @@ class AdminMap extends React.Component {
                 +'</form>')
                 infowindow.setContent(infowindowContent);
                 infowindow.open(map, marker)
-            });
         });
     })}
 
@@ -5022,10 +5013,10 @@ class Authenticate extends React.Component{
 }
 // main App
 class App extends React.Component {
-    componentDidMount(){
-        GoogleMapsLoader.KEY = fetch('/api/mapsKey').then(function(response){ response.json().then(function( data){
-            return data
-           }) })
+    async componentDidMount(){
+        var response = await fetch('/api/mapsKey')
+        var responseJSON = await response.json()
+        GoogleMapsLoader.KEY =  await responseJSON
     }
     
     

@@ -10,7 +10,7 @@ var LocalStrategy = require('passport-local').Strategy
 var session = require('express-session')
 var nubianKey = process.env.NUBIAN_KEY
 var uri = process.env.MONGOLAB_URI;
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 8080;
 
 var admin = {
     username: "admin",
