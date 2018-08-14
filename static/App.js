@@ -4774,6 +4774,7 @@ var BrowserRouter = require('react-router-dom').BrowserRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 var Router = require('react-router-dom').Router
+GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c'
 
 class AdminListView extends React.Component {
 
@@ -5013,10 +5014,7 @@ class Authenticate extends React.Component{
 }
 // main App
 class App extends React.Component {
-    async componentDidMount(){
-        var response = await fetch('/api/mapsKey')
-        var responseJSON = await response.json()
-        GoogleMapsLoader.KEY =  await responseJSON
+    componentDidMount(){
     }
     
     
@@ -5132,6 +5130,7 @@ ReactDOM.render(
 );
 
 // watchify -t reactify index.js -o App.js -v
+
 },{"google-maps":2,"react-router-dom":33}],51:[function(require,module,exports){
 "use strict";
 
