@@ -4943,7 +4943,7 @@ class MainMap extends React.Component {
                 allBusinesses.forEach(function(business, index, array) {
                     var request = {
                         placeId: business.placeID,
-                        fields: ['name', 'geometry']
+                        fields: ['name', 'geometry', 'photos']
                     };
                     if (!map){
                         GoogleMapsLoader.load(function(google)  {
@@ -4960,8 +4960,16 @@ class MainMap extends React.Component {
 					
                     function callback(place, status) {
                         if (status == google.maps.places.PlacesServiceStatus.OK) {
-
-
+                                var ImgDiv = document.createElement("div");
+                                var placeImg = document.createElement("IMG");
+                                var newsfeed = document.getElementById("newsfeed");
+                                placeImg.src = place.photos[0].getUrl({'maxWidth': 350, 'maxHeight': 350});
+                                placeImg.id = "feedItem";
+                                placeImg.style = "height:200px;width:200px";
+                                ImgDiv.style = "display;block;margin-left:auto;margin-right:auto"
+                                ImgDiv.appendChild(placeImg)                                
+                                newsfeed.appendChild(ImgDiv)
+                                
 								var lat = place.geometry.location.lat()
 								var lng = place.geometry.location.lng()
 
@@ -4969,7 +4977,7 @@ class MainMap extends React.Component {
     
                         		markers[name] = new google.maps.Marker({
                             	position: place.geometry.location,
-                            	map: map
+                                map: map,
 								});
 					
                             	infowindows[name] = new google.maps.InfoWindow({
