@@ -4852,6 +4852,8 @@ class AdminListView extends React.Component {
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     componentDidMount() {
+        var newsfeed = document.getElementById("newsfeed")
+        newsfeed.style = "visibility:hidden"
         GoogleMapsLoader.load(function(google)  {
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 43.642567, lng: -79.387054},
@@ -4933,6 +4935,8 @@ class MainMap extends React.Component {
     }
 // displays various groups of businesses based on the URL param supplied in props
     componentDidMount() {
+        var newsfeed = document.getElementById("newsfeed")
+        newsfeed.style = "visibility:visible"
 		var map;
 		var markers = {}
         var infowindows = {}
@@ -4963,9 +4967,9 @@ class MainMap extends React.Component {
                                 var ImgDiv = document.createElement("div");
                                 var placeImg = document.createElement("IMG");
                                 var newsfeed = document.getElementById("newsfeed");
-                                placeImg.src = place.photos[0].getUrl({'maxWidth': 350, 'maxHeight': 350});
+                                placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
                                 placeImg.id = "feedItem";
-                                placeImg.style = "height:200px;width:200px";
+                                placeImg.style = "height:325px;width:285px;box-shadow: 10px 10px 25px;padding-bottom: 10px";
                                 ImgDiv.style = "display;block;margin-left:auto;margin-right:auto"
                                 ImgDiv.appendChild(placeImg)                                
                                 newsfeed.appendChild(ImgDiv)

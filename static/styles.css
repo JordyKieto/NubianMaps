@@ -4,5 +4,25 @@
     top: -700px;
     left: 100px;
     overflow-y: scroll;
+    z-index: 2;
+    width: 320px;
+}
+
+#form {
+    position: fixed;
+    top: 100px;
+    left: 400px;
+    z-index: 3;
+}
+
+#map {
     z-index: 1;
+}
+
+#feedItem {
+    transition: 0.5s ease;
+}
+
+#feedItem:hover {
+    transform: scale(1.1)
 }
