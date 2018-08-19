@@ -1,10 +1,21 @@
 var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.LIBRARIES = ['geometry', 'places']
-var BrowserRouter = require('react-router-dom').BrowserRouter
-var Route = require('react-router-dom').Route
-var Link = require('react-router-dom').Link
-var Router = require('react-router-dom').Router
-GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c'
+GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+var BrowserRouter = require('react-router-dom').BrowserRouter;
+var Route = require('react-router-dom').Route;
+var Link = require('react-router-dom').Link;
+var Router = require('react-router-dom').Router;
+GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
+
+function Newsfeed(props) {
+    var feed = props.imgArray.map(function (feedItem) {
+        return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
+                        )});
+                                            
+    return (
+        React.createElement("div", {id: "newsfeed"}, feed)
+    )
+}
+
 
 class AdminListView extends React.Component {
 
@@ -163,17 +174,23 @@ class AdminMap extends React.Component {
 
 class MainMap extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
+        this.state = {
+            imgArray: [2]
+        }
     }
 // displays various groups of businesses based on the URL param supplied in props
-    componentDidMount() {
+    async componentDidMount() {
+
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:visible"
-		var map;
+        var map;
+        var imgArray = []        
 		var markers = {}
         var infowindows = {}
+        var self = this;
        
-        fetch("/api/businesses?category=" + this.props.category).then(function(response){
+        await fetch("/api/businesses?category=" + this.props.category).then(function(response){
                 response.json().then(function(allBusinesses){
         
                 allBusinesses.forEach(function(business, index, array) {
@@ -196,8 +213,8 @@ class MainMap extends React.Component {
 					
                     function callback(place, status) {
                         if (status == google.maps.places.PlacesServiceStatus.OK) {
-                                var ImgDiv = document.createElement("div");
-                                var placeImg = document.createElement("IMG");
+                                var imgDiv = document.createElement("div");
+                                var placeImg = {}
                                 var newsfeed = document.getElementById("newsfeed");
                                 try {
                                     placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
@@ -208,10 +225,6 @@ class MainMap extends React.Component {
                                 }
                                 var name = place.name
                                 placeImg.id = "feedItem";
-                                placeImg.style = "height:355px;width:285px;box-shadow: 10px 10px 25px;padding-bottom: 10px";
-                                ImgDiv.style = "display;block;margin-left:auto;margin-right:auto"
-                                ImgDiv.appendChild(placeImg)                                
-                                newsfeed.appendChild(ImgDiv)
                                 
 								var lat = place.geometry.location.lat()
 								var lng = place.geometry.location.lng()
@@ -230,21 +243,36 @@ class MainMap extends React.Component {
 								});
                                 bounds.extend(new google.maps.LatLng(lat, lng));
                                 
-                                placeImg.onmouseover = function(){google.maps.event.trigger(marker, 'click')}
-                                placeImg.onmouseout = function(){infowindow.close()}
-
+                                placeImg.onmouseover = function(){
+                                    google.maps.event.trigger(marker, 'click');
+                                    map.setZoom(14);
+                                    map.panTo(place.geometry.location)
+                                };
+                                placeImg.onmouseout = function(){infowindow.close()};
+                                imgArray.push(placeImg);
+                                (() => {
+                                    self.setState({
+                                    imgArray: imgArray
+                                })
+                            })()
+                               
 						}
 							map.fitBounds(bounds)
 							map.setZoom(13)
-					}
+					};
 			});
-		});
         });
-    })}
+       
+    });
+    });
+    };
 
     render() {
         return (
-            React.createElement("div", {id: "map", style: styles.map})
+        <div>
+        <div id ="map" style={styles.map}> </div>
+        <Newsfeed imgArray={this.state.imgArray}/>
+        </div>
         )
     }
 }
@@ -373,6 +401,18 @@ styles.nav = {
       top: -300,
       position: "relative",
       width: "270px",
+  }
+
+  styles.placeImg = {
+    height: "355px",
+    width: "285px",
+    boxShadow: "10px 10px 25px",
+    paddingBottom: "10px"
+  }
+
+  styles.imgDiv = { 
+      display: "block;margin-left:auto",
+      marginRight: "auto"
   }
 
 ReactDOM.render(
