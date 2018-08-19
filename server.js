@@ -106,12 +106,13 @@ app.post('/api/businesses', function(request, response){
 app.delete('/api/businesses', function(request, response){
     if (request.isAuthenticated()) {
     var _idArray = [];
-    JSON.parse(request.body).forEach(function(_id) {
+    request.body.forEach(function(_id) {
         _idArray.push(ObjectID(_id))
     })
     console.log(_idArray)
-    db.collection("businesses").remove({ "_id": { $in: _idArray }})
-    response.redirect('/admin')
+    db.collection("businesses").remove({ "_id": { $in: _idArray }});
+    response.status(202);
+    response.redirect('/admin');
         }
     else {response.sendStatus(401)}
 })

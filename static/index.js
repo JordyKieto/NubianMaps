@@ -31,22 +31,24 @@ class AdminListView extends React.Component {
                     });
     
                 }
-                    editButton.setAttribute('value', 'Update')
-                    editButton.setAttribute('type', 'button')
-                    textnode.setAttribute('type', 'text')
-                    textnode.setAttribute('value', entry.name)
-                    var form = document.getElementById("form")
-                    var submit = document.getElementById("submitID")
-                    node.appendChild(textnode)
-                    var input = document.createElement("INPUT")
-                    input.setAttribute('type', 'checkbox')
-                    input.setAttribute('name', entry.name)
-                    input.setAttribute('value', entry._id)
-                    node.appendChild(input)
+                    editButton.setAttribute('value', 'Update');
+                    editButton.setAttribute('type', 'button');
+                    textnode.setAttribute('type', 'text');
+                    textnode.setAttribute('value', entry.name);
+                    var form = document.getElementById("form");
+                    var submit = document.getElementById("submitID");
+                    node.appendChild(textnode);
+                    var input = document.createElement("INPUT");
+                    input.setAttribute('type', 'checkbox');
+                    input.setAttribute('name', entry.name);
+                    input.setAttribute('value', entry._id);
+                    input.setAttribute('class', "adminInput");
+                    input.style.fontSize = "30px"
+                    node.appendChild(input);
                     node.appendChild(editButton)
-                    document.getElementById("form").appendChild(node)
+                    document.getElementById("form").appendChild(node);
                     // adds the submit button to end of form
-                    form.insertBefore(node, submit)
+                    form.insertBefore(node, submit);
 
         })
     })})}
@@ -197,9 +199,15 @@ class MainMap extends React.Component {
                                 var ImgDiv = document.createElement("div");
                                 var placeImg = document.createElement("IMG");
                                 var newsfeed = document.getElementById("newsfeed");
-                                placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
+                                try {
+                                            placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
+                                }
+                                catch(err) {
+                                    console.log('no image for this.')
+                                    placeImg.src = '/africaLogo.png'
+                                }
                                 placeImg.id = "feedItem";
-                                placeImg.style = "height:325px;width:285px;box-shadow: 10px 10px 25px;padding-bottom: 10px";
+                                placeImg.style = "height:355px;width:285px;box-shadow: 10px 10px 25px;padding-bottom: 10px";
                                 ImgDiv.style = "display;block;margin-left:auto;margin-right:auto"
                                 ImgDiv.appendChild(placeImg)                                
                                 newsfeed.appendChild(ImgDiv)
