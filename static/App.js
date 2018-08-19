@@ -5020,7 +5020,10 @@ class MainMap extends React.Component {
                                     map.setZoom(15);
                                     map.panTo(place.geometry.location)
                                 };
-                                placeImg.onmouseout = function(){infowindow.close()};
+                                placeImg.onmouseout = function(){
+                                    map.setZoom(14);
+                                    map.panTo(place.geometry.location)                                    
+                                    infowindow.close();};
                                 imgArray.push(placeImg);
                                 (() => {
                                     self.setState({
