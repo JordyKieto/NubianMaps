@@ -200,12 +200,13 @@ class MainMap extends React.Component {
                                 var placeImg = document.createElement("IMG");
                                 var newsfeed = document.getElementById("newsfeed");
                                 try {
-                                            placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
+                                    placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
                                 }
                                 catch(err) {
-                                    console.log('no image for this.')
+                                 // no image for this place, setting default
                                     placeImg.src = '/africaLogo.png'
                                 }
+                                var name = place.name
                                 placeImg.id = "feedItem";
                                 placeImg.style = "height:355px;width:285px;box-shadow: 10px 10px 25px;padding-bottom: 10px";
                                 ImgDiv.style = "display;block;margin-left:auto;margin-right:auto"
@@ -214,22 +215,23 @@ class MainMap extends React.Component {
                                 
 								var lat = place.geometry.location.lat()
 								var lng = place.geometry.location.lng()
-
-								var name = place.name
     
-                        		markers[name] = new google.maps.Marker({
+                        		var marker = new google.maps.Marker({
                             	position: place.geometry.location,
                                 map: map,
 								});
 					
-                            	infowindows[name] = new google.maps.InfoWindow({
+                            	var infowindow = new google.maps.InfoWindow({
                                 content: place.name
                                 });
 
-                                markers[name].addListener('click', function(){
-                                infowindows[name].open(map, markers[name])
+                                marker.addListener('click', function(){
+                                infowindow.open(map, marker)
 								});
-								bounds.extend(new google.maps.LatLng(lat, lng));
+                                bounds.extend(new google.maps.LatLng(lat, lng));
+                                
+                                placeImg.onmouseover = function(){google.maps.event.trigger(marker, 'click')}
+                                placeImg.onmouseout = function(){infowindow.close()}
 
 						}
 							map.fitBounds(bounds)
