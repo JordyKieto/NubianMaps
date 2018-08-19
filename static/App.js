@@ -4778,7 +4778,7 @@ GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 
 function Newsfeed(props) {
     var feed = props.imgArray.map(function (feedItem) {
-        return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
+        return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {className: "feedItem", style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
                         )});
                                             
     return (
@@ -4824,7 +4824,7 @@ class AdminListView extends React.Component {
                     input.setAttribute('name', entry.name);
                     input.setAttribute('value', entry._id);
                     input.setAttribute('class', "adminInput");
-                    input.style.fontSize = "30px"
+
                     node.appendChild(input);
                     node.appendChild(editButton)
                     document.getElementById("form").appendChild(node);
@@ -4835,27 +4835,29 @@ class AdminListView extends React.Component {
     })})}
 
     handlesubmit  (event)  {
+        var self = this;
         event.preventDefault()
         var entries = [];
         var formData = new FormData(event.target)
         for (let entry of formData.entries()) {
             entries.push(entry[1]);
         }
+        
         fetch('/api/businesses', {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'},
             method: 'delete',
-            body: JSON.stringify(entries)})
-    
+            body: JSON.stringify(entries)}).then(function(){location.reload();}); 
     }
-
     render () {
         return (
+            React.createElement("div", {id: "adminForm"}, 
             React.createElement("form", {onSubmit: this.handlesubmit, id: "form", style: styles.admin}, 
             React.createElement("div", {id: "submitID"}, 
             React.createElement("br", null), 
             React.createElement("input", {type: "submit", value: "Delete"})
+            )
             )
             )
         )
@@ -4946,7 +4948,7 @@ class MainMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            imgArray: [2]
+            imgArray: []
         }
     }
 // displays various groups of businesses based on the URL param supplied in props
@@ -4991,7 +4993,7 @@ class MainMap extends React.Component {
                                 }
                                 catch(err) {
                                  // no image for this place, setting default
-                                    placeImg.src = '/africaLogo.png'
+                                    placeImg.src = '/altLogo.png'
                                 }
                                 var name = place.name
                                 placeImg.id = "feedItem";
@@ -5015,7 +5017,7 @@ class MainMap extends React.Component {
                                 
                                 placeImg.onmouseover = function(){
                                     google.maps.event.trigger(marker, 'click');
-                                    map.setZoom(14);
+                                    map.setZoom(15);
                                     map.panTo(place.geometry.location)
                                 };
                                 placeImg.onmouseout = function(){infowindow.close()};
@@ -5176,13 +5178,14 @@ styles.nav = {
   styles.placeImg = {
     height: "355px",
     width: "285px",
-    boxShadow: "10px 10px 25px",
-    paddingBottom: "10px"
+    boxShadow: "10px 1px 25px",
+    paddingBottom: "30px"
   }
 
   styles.imgDiv = { 
-      display: "block;margin-left:auto",
-      marginRight: "auto"
+      display: "block",
+      marginLeft: "auto",
+      marginRight: "auto",
   }
 
 ReactDOM.render(

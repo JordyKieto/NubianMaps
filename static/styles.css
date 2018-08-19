@@ -9,7 +9,6 @@
 }
 
 #form {
-    position: fixed;
     top: 100px;
     left: 400px;
     z-index: 3;
@@ -19,10 +18,16 @@
     z-index: 1;
 }
 
-#feedItem {
+.feedItem {
     transition: 0.5s ease;
 }
 
-#feedItem:hover {
+.feedItem:hover {
     transform: scale(1.1)
+}
+#adminForm {
+    position: absolute;
+    top: 500px;
+    left: -100px;
+    font-size: 200%;
 }
