@@ -4926,7 +4926,7 @@ class AdminMap extends React.Component {
 
     render() {
         return (
-        React.createElement("div", null, 
+        React.createElement("div", {id: "mapdiv"}, 
 
         React.createElement("div", {id: "map", style: styles.map}), 
 

@@ -156,7 +156,7 @@ class AdminMap extends React.Component {
 
     render() {
         return (
-        <div>
+        <div id="mapdiv">
 
         <div id="map" style={styles.map}></div>
 
