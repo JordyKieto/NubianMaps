@@ -241,7 +241,7 @@ class MainMap extends React.Component {
                                 });
 
                                 marker.addListener('click', function(){
-                                infowindow.open(map, marker)
+                                infowindow.open(map, marker);
 								});
                                 bounds.extend(new google.maps.LatLng(lat, lng));
                                 
@@ -312,7 +312,7 @@ class App extends React.Component {
     <img style={styles.logo} src="africaLogo.png"/>
     <h1 style={styles.h1}>NUBIAN MAPS</h1>
     </div>
-    <ul style={styles.nav}>
+    <ul id ="navbar" style={styles.nav}>
         <NavLink to="/">Home</NavLink>
         <NavLink to="/entertainment">Entertainment</NavLink>
         <NavLink to="/networking">Networking</NavLink>

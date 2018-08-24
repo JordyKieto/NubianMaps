@@ -1,0 +1,19 @@
+#newsfeed {
+    width: 120px;
+    left: -0px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+
+}
+#map {
+    width: 100%;
+}
+
+#navbar {
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.feedItem:hover {
+    opacity: .6;
+}

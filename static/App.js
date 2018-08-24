@@ -5011,7 +5011,7 @@ class MainMap extends React.Component {
                                 });
 
                                 marker.addListener('click', function(){
-                                infowindow.open(map, marker)
+                                infowindow.open(map, marker);
 								});
                                 bounds.extend(new google.maps.LatLng(lat, lng));
                                 
@@ -5082,7 +5082,7 @@ class App extends React.Component {
     React.createElement("img", {style: styles.logo, src: "africaLogo.png"}), 
     React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
     ), 
-    React.createElement("ul", {style: styles.nav}, 
+    React.createElement("ul", {id: "navbar", style: styles.nav}, 
         React.createElement(NavLink, {to: "/"}, "Home"), 
         React.createElement(NavLink, {to: "/entertainment"}, "Entertainment"), 
         React.createElement(NavLink, {to: "/networking"}, "Networking"), 
