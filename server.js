@@ -2,6 +2,8 @@ var express = require("express");
 var MongoClient = require("mongodb").MongoClient;
 var http = require("http");
 var path = require("path");
+var mongoose = require('mongoose');
+var Business = require("./models/businesses")
 var bodyParser = require('body-parser');
 var ObjectID = require('mongodb').ObjectID;
 var mapsKey = process.env.MAPS_KEY
@@ -23,7 +25,8 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-     var adminDeSerial = Object.assign({password: null}, admin)
+    // don't serialize sensitive info
+    var adminDeSerial = Object.assign({password: null}, admin)
     done(null, adminDeSerial)
 });
 
@@ -51,7 +54,7 @@ app.use(passport.session());
 
 app.get('/api/businesses', function(request, response) {
     if (request.query.category === 'all') {
-        db.collection("businesses").find().toArray().then(allBusinesses =>{
+        Business.find({}).then(allBusinesses =>{
             console.log(allBusinesses)
             // regular request code, nothing to report
             response.status(202)
@@ -59,9 +62,9 @@ app.get('/api/businesses', function(request, response) {
         });
     } else {
     console.log(request.query.category)
-    db.collection("businesses").find(
+    Business.find(
         { category: request.query.category }
-    ).toArray().then(allBusinesses =>{
+    ).then(allBusinesses =>{
         console.log(allBusinesses)
         response.status(200)
         response.json(allBusinesses)
@@ -69,9 +72,9 @@ app.get('/api/businesses', function(request, response) {
 });
 app.get('/api/businesses/:_id', function(request, response){
     var _id = ObjectID(request.params._id)
-    db.collection("businesses").find(
+    Business.find(
     { "_id": _id }
-    ).toArray().then(businessInfo =>{
+    ).then(businessInfo =>{
         console.log(businessInfo)
         response.status(200)
         response.json(businessInfo)
@@ -84,7 +87,7 @@ app.put('/api/businesses/:_id', function(request, response){
     console.log(request.body)
     var body = request.body
     var _id = ObjectID(request.params._id)
-    db.collection("businesses").findOneAndUpdate(
+    Business.findOneAndUpdate(
         { "_id": _id }, { $set: {"name": body.name}}
     ) 
     } else {response.sendStatus(401)}
@@ -93,7 +96,7 @@ app.post('/api/businesses', function(request, response){
     if (request.isAuthenticated()) {
     var body = request.body
     console.log(request.body)
-    db.collection("businesses").insertOne({ name: request.body.name, 
+    Business.insertOne({ name: request.body.name, 
                                             category: request.body.category, 
                                             placeID: request.body.placeID
                                          });
@@ -110,7 +113,7 @@ app.delete('/api/businesses', function(request, response){
         _idArray.push(ObjectID(_id))
     })
     console.log(_idArray)
-    db.collection("businesses").remove({ "_id": { $in: _idArray }});
+    Business.remove({ "_id": { $in: _idArray }});
     response.status(202);
     response.redirect('/admin');
         }
@@ -146,9 +149,10 @@ app.get('/*', function(req, res) {
     })
 });
 let db = 'blank'
-MongoClient.connect( uri || 'mongodb://localhost').then(client =>{
-     db = client.db('heroku_jk2dkbrb');
-    console.log(db.s.databaseName+' started');
+mongoose.connection.on('connected', function (err) {
+    console.log("Mongo connect success on... "+ mongoose.connection.name)
+   });
+mongoose.connect( uri || 'mongodb://localhost').then(() =>{
     app.server = app.listen(port, function(){
     console.log('Nubian Maps on '+ app.server.address().port)
 });

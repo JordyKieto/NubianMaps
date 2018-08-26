@@ -4,7 +4,7 @@
   "description": "Have different business categories, and buttons to change",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cd test && mocha testServer",
     "start": "node server.js"
   },
   "author": "",
@@ -25,6 +25,7 @@
     "google-maps": "^3.3.0",
     "mocha": "^5.2.0",
     "mongodb": "^3.1.1",
+    "mongoose": "^5.2.9",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "react-router-dom": "^4.3.1",

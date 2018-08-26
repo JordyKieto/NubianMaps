@@ -8,7 +8,7 @@ GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 
 function Newsfeed(props) {
     var feed = props.imgArray.map(function (feedItem) {
-        return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {className: "feedItem", style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
+        return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
                         )});
                                             
     return (
@@ -226,7 +226,7 @@ class MainMap extends React.Component {
                                     placeImg.src = '/altLogo.png'
                                 }
                                 var name = place.name
-                                placeImg.id = "feedItem";
+                                placeImg.id = name.replace(/ /, '-');
                                 
 								var lat = place.geometry.location.lat()
 								var lng = place.geometry.location.lng()
