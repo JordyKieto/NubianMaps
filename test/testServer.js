@@ -4,8 +4,8 @@ var assert = require('chai').assert;
 var mapsKey = process.env.MAPS_KEY
 var request = require('supertest');
 var MongoClient = require("mongodb").MongoClient;
-var admin = require('../server').admin
-let cookie
+var admin = require('../config/defaultAdmin').admin;
+let cookie;
 
 describe('API', function () {
     beforeEach( async function() {
