@@ -107,16 +107,17 @@ router.get('/api/checkAuthentication', function(request, response) {
     } else {response.json(false)}
 });
 router.post('/api/favourites', function(request, response) {
-    var newPlaces = JSON.stringify(request.body.newPlaces);
-    newPlaces.trim();
-    console.log(typeof newPlaces);
+    console.log(request.body);
+    var newPlace = JSON.stringify(request.body.id);
+    newPlace.trim();
+    console.log(typeof newPlace);
    // [...] is characterset, \ before special char means next one should be interprerted literally
-    newPlaces = newPlaces.replace(/[[\]]/g, '').replace(/(["])/g, '');
-    console.log(newPlaces);
+    newPlace = newPlace.replace(/[[\]]/g, '').replace(/(["])/g, '');
+    console.log(newPlace);
     if (request.isAuthenticated()) {
         User.findById(request.user.id)
         .then(function(user) {
-            user.addToFavourites(newPlaces);
+            user.addToFavourites(newPlace);
             response.status(200).redirect('/favourites');
         })
     } else {

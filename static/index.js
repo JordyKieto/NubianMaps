@@ -288,10 +288,13 @@ class MainMap extends React.Component {
                             	position: place.geometry.location,
                                 map: map,
 								});
-                                var apple = 'apple'
                             	var infowindow = new google.maps.InfoWindow({
-                                content: (place.name + '<br/><img class="favouriteStar" src="https://vignette.wikia.nocookie.net/justdance/images/2/2e/Star.png/revision/latest?cb=20160307193808"'
-                                +'"width="35" height="35" />'
+                                content: (place.name + '<br/><div style="height:33px">'
+                                +'<form action="/api/favourites" method="post">'
+                                +'<img src="/star.png" class="star" style="width:30px;height:30px" />'
+                                +'<input name="id" type="hidden" value='+business._id+ ' />'
+                                +'<input class="favButton" value="Fav Me!"type="Submit"/></div>'
+                                +'</form'
                                 )});
                                 marker.addListener('click', function(){
                                 infowindow.open(map, marker);
@@ -362,6 +365,7 @@ class App extends React.Component {
     <div>
     
     <div style={styles.header}>
+    <a href="/favourites"><img src="/star.png" id="favouriteStar" /></a>
     <img style={styles.logo} src="africaLogo.png"/>
     <h1 style={styles.h1}>NUBIAN MAPS</h1>
     </div>
