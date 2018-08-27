@@ -4776,6 +4776,18 @@ var Link = require('react-router-dom').Link;
 var Router = require('react-router-dom').Router;
 GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 
+class postFavourites extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/favourites", method: "post"}, 
+                React.createElement("label", {htmlFor: "username"}, "New Favourites:"), 
+                    React.createElement("input", {type: "text", name: "newPlaces[]"}), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )}};
 class Login extends React.Component{
     componentDidMount(){}
     render() {
@@ -4816,7 +4828,10 @@ class Register extends React.Component{
 
 function Newsfeed(props) {
     var feed = props.imgArray.map(function (feedItem) {
-        return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
+        return React.createElement("div", {style: styles.imgDiv}, 
+                    React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
+                    style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
+                    onMouseOut: feedItem.onmouseout})
                         )});
                                             
     return (
@@ -5043,11 +5058,11 @@ class MainMap extends React.Component {
                             	position: place.geometry.location,
                                 map: map,
 								});
-					
+                                var apple = 'apple'
                             	var infowindow = new google.maps.InfoWindow({
-                                content: place.name
-                                });
-
+                                content: (place.name + '<br/><img class="favouriteStar" src="https://vignette.wikia.nocookie.net/justdance/images/2/2e/Star.png/revision/latest?cb=20160307193808"'
+                                +'"width="35" height="35" />'
+                                )});
                                 marker.addListener('click', function(){
                                 infowindow.open(map, marker);
 								});
@@ -5133,6 +5148,8 @@ class App extends React.Component {
     React.createElement(Route, {exact: true, path: "/food", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'food'}))}), 
     React.createElement(Route, {exact: true, path: "/cosmetics", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'cosmetics'}))}), 
     React.createElement(Route, {exact: true, path: "/networking", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'networking'}))}), 
+    React.createElement(Route, {exact: true, path: "/favourites", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'favourites'}))}), 
+    React.createElement(Route, {path: "/postFavourites", component: postFavourites}), 
     React.createElement(Route, {path: "/admin", component: AdminMap}), 
     React.createElement(Route, {path: "/authenticate", component: Authenticate}), 
     React.createElement(Route, {path: "/login", component: Login}), 

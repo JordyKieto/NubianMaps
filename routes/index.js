@@ -4,17 +4,21 @@ var Business = require("../models/businesses");
 var mapsKey = process.env.MAPS_KEY;
 var ObjectID = require('mongodb').ObjectID;
 var passport = require('passport');
+var User = require("../models/users");
 
 router.get('/api/businesses', function(request, response) {
-    if (request.query.category === 'all') {
+    console.log(request.query.category);
+    if (request.query.category === 'favourites') {
+        getFavourites(request, response);
+    }
+    else if (request.query.category === 'all') {
         Business.find({}).then(allBusinesses =>{
             console.log(allBusinesses)
             // regular request code, nothing to report
-            response.status(202)
+            response.status(200)
             response.json(allBusinesses)
         });
     } else {
-    console.log(request.query.category)
     Business.find(
         { category: request.query.category }
     ).then(allBusinesses =>{
@@ -25,6 +29,7 @@ router.get('/api/businesses', function(request, response) {
 });
 router.get('/api/businesses/:_id', function(request, response){
     var _id = ObjectID(request.params._id)
+    console.log(_id)
     Business.find(
     { "_id": _id }
     ).then(businessInfo =>{
@@ -38,7 +43,7 @@ router.put('/api/businesses/:_id', function(request, response){
     if (request.isAuthenticated()) {
     console.log(request.body)
     var body = request.body
-    var _id = ObjectID(request.params._id)
+    var _id = ObjectID(request.params._id);
     Business.findOneAndUpdate(
         { "_id": _id }, { $set: {"name": body.name}}
     ) 
@@ -66,7 +71,7 @@ router.delete('/api/businesses', function(request, response){
     })
     console.log(_idArray)
     Business.remove({ "_id": { $in: _idArray }});
-    response.status(202);
+    response.status(200);
     response.redirect('/admin');
         }
     else {response.sendStatus(401)}
@@ -97,9 +102,45 @@ router.get('/api/login', passport.authenticate('login', {successRedirect: '/admi
 );
 router.get('/api/checkAuthentication', function(request, response) {
     if (request.isAuthenticated()) {
-        response.json(true)
+        console.log(request.user.username);
+        response.json(true);
     } else {response.json(false)}
-});                                                
+});
+router.post('/api/favourites', function(request, response) {
+    var newPlaces = JSON.stringify(request.body.newPlaces);
+    newPlaces.trim();
+    console.log(typeof newPlaces);
+   // [...] is characterset, \ before special char means next one should be interprerted literally
+    newPlaces = newPlaces.replace(/[[\]]/g, '').replace(/(["])/g, '');
+    console.log(newPlaces);
+    if (request.isAuthenticated()) {
+        User.findById(request.user.id)
+        .then(function(user) {
+            user.addToFavourites(newPlaces);
+            response.status(200).redirect('/favourites');
+        })
+    } else {
+        response.redirect('/');
+    }
+});
+router.get('/api/favourites', function(request, response) {
+    getFavourites(request, response); 
+});
+
+var getFavourites = function(request, response) {
+    if(request.isAuthenticated()){
+        User.findById(request.user.id)
+        .populate('favourites')
+        // query will not run until exec or then
+        .exec(function (err, user) {
+            if(err) {throw err}
+            else{
+                console.log(user.favourites);
+                response.status(200).json(user.favourites);
+            }
+        })
+    } else {response.redirect('/admin')}
+}
 // for all other requests, send index. allows react app too handle rest of routing
 router.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname, '../static/index.html'), function(err) {

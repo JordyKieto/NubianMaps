@@ -12,6 +12,7 @@ module.exports = function(passport) {
     passport.deserializeUser(function(id, done) {
         if(id === admin.id) {
         // don't serialize sensitive info
+        // **TODO** also protect User method
         var adminDeSerial = Object.assign({password: null}, admin)
         done(null, adminDeSerial)
         } else {
