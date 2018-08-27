@@ -6,6 +6,44 @@ var Link = require('react-router-dom').Link;
 var Router = require('react-router-dom').Router;
 GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 
+class Login extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            <div>
+                <form action="/api/login" method="get">
+                <label htmlFor="username">Username:</label>
+                    <input type="text" name="username" id="username"/>
+                    <br/>
+                    <label htmlFor="password">Password:</label>
+                    <input type="password"  name="password" id="password"/>
+                    <br/>
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+        )
+    }
+};
+
+class Register extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            <div>
+                <form action="/api/register" method="get">
+                <label htmlFor="username">Username:</label>
+                    <input type="text" name="username" id="username"/>
+                    <br/>
+                    <label htmlFor="password">Password:</label>
+                    <input type="password"  name="password" id="password"/>
+                    <br/>
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+        )
+    }
+};
+
 function Newsfeed(props) {
     var feed = props.imgArray.map(function (feedItem) {
         return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
@@ -296,7 +334,7 @@ class Authenticate extends React.Component{
             </div>
         )
     }
-}
+};
 // main App
 class App extends React.Component {
     componentDidMount(){
@@ -327,10 +365,13 @@ class App extends React.Component {
     <Route exact path="/networking" render={(props) => <MainMap {...props} category={'networking'}/>} />
     <Route path="/admin" component={AdminMap}/>
     <Route path="/authenticate" component={Authenticate}/>
+    <Route path="/login" component={Login}/>
+    <Route path="/register" component={Register}/>
+
     </div>
 
 )
-}}
+}};
 const NavLink = props => (
     <li style={styles.navItem}>
       <Link {...props} style={{ color: "inherit" }} />

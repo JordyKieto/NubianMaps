@@ -33,8 +33,7 @@ router.get('/api/businesses/:_id', function(request, response){
         response.json(businessInfo)
     });
 
-})
-
+});
 router.put('/api/businesses/:_id', function(request, response){
     if (request.isAuthenticated()) {
     console.log(request.body)
@@ -71,14 +70,14 @@ router.delete('/api/businesses', function(request, response){
     response.redirect('/admin');
         }
     else {response.sendStatus(401)}
-})
+});
 router.get('/api/mapsKey', function(request, response) {
     response.json(mapsKey)
-})
+});
 router.get('/api/authenticate', passport.authenticate('authenticate', {successRedirect: '/admin',
                                                             failureRedirect: '/authenticate'
-                                                    }));
-
+                                                    })
+);
 router.get('/api/logout', function(request, response) {
     if (request.isAuthenticated()) {
         console.log('logging out and destroying session');
@@ -88,7 +87,15 @@ router.get('/api/logout', function(request, response) {
         response.redirect('/admin')
     }
 });
-router.get('/checkAuthentication', function(request, response) {
+router.get('/api/register', passport.authenticate('register', {successRedirect: '/admin',
+                                                            failureRedirect: '/register'
+                                                    })
+);
+router.get('/api/login', passport.authenticate('login', {successRedirect: '/admin',
+                                                            failureRedirect: '/login'
+                                                    })
+);
+router.get('/api/checkAuthentication', function(request, response) {
     if (request.isAuthenticated()) {
         response.json(true)
     } else {response.json(false)}

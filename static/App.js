@@ -4776,6 +4776,44 @@ var Link = require('react-router-dom').Link;
 var Router = require('react-router-dom').Router;
 GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 
+class Login extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/login", method: "get"}, 
+                React.createElement("label", {htmlFor: "username"}, "Username:"), 
+                    React.createElement("input", {type: "text", name: "username", id: "username"}), 
+                    React.createElement("br", null), 
+                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
+                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
+                    React.createElement("br", null), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )
+    }
+};
+
+class Register extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/register", method: "get"}, 
+                React.createElement("label", {htmlFor: "username"}, "Username:"), 
+                    React.createElement("input", {type: "text", name: "username", id: "username"}), 
+                    React.createElement("br", null), 
+                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
+                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
+                    React.createElement("br", null), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )
+    }
+};
+
 function Newsfeed(props) {
     var feed = props.imgArray.map(function (feedItem) {
         return React.createElement("div", {style: styles.imgDiv}, React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, onMouseOut: feedItem.onmouseout})
@@ -5066,7 +5104,7 @@ class Authenticate extends React.Component{
             )
         )
     }
-}
+};
 // main App
 class App extends React.Component {
     componentDidMount(){
@@ -5096,11 +5134,14 @@ class App extends React.Component {
     React.createElement(Route, {exact: true, path: "/cosmetics", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'cosmetics'}))}), 
     React.createElement(Route, {exact: true, path: "/networking", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'networking'}))}), 
     React.createElement(Route, {path: "/admin", component: AdminMap}), 
-    React.createElement(Route, {path: "/authenticate", component: Authenticate})
+    React.createElement(Route, {path: "/authenticate", component: Authenticate}), 
+    React.createElement(Route, {path: "/login", component: Login}), 
+    React.createElement(Route, {path: "/register", component: Register})
+
     )
 
 )
-}}
+}};
 const NavLink = props => (
     React.createElement("li", {style: styles.navItem}, 
       React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
