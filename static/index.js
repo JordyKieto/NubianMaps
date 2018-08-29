@@ -293,7 +293,7 @@ class MainMap extends React.Component {
                                 +'<form action="/api/favourites" method="post">'
                                 +'<img src="/star.png" class="star" style="width:30px;height:30px" />'
                                 +'<input name="id" type="hidden" value='+business._id+ ' />'
-                                +'<input class="favButton" value="Fav Me!"type="Submit"/></div>'
+                                +'<input class="favButton" value="Shop Nubian!"type="Submit"/></div>'
                                 +'</form'
                                 )});
                                 marker.addListener('click', function(){
@@ -357,6 +357,22 @@ class Authenticate extends React.Component{
 class App extends React.Component {
     componentDidMount(){
     }
+
+    makeVisible(subNavs) {
+        subNavs.forEach(function(subNav) {
+        let navItem = document.getElementById(subNav);
+        console.log(subNav);
+        navItem.style.visibility = "visible"
+    })
+    }
+
+    makeInvisible(subNavs) {
+        subNavs.forEach(function(subNav) {
+        let navItem = document.getElementById(subNav);
+        console.log(subNav);
+        navItem.style.visibility = "hidden"
+    });
+    }
     
     
     render() {
@@ -369,14 +385,40 @@ class App extends React.Component {
     <img style={styles.logo} src="africaLogo.png"/>
     <h1 style={styles.h1}>NUBIAN MAPS</h1>
     </div>
+    {/** the nav Grid, make sure to have equal number of NavLink's on each sublevel */}
     <ul id ="navbar" style={styles.nav}>
         <NavLink to="/">Home</NavLink>
         <NavLink to="/entertainment">Entertainment</NavLink>
         <NavLink to="/networking">Networking</NavLink>
         <NavLink to="/food">Food</NavLink>
         <NavLink to="/cosmetics">Cosmetics</NavLink>
-        <NavLink to="/admin">Admin</NavLink>
+        <NavLink to="/admin" onMouseOver={() => this.makeVisible(["loginNav"])} onMouseOut={()=> this.makeInvisible(["loginNav"])}>Admin</NavLink>
     </ul>
+    <ul id ="navbar" style={styles.subNav}>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/login" id="loginNav" onMouseOver={() => this.makeVisible(["loginNav", "logoutNav"])} onMouseOut={()=> this.makeInvisible(["loginNav", "logoutNav"])}>Login</NavLink>
+    </ul>
+    <ul id ="navbar" style={styles.subNav}>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/logout" id="logoutNav" onMouseOver={() => this.makeVisible(["loginNav", "logoutNav", "registerNav"])} onMouseOut={()=> this.makeInvisible(["logoutNav", "loginNav", "registerNav"])}>Logout</NavLink>
+    </ul>
+    <ul id ="navbar" style={styles.subNav}>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/register" id="registerNav" onMouseOver={() => this.makeVisible(["registerNav", "logoutNav", "loginNav"])} onMouseOut={()=> this.makeInvisible(["registerNav", "logoutNav","loginNav"])}>Register</NavLink>
+    </ul>
+    {/** https://zhenyong.github.io/react/docs/jsx-spread.html */}
     <Route exact path="/" render={(props) => <MainMap {...props} category={'all'}/>} />
     <Route exact path="/entertainment" render={(props) => <MainMap {...props} category={'entertainment'}/>} />
     <Route exact path="/food" render={(props) => <MainMap {...props} category={'food'}/>} />
@@ -394,14 +436,18 @@ class App extends React.Component {
 )
 }};
 const NavLink = props => (
-    <li style={styles.navItem}>
-      <Link {...props} style={{ color: "inherit" }} />
-    </li>
-  );
+        <div style={styles.navItem} id={props.id} onMouseOver={props.onMouseOver} onMouseOut={props.onMouseOut}>
+            <li >
+                <Link {...props} style={{ color: "inherit" }} />
+            </li>
+    </div>
+);
 
 const styles = {};
 
 styles.map = {
+    position: "relative",
+    top: -120,
     width: "100%",
     height: "800px"
 }
@@ -416,13 +462,26 @@ styles.nav = {
     display: "flex"
   };
 
+  styles.subNav = {
+    padding: 0,
+    margin: 0,
+    position: "relative",
+    top: 0,
+    height: "40px",
+    width: "100%",
+    display: "flex",
+    visibility: "hidden"
+  };
+
   styles.navItem = {
+    
     textAlign: "center",
     flex: 1,
     listStyleType: "none",
     padding: "5px",
     backgroundColor: "#e6e6e6",
     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+    zIndex: 4,
   };
 
   styles.header = {

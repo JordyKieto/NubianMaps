@@ -5063,7 +5063,7 @@ class MainMap extends React.Component {
                                 +'<form action="/api/favourites" method="post">'
                                 +'<img src="/star.png" class="star" style="width:30px;height:30px" />'
                                 +'<input name="id" type="hidden" value='+business._id+ ' />'
-                                +'<input class="favButton" value="Fav Me!"type="Submit"/></div>'
+                                +'<input class="favButton" value="Shop Nubian!"type="Submit"/></div>'
                                 +'</form'
                                 )});
                                 marker.addListener('click', function(){
@@ -5127,6 +5127,22 @@ class Authenticate extends React.Component{
 class App extends React.Component {
     componentDidMount(){
     }
+
+    makeVisible(subNavs) {
+        subNavs.forEach(function(subNav) {
+        let navItem = document.getElementById(subNav);
+        console.log(subNav);
+        navItem.style.visibility = "visible"
+    })
+    }
+
+    makeInvisible(subNavs) {
+        subNavs.forEach(function(subNav) {
+        let navItem = document.getElementById(subNav);
+        console.log(subNav);
+        navItem.style.visibility = "hidden"
+    });
+    }
     
     
     render() {
@@ -5139,14 +5155,40 @@ class App extends React.Component {
     React.createElement("img", {style: styles.logo, src: "africaLogo.png"}), 
     React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
     ), 
+    /** the nav Grid, make sure to have equal number of NavLink's on each sublevel */
     React.createElement("ul", {id: "navbar", style: styles.nav}, 
         React.createElement(NavLink, {to: "/"}, "Home"), 
         React.createElement(NavLink, {to: "/entertainment"}, "Entertainment"), 
         React.createElement(NavLink, {to: "/networking"}, "Networking"), 
         React.createElement(NavLink, {to: "/food"}, "Food"), 
         React.createElement(NavLink, {to: "/cosmetics"}, "Cosmetics"), 
-        React.createElement(NavLink, {to: "/admin"}, "Admin")
+        React.createElement(NavLink, {to: "/admin", onMouseOver: () => this.makeVisible(["loginNav"]), onMouseOut: ()=> this.makeInvisible(["loginNav"])}, "Admin")
     ), 
+    React.createElement("ul", {id: "navbar", style: styles.subNav}, 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/login", id: "loginNav", onMouseOver: () => this.makeVisible(["loginNav", "logoutNav"]), onMouseOut: ()=> this.makeInvisible(["loginNav", "logoutNav"])}, "Login")
+    ), 
+    React.createElement("ul", {id: "navbar", style: styles.subNav}, 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/logout", id: "logoutNav", onMouseOver: () => this.makeVisible(["loginNav", "logoutNav", "registerNav"]), onMouseOut: ()=> this.makeInvisible(["logoutNav", "loginNav", "registerNav"])}, "Logout")
+    ), 
+    React.createElement("ul", {id: "navbar", style: styles.subNav}, 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/register", id: "registerNav", onMouseOver: () => this.makeVisible(["registerNav", "logoutNav", "loginNav"]), onMouseOut: ()=> this.makeInvisible(["registerNav", "logoutNav","loginNav"])}, "Register")
+    ), 
+    /** https://zhenyong.github.io/react/docs/jsx-spread.html */
     React.createElement(Route, {exact: true, path: "/", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'all'}))}), 
     React.createElement(Route, {exact: true, path: "/entertainment", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'entertainment'}))}), 
     React.createElement(Route, {exact: true, path: "/food", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'food'}))}), 
@@ -5164,14 +5206,18 @@ class App extends React.Component {
 )
 }};
 const NavLink = props => (
-    React.createElement("li", {style: styles.navItem}, 
-      React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
+        React.createElement("div", {style: styles.navItem, id: props.id, onMouseOver: props.onMouseOver, onMouseOut: props.onMouseOut}, 
+            React.createElement("li", null, 
+                React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
+            )
     )
-  );
+);
 
 const styles = {};
 
 styles.map = {
+    position: "relative",
+    top: -120,
     width: "100%",
     height: "800px"
 }
@@ -5186,13 +5232,26 @@ styles.nav = {
     display: "flex"
   };
 
+  styles.subNav = {
+    padding: 0,
+    margin: 0,
+    position: "relative",
+    top: 0,
+    height: "40px",
+    width: "100%",
+    display: "flex",
+    visibility: "hidden"
+  };
+
   styles.navItem = {
+    
     textAlign: "center",
     flex: 1,
     listStyleType: "none",
     padding: "5px",
     backgroundColor: "#e6e6e6",
     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+    zIndex: 4,
   };
 
   styles.header = {
