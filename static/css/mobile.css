@@ -1,7 +1,7 @@
 #newsfeed {
     width: 100%;
     left: 0px;
-    top: -500px;
+    top: -850px;
     overflow-x: scroll;
     overflow-y: hidden;
     height: 120px;
@@ -33,5 +33,6 @@ img.feedItem {
     left: 0px;
     width: 125px;
     height: 125px;
+    top: 500px;
 }
 
