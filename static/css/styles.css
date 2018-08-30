@@ -20,6 +20,10 @@
 
 .feedItem {
     transition: 0.5s ease;
+    height: 355px;
+    width: 285px;
+    box-shadow: 10px 1px 25px;
+    padding-bottom: 30px;
 }
 
 .feedItem:hover {
@@ -52,4 +56,16 @@
 
 .NavLink:hover {
     background-color: "red"
+}
+
+.imgDiv {
+    display: block;
+}
+
+.feedItem {
+    display: block;
+}
+
+#root > div > div:nth-child(6) {
+    height: 0px;
 }
