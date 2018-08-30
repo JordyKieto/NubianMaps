@@ -358,20 +358,29 @@ class App extends React.Component {
     componentDidMount(){
     }
 
-    makeVisible(subNavs) {
-        subNavs.forEach(function(subNav) {
-        let navItem = document.getElementById(subNav);
-        console.log(subNav);
-        navItem.style.visibility = "visible"
-    })
+    select(thisNav, subNavs) {
+        if (subNavs) {
+            subNavs.forEach(function(subNav) {
+            let navItem = document.getElementById(subNav);
+            navItem.style.visibility = "visible";
+            })
+        }
+    let selectedItem = document.getElementById(thisNav);
+    selectedItem.style.visibility = "visible";
+    selectedItem.style.backgroundColor = "black";
+    selectedItem.style.color = "white";
     }
 
-    makeInvisible(subNavs) {
-        subNavs.forEach(function(subNav) {
-        let navItem = document.getElementById(subNav);
-        console.log(subNav);
-        navItem.style.visibility = "hidden"
-    });
+    deSelect(thisNav, subNavs) {
+        if (subNavs) {
+            subNavs.forEach(function(subNav) {
+            let navItem = document.getElementById(subNav);
+            navItem.style.visibility = "hidden"
+            });
+        }
+    let selectedItem = document.getElementById(thisNav);
+    selectedItem.style.backgroundColor = "#e6e6e6"
+    selectedItem.style.color = "black";
     }
     
     
@@ -386,13 +395,41 @@ class App extends React.Component {
     <h1 style={styles.h1}>NUBIAN MAPS</h1>
     </div>
     {/** the nav Grid, make sure to have equal number of NavLink's on each sublevel */}
+    {/** a link should make itself and every preceeding element invisible on MouseOut  */}
+    {/** & make itself and a next element visible on MouseOver */}
+    {/** following the above rules, first pass select/deselect function the links id */ }
+    {/**    then in an array, pass the id's of preceeding/proceeding NavLink's   */ }
+
+
     <ul id ="navbar" style={styles.nav}>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/entertainment">Entertainment</NavLink>
-        <NavLink to="/networking">Networking</NavLink>
-        <NavLink to="/food">Food</NavLink>
-        <NavLink to="/cosmetics">Cosmetics</NavLink>
-        <NavLink to="/admin" onMouseOver={() => this.makeVisible(["loginNav"])} onMouseOut={()=> this.makeInvisible(["loginNav"])}>Admin</NavLink>
+        <NavLink to="/" id="homeNav" onMouseOver={() => this.select("homeNav", null)} 
+            onMouseOut={()=> this.deSelect("homeNav", null)}
+        >Home</NavLink>
+        <NavLink to="/entertainment" id="entNav" onMouseOver={() => this.select("entNav", null)} 
+            onMouseOut={()=> this.deSelect("entNav", null)}
+        >Entertainment</NavLink>
+        <NavLink to="/networking" id="netNav" onMouseOver={() => this.select("netNav", null)} 
+            onMouseOut={()=> this.deSelect("netNav", null)}
+        >Networking</NavLink>
+        <NavLink to="/food" id="foodNav" onMouseOver={() => this.select("foodNav", null)} 
+            onMouseOut={()=> this.deSelect("foodNav", null)}
+        >Food</NavLink>
+        <NavLink to="/cosmetics" id="cosNav" onMouseOver={() => this.select("cosNav", null)} 
+            onMouseOut={()=> this.deSelect("cosNav", null)}
+        >Cosmetics</NavLink>
+        <NavLink to="/admin" id="adminNav" onMouseOver={() => this.select("adminNav", ["registerNav"])} 
+            onMouseOut={()=> this.deSelect("adminNav", ["registerNav"])}
+        >Admin</NavLink>
+    </ul>
+    <ul id ="navbar" className="mainNavBar" style={styles.subNav}>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/"></NavLink>
+        <NavLink to="/register" id="registerNav" onMouseOver={() => this.select("registerNav", ["loginNav"])} 
+            onMouseOut={()=> this.deSelect("registerNav", ["loginNav", "registerNav"])}
+        >Register</NavLink>
     </ul>
     <ul id ="navbar" style={styles.subNav}>
         <NavLink to="/"></NavLink>
@@ -400,7 +437,9 @@ class App extends React.Component {
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
-        <NavLink to="/login" id="loginNav" onMouseOver={() => this.makeVisible(["loginNav", "logoutNav"])} onMouseOut={()=> this.makeInvisible(["loginNav", "logoutNav"])}>Login</NavLink>
+        <NavLink to="/login" id="loginNav" onMouseOver={() => this.select("loginNav", ["registerNav",  "logoutNav"])} 
+            onMouseOut={()=> this.deSelect("loginNav", ["loginNav", "registerNav", "logoutNav"])}
+        >Login</NavLink>
     </ul>
     <ul id ="navbar" style={styles.subNav}>
         <NavLink to="/"></NavLink>
@@ -408,15 +447,9 @@ class App extends React.Component {
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
-        <NavLink to="/logout" id="logoutNav" onMouseOver={() => this.makeVisible(["loginNav", "logoutNav", "registerNav"])} onMouseOut={()=> this.makeInvisible(["logoutNav", "loginNav", "registerNav"])}>Logout</NavLink>
-    </ul>
-    <ul id ="navbar" style={styles.subNav}>
-        <NavLink to="/"></NavLink>
-        <NavLink to="/"></NavLink>
-        <NavLink to="/"></NavLink>
-        <NavLink to="/"></NavLink>
-        <NavLink to="/"></NavLink>
-        <NavLink to="/register" id="registerNav" onMouseOver={() => this.makeVisible(["registerNav", "logoutNav", "loginNav"])} onMouseOut={()=> this.makeInvisible(["registerNav", "logoutNav","loginNav"])}>Register</NavLink>
+        <NavLink to="/logout" id="logoutNav" onMouseOver={() => this.select("logoutNav", ["loginNav", "registerNav"])} 
+            onMouseOut={()=> this.deSelect("logoutNav", ["logoutNav", "loginNav","registerNav"])}
+        >Logout</NavLink>
     </ul>
     {/** https://zhenyong.github.io/react/docs/jsx-spread.html */}
     <Route exact path="/" render={(props) => <MainMap {...props} category={'all'}/>} />
@@ -436,7 +469,7 @@ class App extends React.Component {
 )
 }};
 const NavLink = props => (
-        <div style={styles.navItem} id={props.id} onMouseOver={props.onMouseOver} onMouseOut={props.onMouseOut}>
+        <div className="NavLink" style={styles.navItem} id={props.id} onMouseOver={props.onMouseOver} onMouseOut={props.onMouseOut}>
             <li >
                 <Link {...props} style={{ color: "inherit" }} />
             </li>
