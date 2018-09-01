@@ -2662,7 +2662,7 @@ BrowserRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = BrowserRouter;
-},{"./Router":29,"history":10,"prop-types":19,"react":60,"warning":49}],22:[function(require,module,exports){
+},{"./Router":29,"history":10,"prop-types":19,"react":67,"warning":49}],22:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2729,7 +2729,7 @@ HashRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = HashRouter;
-},{"./Router":29,"history":10,"prop-types":19,"react":60,"warning":49}],23:[function(require,module,exports){
+},{"./Router":29,"history":10,"prop-types":19,"react":67,"warning":49}],23:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2847,7 +2847,7 @@ Link.contextTypes = {
   }).isRequired
 };
 exports.default = Link;
-},{"history":10,"invariant":13,"prop-types":19,"react":60}],24:[function(require,module,exports){
+},{"history":10,"invariant":13,"prop-types":19,"react":67}],24:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2951,7 +2951,7 @@ NavLink.defaultProps = {
 };
 
 exports.default = NavLink;
-},{"./Link":23,"./Route":28,"prop-types":19,"react":60}],26:[function(require,module,exports){
+},{"./Link":23,"./Route":28,"prop-types":19,"react":67}],26:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3205,7 +3205,7 @@ MemoryRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = MemoryRouter;
-},{"./Router":40,"history":10,"prop-types":19,"react":60,"warning":49}],37:[function(require,module,exports){
+},{"./Router":40,"history":10,"prop-types":19,"react":67,"warning":49}],37:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3296,7 +3296,7 @@ Prompt.contextTypes = {
   }).isRequired
 };
 exports.default = Prompt;
-},{"invariant":13,"prop-types":19,"react":60}],38:[function(require,module,exports){
+},{"invariant":13,"prop-types":19,"react":67}],38:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3428,7 +3428,7 @@ Redirect.contextTypes = {
   }).isRequired
 };
 exports.default = Redirect;
-},{"./generatePath":43,"history":10,"invariant":13,"prop-types":19,"react":60,"warning":49}],39:[function(require,module,exports){
+},{"./generatePath":43,"history":10,"invariant":13,"prop-types":19,"react":67,"warning":49}],39:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3586,7 +3586,7 @@ Route.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Route;
-},{"./matchPath":44,"invariant":13,"prop-types":19,"react":60,"warning":49}],40:[function(require,module,exports){
+},{"./matchPath":44,"invariant":13,"prop-types":19,"react":67,"warning":49}],40:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3706,7 +3706,7 @@ Router.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Router;
-},{"invariant":13,"prop-types":19,"react":60,"warning":49}],41:[function(require,module,exports){
+},{"invariant":13,"prop-types":19,"react":67,"warning":49}],41:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3876,7 +3876,7 @@ StaticRouter.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = StaticRouter;
-},{"./Router":40,"history":10,"invariant":13,"prop-types":19,"react":60,"warning":49}],42:[function(require,module,exports){
+},{"./Router":40,"history":10,"invariant":13,"prop-types":19,"react":67,"warning":49}],42:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3971,7 +3971,7 @@ Switch.propTypes = {
   location: _propTypes2.default.object
 };
 exports.default = Switch;
-},{"./matchPath":44,"invariant":13,"prop-types":19,"react":60,"warning":49}],43:[function(require,module,exports){
+},{"./matchPath":44,"invariant":13,"prop-types":19,"react":67,"warning":49}],43:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4580,7 +4580,7 @@ var withRouter = function withRouter(Component) {
 };
 
 exports.default = withRouter;
-},{"./Route":39,"hoist-non-react-statics":12,"prop-types":19,"react":60}],47:[function(require,module,exports){
+},{"./Route":39,"hoist-non-react-statics":12,"prop-types":19,"react":67}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4768,13 +4768,7 @@ module.exports = warning;
 
 }).call(this,require('_process'))
 },{"_process":1}],50:[function(require,module,exports){
-var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-var BrowserRouter = require('react-router-dom').BrowserRouter;
-var Route = require('react-router-dom').Route;
-var Link = require('react-router-dom').Link;
-var Router = require('react-router-dom').Router;
-GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
+var styles = require("../../css/styles");
 
 class postFavourites extends React.Component{
     componentDidMount(){}
@@ -4825,20 +4819,21 @@ class Register extends React.Component{
         )
     }
 };
-
-function Newsfeed(props) {
-    var feed = props.imgArray.map(function (feedItem) {
-        return React.createElement("div", {style: styles.imgDiv, className: "imgDiv"}, 
-                    React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
-                    style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
-                    onMouseOut: feedItem.onmouseout})
-                        )});
-                                            
-    return (
-        React.createElement("div", {id: "newsfeed"}, feed)
-    )
-}
-
+class Authenticate extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/authenticate", method: "get"}, 
+                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
+                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
+                    React.createElement("input", {type: "hidden", name: "username", value: "admin"}), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )
+    }
+};
 
 class AdminListView extends React.Component {
 
@@ -4916,6 +4911,21 @@ class AdminListView extends React.Component {
         )
     }
 }
+
+module.exports = {
+    postFavourites: postFavourites,
+    Register: Register,
+    Login: Login,
+    Authenticate: Authenticate,
+    AdminListView: AdminListView
+}
+
+},{"../../css/styles":56}],51:[function(require,module,exports){
+var GoogleMapsLoader = require('google-maps');
+GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
+var {AdminListView} = require("../adminForms")
+var styles = require("../../css/styles");
 
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
@@ -4996,6 +5006,16 @@ class AdminMap extends React.Component {
         )
     }
 }
+
+module.exports = AdminMap;
+
+},{"../../css/styles":56,"../adminForms":50,"google-maps":2}],52:[function(require,module,exports){
+var Newsfeed = require("../newsfeed/newsfeed");
+var GoogleMapsLoader = require('google-maps');
+GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
+var styles = require("../../css/styles");
+
 
 class MainMap extends React.Component {
     constructor(props) {
@@ -5106,28 +5126,28 @@ class MainMap extends React.Component {
         )
         )
     }
-}
-
-class Authenticate extends React.Component{
-    componentDidMount(){}
-    render() {
-        return(
-            React.createElement("div", null, 
-                React.createElement("form", {action: "/api/authenticate", method: "get"}, 
-                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
-                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
-                    React.createElement("input", {type: "hidden", name: "username", value: "admin"}), 
-                    React.createElement("input", {type: "submit", value: "Submit"})
-                )
-            )
-        )
-    }
 };
-// main App
-class App extends React.Component {
-    componentDidMount(){
-    }
 
+module.exports = MainMap
+},{"../../css/styles":56,"../newsfeed/newsfeed":54,"google-maps":2}],53:[function(require,module,exports){
+var styles = require("../../css/styles");
+var Link = require('react-router-dom').Link;
+
+const NavLink = props => (
+    React.createElement("div", {className: "NavLink", style: styles.navItem, id: props.id, onMouseOver: props.onMouseOver, onMouseOut: props.onMouseOut}, 
+        React.createElement("li", null, 
+            React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
+        )
+)
+);
+
+{/** the nav Grid, make sure to have equal number of NavLink's on each sublevel */}
+{/** a link should make itself and every preceeding element invisible on MouseOut  */}
+{/** & make itself and a next element visible on MouseOver */}
+{/** following the above rules, first pass select/deselect function the links id */ }
+{/**    then in an array, pass the id's of preceeding/proceeding NavLink's   */ }
+
+class Navbar extends React.Component {
     select(thisNav, subNavs) {
         if (subNavs) {
             subNavs.forEach(function(subNav) {
@@ -5152,25 +5172,10 @@ class App extends React.Component {
     selectedItem.style.backgroundColor = "#e6e6e6"
     selectedItem.style.color = "black";
     }
-    
-    
+
     render() {
-        return(
- 
-    React.createElement("div", null, 
-    
-    React.createElement("div", {style: styles.header}, 
-    React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "/star.png", id: "favouriteStar"})), 
-    React.createElement("img", {style: styles.logo, src: "africaLogo.png"}), 
-    React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
-    ), 
-    /** the nav Grid, make sure to have equal number of NavLink's on each sublevel */
-    /** a link should make itself and every preceeding element invisible on MouseOut  */
-    /** & make itself and a next element visible on MouseOver */
-    /** following the above rules, first pass select/deselect function the links id */ 
-    /**    then in an array, pass the id's of preceeding/proceeding NavLink's   */ 
-
-
+    return (
+    React.createElement("navbar", null, 
     React.createElement("ul", {id: "navbar", style: styles.nav}, 
         React.createElement(NavLink, {to: "/", id: "homeNav", onMouseOver: () => this.select("homeNav", null), 
             onMouseOut: ()=> this.deSelect("homeNav", null)
@@ -5211,7 +5216,7 @@ class App extends React.Component {
             onMouseOut: ()=> this.deSelect("loginNav", ["loginNav", "registerNav", "logoutNav"])
         }, "Login")
     ), 
-    React.createElement("ul", {id: "navbar", style: styles.subNav}, 
+    React.createElement("ul", {id: "subNav", style: styles.subNav}, 
         React.createElement(NavLink, {to: "/"}), 
         React.createElement(NavLink, {to: "/"}), 
         React.createElement(NavLink, {to: "/"}), 
@@ -5220,32 +5225,58 @@ class App extends React.Component {
         React.createElement(NavLink, {to: "/logout", id: "logoutNav", onMouseOver: () => this.select("logoutNav", ["loginNav", "registerNav"]), 
             onMouseOut: ()=> this.deSelect("logoutNav", ["logoutNav", "loginNav","registerNav"])
         }, "Logout")
-    ), 
-    /** https://zhenyong.github.io/react/docs/jsx-spread.html */
-    React.createElement(Route, {exact: true, path: "/", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'all'}))}), 
-    React.createElement(Route, {exact: true, path: "/entertainment", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'entertainment'}))}), 
-    React.createElement(Route, {exact: true, path: "/food", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'food'}))}), 
-    React.createElement(Route, {exact: true, path: "/cosmetics", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'cosmetics'}))}), 
-    React.createElement(Route, {exact: true, path: "/networking", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'networking'}))}), 
-    React.createElement(Route, {exact: true, path: "/favourites", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'favourites'}))}), 
-    React.createElement(Route, {path: "/postFavourites", component: postFavourites}), 
-    React.createElement(Route, {path: "/admin", component: AdminMap}), 
-    React.createElement(Route, {path: "/authenticate", component: Authenticate}), 
-    React.createElement(Route, {path: "/login", component: Login}), 
-    React.createElement(Route, {path: "/register", component: Register})
-
     )
+    )
+    )}}
 
-)
-}};
-const NavLink = props => (
-        React.createElement("div", {className: "NavLink", style: styles.navItem, id: props.id, onMouseOver: props.onMouseOver, onMouseOut: props.onMouseOut}, 
-            React.createElement("li", null, 
-                React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
+    module.exports = Navbar
+
+},{"../../css/styles":56,"react-router-dom":33}],54:[function(require,module,exports){
+var styles = require("../../css/styles");
+
+function Newsfeed(props) {
+    var feed = props.imgArray.map(function (feedItem) {
+        return React.createElement("div", {style: styles.imgDiv, className: "imgDiv"}, 
+                    React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
+                    style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
+                    onMouseOut: feedItem.onmouseout})
+                        )});
+                                            
+    return (
+        React.createElement("div", {id: "newsfeed"}, feed)
+    )
+};
+module.exports = Newsfeed
+
+},{"../../css/styles":56}],55:[function(require,module,exports){
+var {postFavourites, Login, Register, Authenticate} = require("../adminForms");
+var MainMap = require("../maps/mainMap");
+var AdminMap = require("../maps/adminMap");
+var Route = require('react-router-dom').Route;
+
+class Routing extends React.Component {
+    render() {
+        return(
+            React.createElement("div", null, 
+                /** https://zhenyong.github.io/react/docs/jsx-spread.html */
+                React.createElement(Route, {exact: true, path: "/", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'all'}))}), 
+                React.createElement(Route, {exact: true, path: "/entertainment", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'entertainment'}))}), 
+                React.createElement(Route, {exact: true, path: "/food", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'food'}))}), 
+                React.createElement(Route, {exact: true, path: "/cosmetics", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'cosmetics'}))}), 
+                React.createElement(Route, {exact: true, path: "/networking", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'networking'}))}), 
+                React.createElement(Route, {exact: true, path: "/favourites", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'favourites'}))}), 
+                React.createElement(Route, {path: "/postFavourites", component: postFavourites}), 
+                React.createElement(Route, {path: "/admin", component: AdminMap}), 
+                React.createElement(Route, {path: "/authenticate", component: Authenticate}), 
+                React.createElement(Route, {path: "/login", component: Login}), 
+                React.createElement(Route, {path: "/register", component: Register})
             )
-    )
-);
+        )}
+};
 
+module.exports = Routing
+
+},{"../adminForms":50,"../maps/adminMap":51,"../maps/mainMap":52,"react-router-dom":33}],56:[function(require,module,exports){
 const styles = {};
 
 styles.map = {
@@ -5339,7 +5370,35 @@ styles.nav = {
   styles.imgDiv = { 
       marginLeft: "auto",
       marginRight: "auto",
-  }
+  };
+  
+  module.exports = styles
+
+},{}],57:[function(require,module,exports){
+var BrowserRouter = require('react-router-dom').BrowserRouter;
+var styles = require("./css/styles");
+var Navbar = require("./components/navbar");
+var Routing = require("./components/routing");
+
+// main App
+class App extends React.Component {
+    componentDidMount(){
+    }
+    
+    render() {
+        return(
+ 
+    React.createElement("main", null, 
+    React.createElement("div", {style: styles.header}, 
+    React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "/star.png", id: "favouriteStar"})), 
+    React.createElement("img", {style: styles.logo, src: "africaLogo.png"}), 
+    React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
+    ), 
+    React.createElement(Navbar, null), 
+    React.createElement(Routing, null)
+    )
+)
+}};
 
 ReactDOM.render(
    React.createElement(BrowserRouter, null,
@@ -5349,7 +5408,7 @@ ReactDOM.render(
 
 // watchify -t reactify index.js -o App.js -v
 
-},{"google-maps":2,"react-router-dom":33}],51:[function(require,module,exports){
+},{"./components/navbar":53,"./components/routing":55,"./css/styles":56,"react-router-dom":33}],58:[function(require,module,exports){
 "use strict";
 
 /**
@@ -5386,7 +5445,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],52:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -5406,7 +5465,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":1}],53:[function(require,module,exports){
+},{"_process":1}],60:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -5462,7 +5521,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":1}],54:[function(require,module,exports){
+},{"_process":1}],61:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -5527,13 +5586,13 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":51,"_process":1}],55:[function(require,module,exports){
+},{"./emptyFunction":58,"_process":1}],62:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}],56:[function(require,module,exports){
+},{"dup":15}],63:[function(require,module,exports){
 arguments[4][16][0].apply(exports,arguments)
-},{"./lib/ReactPropTypesSecret":57,"_process":1,"dup":16}],57:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":64,"_process":1,"dup":16}],64:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"dup":20}],58:[function(require,module,exports){
+},{"dup":20}],65:[function(require,module,exports){
 (function (process){
 /** @license React v16.4.1
  * react.development.js
@@ -7023,7 +7082,7 @@ module.exports = react;
 }
 
 }).call(this,require('_process'))
-},{"_process":1,"fbjs/lib/emptyFunction":51,"fbjs/lib/emptyObject":52,"fbjs/lib/invariant":53,"fbjs/lib/warning":54,"object-assign":55,"prop-types/checkPropTypes":56}],59:[function(require,module,exports){
+},{"_process":1,"fbjs/lib/emptyFunction":58,"fbjs/lib/emptyObject":59,"fbjs/lib/invariant":60,"fbjs/lib/warning":61,"object-assign":62,"prop-types/checkPropTypes":63}],66:[function(require,module,exports){
 /** @license React v16.4.1
  * react.production.min.js
  *
@@ -7047,7 +7106,7 @@ _calculateChangedBits:b,_defaultValue:a,_currentValue:a,_currentValue2:a,_change
 b.key&&(g=""+b.key);var l=void 0;a.type&&a.type.defaultProps&&(l=a.type.defaultProps);for(c in b)K.call(b,c)&&!L.hasOwnProperty(c)&&(d[c]=void 0===b[c]&&void 0!==l?l[c]:b[c])}c=arguments.length-2;if(1===c)d.children=e;else if(1<c){l=Array(c);for(var m=0;m<c;m++)l[m]=arguments[m+2];d.children=l}return{$$typeof:t,type:a.type,key:g,ref:h,props:d,_owner:f}},createFactory:function(a){var b=M.bind(null,a);b.type=a;return b},isValidElement:N,version:"16.4.1",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentOwner:J,
 assign:k}},Y={default:X},Z=Y&&X||Y;module.exports=Z.default?Z.default:Z;
 
-},{"fbjs/lib/emptyFunction":51,"fbjs/lib/emptyObject":52,"fbjs/lib/invariant":53,"object-assign":55}],60:[function(require,module,exports){
+},{"fbjs/lib/emptyFunction":58,"fbjs/lib/emptyObject":59,"fbjs/lib/invariant":60,"object-assign":62}],67:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -7058,4 +7117,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react.development.js":58,"./cjs/react.production.min.js":59,"_process":1}]},{},[50]);
+},{"./cjs/react.development.js":65,"./cjs/react.production.min.js":66,"_process":1}]},{},[57]);

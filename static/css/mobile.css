@@ -7,9 +7,8 @@
     height: 120px;
     white-space: nowrap;
 }
-#navbar {
-    width: 100%;
-    overflow-x: scroll;
+h1 {
+    font-size: 160%;
 }
 
 img.feedItem {
@@ -36,3 +35,10 @@ img.feedItem {
     top: 500px;
 }
 
+.NavLink {
+    font-size: 55%;
+}
+
+#adminForm {
+    left: -400px;
+}
