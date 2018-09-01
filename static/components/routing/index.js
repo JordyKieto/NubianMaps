@@ -8,6 +8,7 @@ class Routing extends React.Component {
         return(
             <div>
                 {/** https://zhenyong.github.io/react/docs/jsx-spread.html */}
+                {/** https://reacttraining.com/react-router/web/api/Route/render-func */}
                 <Route exact path="/" render={(props) => <MainMap {...props} category={'all'}/>} />
                 <Route exact path="/entertainment" render={(props) => <MainMap {...props} category={'entertainment'}/>} />
                 <Route exact path="/food" render={(props) => <MainMap {...props} category={'food'}/>} />

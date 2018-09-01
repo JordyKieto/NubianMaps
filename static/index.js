@@ -1,27 +1,21 @@
 var BrowserRouter = require('react-router-dom').BrowserRouter;
-var styles = require("./css/styles");
 var Navbar = require("./components/navbar");
 var Routing = require("./components/routing");
+var Header = require("./components/header");
 
 // main App
 class App extends React.Component {
     componentDidMount(){
     }
-    
     render() {
         return(
- 
     <main>
-    <div style={styles.header}>
-    <a href="/favourites"><img src="/star.png" id="favouriteStar" /></a>
-    <img style={styles.logo} src="africaLogo.png"/>
-    <h1 style={styles.h1}>NUBIAN MAPS</h1>
-    </div>
-    <Navbar/>
-    <Routing/>
+        <Header/>
+        <Navbar/>
+        <Routing/>
     </main>
-)
-}};
+    )};
+};
 
 ReactDOM.render(
    React.createElement(BrowserRouter, null,
