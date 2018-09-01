@@ -6,7 +6,7 @@ class Header extends React.Component {
             <header style={styles.header}>
             <a href="/favourites"><img src="/star.png" id="favouriteStar" /></a>
             <img style={styles.logo} src="africaLogo.png"/>
-            <h1 style={styles.h1}>NUBIAN FAPS</h1>
+            <h1 style={styles.h1}>NUBIAN MAPS</h1>
             </header>
     )};
 };

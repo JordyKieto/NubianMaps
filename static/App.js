@@ -4929,7 +4929,7 @@ class Header extends React.Component {
             React.createElement("header", {style: styles.header}, 
             React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "/star.png", id: "favouriteStar"})), 
             React.createElement("img", {style: styles.logo, src: "africaLogo.png"}), 
-            React.createElement("h1", {style: styles.h1}, "NUBIAN FAPS")
+            React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
             )
     )};
 };
