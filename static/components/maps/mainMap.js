@@ -13,9 +13,8 @@ class MainMap extends React.Component {
     }
    
 // displays various groups of businesses based on the URL param supplied in props
-    componentDidMount() {
-        Controller.getMapsKey().then((data)=>{ 
-        GoogleMapsLoader.KEY = data; 
+    async componentDidMount() {
+        GoogleMapsLoader.KEY = await Controller.getMapsKey()
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:visible"
         var map;
@@ -103,7 +102,6 @@ class MainMap extends React.Component {
        
     });
     });
-});
 };
 
     render() {

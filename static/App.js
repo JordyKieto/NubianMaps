@@ -4944,9 +4944,8 @@ var Controller = require("./controller")
 
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
-    componentDidMount() {
-        Controller.getMapsKey().then((data)=>{ 
-        GoogleMapsLoader.KEY = data;
+    async componentDidMount() {
+        GoogleMapsLoader.KEY = await Controller.getMapsKey()
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:hidden"
         GoogleMapsLoader.load(function(google)  {
@@ -5003,7 +5002,6 @@ class AdminMap extends React.Component {
                 infowindow.open(map, marker)
         });
     });
-});
 };
 
     render() {
@@ -5055,9 +5053,8 @@ class MainMap extends React.Component {
     }
    
 // displays various groups of businesses based on the URL param supplied in props
-    componentDidMount() {
-        Controller.getMapsKey().then((data)=>{ 
-        GoogleMapsLoader.KEY = data; 
+    async componentDidMount() {
+        GoogleMapsLoader.KEY = await Controller.getMapsKey()
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:visible"
         var map;
@@ -5145,7 +5142,6 @@ class MainMap extends React.Component {
        
     });
     });
-});
 };
 
     render() {
