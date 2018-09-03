@@ -18,9 +18,9 @@ class App extends React.Component {
 };
 
 ReactDOM.render(
-   React.createElement(BrowserRouter, null,
-            React.createElement(App, null)),
-            document.getElementById('root')
+    <BrowserRouter>
+        <App/>
+    </BrowserRouter>, document.getElementById('root')
 );
 
 // watchify -t reactify index.js -o App.js -v

@@ -13,7 +13,6 @@ router.get('/api/businesses', function(request, response) {
     }
     else if (request.query.category === 'all') {
         Business.find({}).then(allBusinesses =>{
-            console.log(allBusinesses)
             // regular request code, nothing to report
             response.status(200)
             response.json(allBusinesses)
@@ -22,7 +21,6 @@ router.get('/api/businesses', function(request, response) {
     Business.find(
         { category: request.query.category }
     ).then(allBusinesses =>{
-        console.log(allBusinesses)
         response.status(200)
         response.json(allBusinesses)
     })};
@@ -110,7 +108,6 @@ router.post('/api/favourites', function(request, response) {
     console.log(request.body);
     var newPlace = JSON.stringify(request.body.id);
     newPlace.trim();
-    console.log(typeof newPlace);
    // [...] is characterset, \ before special char means next one should be interprerted literally
     newPlace = newPlace.replace(/[[\]]/g, '').replace(/(["])/g, '');
     console.log(newPlace);
@@ -121,7 +118,7 @@ router.post('/api/favourites', function(request, response) {
             response.status(200).redirect('/favourites');
         })
     } else {
-        response.redirect('/');
+        response.redirect('/login')
     }
 });
 router.get('/api/favourites', function(request, response) {

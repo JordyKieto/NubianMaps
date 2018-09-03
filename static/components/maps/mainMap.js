@@ -4,7 +4,6 @@ GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 var styles = require("../../css/styles");
 
-
 class MainMap extends React.Component {
     constructor(props) {
         super(props);
@@ -19,8 +18,6 @@ class MainMap extends React.Component {
         newsfeed.style = "visibility:visible"
         var map;
         var imgArray = []        
-		var markers = {}
-        var infowindows = {}
         var self = this;
        
         await fetch("/api/businesses?category=" + this.props.category).then(function(response){
@@ -54,7 +51,7 @@ class MainMap extends React.Component {
                                 }
                                 catch(err) {
                                  // no image for this place, setting default
-                                    placeImg.src = '/altLogo.png'
+                                    placeImg.src = '../images/altLogo.png'
                                 }
                                 var name = place.name
                                 placeImg.id = name.replace(/ /, '-');
@@ -67,12 +64,11 @@ class MainMap extends React.Component {
                                 map: map,
 								});
                             	var infowindow = new google.maps.InfoWindow({
-                                content: (place.name + '<br/><div style="height:33px">'
+                                content: ('<span class="infoTitle">' + place.name + '</span><br/><div style="height:43px">'
                                 +'<form action="/api/favourites" method="post">'
-                                +'<img src="/star.png" class="star" style="width:30px;height:30px" />'
+                                +'<button style="width:80%" class="star"><img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
                                 +'<input name="id" type="hidden" value='+business._id+ ' />'
-                                +'<input class="favButton" value="Shop Nubian!"type="Submit"/></div>'
-                                +'</form'
+                                +'</form>'
                                 )});
                                 marker.addListener('click', function(){
                                 infowindow.open(map, marker);

@@ -66,12 +66,26 @@
     display: block;
 }
 
-html
-{
+html {
     overflow-x: hidden;
 
 }
 
 #root > main > div > div {
     height: 0px;
+}
+
+.infoTitle {
+    font-size: 130%;
+    padding-left: 20px;
+    font-weight: bold;
+}
+
+.infoText {
+    font-size: 100%;
+    padding-left: 20px;
+}
+
+.star {
+    margin-left: 16%;
 }

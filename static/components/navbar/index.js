@@ -9,11 +9,11 @@ const NavLink = props => (
 </div>
 );
 
-{/** the nav Grid, make sure to have equal number of NavLink's on each sublevel */}
+{/** the nav Grid, to make a new sublevel create ul with class navbar */}
 {/** a link should make itself and every preceeding element invisible on MouseOut  */}
 {/** & make itself and a next element visible on MouseOver */}
-{/** following the above rules, first pass select/deselect function the links id */ }
-{/**    then in an array, pass the id's of preceeding/proceeding NavLink's   */ }
+{/** following the above rules, FIRST pass select()/deselect() the NavLinks id */ }
+{/**    SECONDLY in an array, pass the id's of preceeding/proceeding NavLink's   */ }
 
 class Navbar extends React.Component {
     select(thisNav, subNavs) {
@@ -44,7 +44,7 @@ class Navbar extends React.Component {
     render() {
     return (
     <navbar>
-    <ul id ="navbar" style={styles.nav}>
+    <ul id="navbar" style={styles.nav}>
         <NavLink to="/" id="homeNav" onMouseOver={() => this.select("homeNav", null)} 
             onMouseOut={()=> this.deSelect("homeNav", null)}
         >Home</NavLink>
@@ -64,7 +64,7 @@ class Navbar extends React.Component {
             onMouseOut={()=> this.deSelect("adminNav", ["registerNav"])}
         >Admin</NavLink>
     </ul>
-    <ul id ="navbar" className="mainNavBar" style={styles.subNav}>
+    <ul id="navbar" className="mainNavBar" style={styles.subNav}>
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
@@ -74,7 +74,7 @@ class Navbar extends React.Component {
             onMouseOut={()=> this.deSelect("registerNav", ["loginNav", "registerNav"])}
         >Register</NavLink>
     </ul>
-    <ul id ="navbar" style={styles.subNav}>
+    <ul id="navbar" style={styles.subNav}>
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>
         <NavLink to="/"></NavLink>

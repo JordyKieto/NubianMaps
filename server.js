@@ -7,10 +7,12 @@ var uri = process.env.MONGOLAB_URI;
 var port = process.env.PORT || 8080;
 var passport = require('passport');
 var routes = require("./routes");
+var morgan = require("morgan")
 
 require('./config/passport')(passport);
 
 var app = express();
+app.use(morgan('dev'))
 app.use(bodyParser());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.text({type: 'json'}));
