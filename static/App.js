@@ -2662,7 +2662,7 @@ BrowserRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = BrowserRouter;
-},{"./Router":29,"history":10,"prop-types":19,"react":68,"warning":49}],22:[function(require,module,exports){
+},{"./Router":29,"history":10,"prop-types":19,"react":69,"warning":49}],22:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2729,7 +2729,7 @@ HashRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = HashRouter;
-},{"./Router":29,"history":10,"prop-types":19,"react":68,"warning":49}],23:[function(require,module,exports){
+},{"./Router":29,"history":10,"prop-types":19,"react":69,"warning":49}],23:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2847,7 +2847,7 @@ Link.contextTypes = {
   }).isRequired
 };
 exports.default = Link;
-},{"history":10,"invariant":13,"prop-types":19,"react":68}],24:[function(require,module,exports){
+},{"history":10,"invariant":13,"prop-types":19,"react":69}],24:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2951,7 +2951,7 @@ NavLink.defaultProps = {
 };
 
 exports.default = NavLink;
-},{"./Link":23,"./Route":28,"prop-types":19,"react":68}],26:[function(require,module,exports){
+},{"./Link":23,"./Route":28,"prop-types":19,"react":69}],26:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3205,7 +3205,7 @@ MemoryRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = MemoryRouter;
-},{"./Router":40,"history":10,"prop-types":19,"react":68,"warning":49}],37:[function(require,module,exports){
+},{"./Router":40,"history":10,"prop-types":19,"react":69,"warning":49}],37:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3296,7 +3296,7 @@ Prompt.contextTypes = {
   }).isRequired
 };
 exports.default = Prompt;
-},{"invariant":13,"prop-types":19,"react":68}],38:[function(require,module,exports){
+},{"invariant":13,"prop-types":19,"react":69}],38:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3428,7 +3428,7 @@ Redirect.contextTypes = {
   }).isRequired
 };
 exports.default = Redirect;
-},{"./generatePath":43,"history":10,"invariant":13,"prop-types":19,"react":68,"warning":49}],39:[function(require,module,exports){
+},{"./generatePath":43,"history":10,"invariant":13,"prop-types":19,"react":69,"warning":49}],39:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3586,7 +3586,7 @@ Route.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Route;
-},{"./matchPath":44,"invariant":13,"prop-types":19,"react":68,"warning":49}],40:[function(require,module,exports){
+},{"./matchPath":44,"invariant":13,"prop-types":19,"react":69,"warning":49}],40:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3706,7 +3706,7 @@ Router.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Router;
-},{"invariant":13,"prop-types":19,"react":68,"warning":49}],41:[function(require,module,exports){
+},{"invariant":13,"prop-types":19,"react":69,"warning":49}],41:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3876,7 +3876,7 @@ StaticRouter.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = StaticRouter;
-},{"./Router":40,"history":10,"invariant":13,"prop-types":19,"react":68,"warning":49}],42:[function(require,module,exports){
+},{"./Router":40,"history":10,"invariant":13,"prop-types":19,"react":69,"warning":49}],42:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3971,7 +3971,7 @@ Switch.propTypes = {
   location: _propTypes2.default.object
 };
 exports.default = Switch;
-},{"./matchPath":44,"invariant":13,"prop-types":19,"react":68,"warning":49}],43:[function(require,module,exports){
+},{"./matchPath":44,"invariant":13,"prop-types":19,"react":69,"warning":49}],43:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4580,7 +4580,7 @@ var withRouter = function withRouter(Component) {
 };
 
 exports.default = withRouter;
-},{"./Route":39,"hoist-non-react-statics":12,"prop-types":19,"react":68}],47:[function(require,module,exports){
+},{"./Route":39,"hoist-non-react-statics":12,"prop-types":19,"react":69}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4920,7 +4920,7 @@ module.exports = {
     AdminListView: AdminListView
 }
 
-},{"../../css/styles":57}],51:[function(require,module,exports){
+},{"../../css/styles":58}],51:[function(require,module,exports){
 var styles = require("../../css/styles");
 
 class Header extends React.Component {
@@ -4935,16 +4935,18 @@ class Header extends React.Component {
 };
 module.exports = Header;
 
-},{"../../css/styles":57}],52:[function(require,module,exports){
+},{"../../css/styles":58}],52:[function(require,module,exports){
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 var {AdminListView} = require("../adminForms")
 var styles = require("../../css/styles");
+var Controller = require("./controller")
 
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     componentDidMount() {
+        Controller.getMapsKey().then((data)=>{ 
+        GoogleMapsLoader.KEY = data;
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:hidden"
         GoogleMapsLoader.load(function(google)  {
@@ -5000,7 +5002,9 @@ class AdminMap extends React.Component {
                 infowindow.setContent(infowindowContent);
                 infowindow.open(map, marker)
         });
-    })}
+    });
+});
+};
 
     render() {
         return (
@@ -5024,12 +5028,23 @@ class AdminMap extends React.Component {
 
 module.exports = AdminMap;
 
-},{"../../css/styles":57,"../adminForms":50,"google-maps":2}],53:[function(require,module,exports){
+},{"../../css/styles":58,"../adminForms":50,"./controller":53,"google-maps":2}],53:[function(require,module,exports){
+const Controller = {
+    getMapsKey : ()=>{
+            var promise = new Promise((resolve, reject)=>{
+            fetch("/api/mapsKey").then((response)=>{response.json().then((data) =>{resolve(data)})});
+                    });
+            return promise;
+    }
+}
+module.exports = Controller;
+
+},{}],54:[function(require,module,exports){
 var Newsfeed = require("../newsfeed/newsfeed");
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 var styles = require("../../css/styles");
+var Controller = require("./controller")
 
 class MainMap extends React.Component {
     constructor(props) {
@@ -5038,16 +5053,19 @@ class MainMap extends React.Component {
             imgArray: []
         }
     }
+   
 // displays various groups of businesses based on the URL param supplied in props
-    async componentDidMount() {
-
+    componentDidMount() {
+        Controller.getMapsKey().then((data)=>{ 
+        GoogleMapsLoader.KEY = data; 
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:visible"
         var map;
         var imgArray = []        
         var self = this;
        
-        await fetch("/api/businesses?category=" + this.props.category).then(function(response){
+
+        fetch("/api/businesses?category=" + this.props.category).then(function(response){
                 response.json().then(function(allBusinesses){
         
                 allBusinesses.forEach(function(business, index, array) {
@@ -5127,7 +5145,8 @@ class MainMap extends React.Component {
        
     });
     });
-    };
+});
+};
 
     render() {
         return (
@@ -5141,7 +5160,7 @@ class MainMap extends React.Component {
 
 module.exports = MainMap
 
-},{"../../css/styles":57,"../newsfeed/newsfeed":55,"google-maps":2}],54:[function(require,module,exports){
+},{"../../css/styles":58,"../newsfeed/newsfeed":56,"./controller":53,"google-maps":2}],55:[function(require,module,exports){
 var styles = require("../../css/styles");
 var Link = require('react-router-dom').Link;
 
@@ -5243,7 +5262,7 @@ class Navbar extends React.Component {
 
     module.exports = Navbar
 
-},{"../../css/styles":57,"react-router-dom":33}],55:[function(require,module,exports){
+},{"../../css/styles":58,"react-router-dom":33}],56:[function(require,module,exports){
 var styles = require("../../css/styles");
 
 function Newsfeed(props) {
@@ -5260,7 +5279,7 @@ function Newsfeed(props) {
 };
 module.exports = Newsfeed
 
-},{"../../css/styles":57}],56:[function(require,module,exports){
+},{"../../css/styles":58}],57:[function(require,module,exports){
 var {postFavourites, Login, Register, Authenticate} = require("../adminForms");
 var MainMap = require("../maps/mainMap");
 var AdminMap = require("../maps/adminMap");
@@ -5289,7 +5308,7 @@ class Routing extends React.Component {
 
 module.exports = Routing
 
-},{"../adminForms":50,"../maps/adminMap":52,"../maps/mainMap":53,"react-router-dom":33}],57:[function(require,module,exports){
+},{"../adminForms":50,"../maps/adminMap":52,"../maps/mainMap":54,"react-router-dom":33}],58:[function(require,module,exports){
 const styles = {};
 
 styles.map = {
@@ -5387,7 +5406,7 @@ styles.nav = {
   
   module.exports = styles
 
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 var BrowserRouter = require('react-router-dom').BrowserRouter;
 var Navbar = require("./components/navbar");
 var Routing = require("./components/routing");
@@ -5415,7 +5434,7 @@ ReactDOM.render(
 
 // watchify -t reactify index.js -o App.js -v
 
-},{"./components/header":51,"./components/navbar":54,"./components/routing":56,"react-router-dom":33}],59:[function(require,module,exports){
+},{"./components/header":51,"./components/navbar":55,"./components/routing":57,"react-router-dom":33}],60:[function(require,module,exports){
 "use strict";
 
 /**
@@ -5452,7 +5471,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -5472,7 +5491,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":1}],61:[function(require,module,exports){
+},{"_process":1}],62:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -5528,7 +5547,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":1}],62:[function(require,module,exports){
+},{"_process":1}],63:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -5593,13 +5612,13 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":59,"_process":1}],63:[function(require,module,exports){
+},{"./emptyFunction":60,"_process":1}],64:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}],64:[function(require,module,exports){
+},{"dup":15}],65:[function(require,module,exports){
 arguments[4][16][0].apply(exports,arguments)
-},{"./lib/ReactPropTypesSecret":65,"_process":1,"dup":16}],65:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":66,"_process":1,"dup":16}],66:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"dup":20}],66:[function(require,module,exports){
+},{"dup":20}],67:[function(require,module,exports){
 (function (process){
 /** @license React v16.4.1
  * react.development.js
@@ -7089,7 +7108,7 @@ module.exports = react;
 }
 
 }).call(this,require('_process'))
-},{"_process":1,"fbjs/lib/emptyFunction":59,"fbjs/lib/emptyObject":60,"fbjs/lib/invariant":61,"fbjs/lib/warning":62,"object-assign":63,"prop-types/checkPropTypes":64}],67:[function(require,module,exports){
+},{"_process":1,"fbjs/lib/emptyFunction":60,"fbjs/lib/emptyObject":61,"fbjs/lib/invariant":62,"fbjs/lib/warning":63,"object-assign":64,"prop-types/checkPropTypes":65}],68:[function(require,module,exports){
 /** @license React v16.4.1
  * react.production.min.js
  *
@@ -7113,7 +7132,7 @@ _calculateChangedBits:b,_defaultValue:a,_currentValue:a,_currentValue2:a,_change
 b.key&&(g=""+b.key);var l=void 0;a.type&&a.type.defaultProps&&(l=a.type.defaultProps);for(c in b)K.call(b,c)&&!L.hasOwnProperty(c)&&(d[c]=void 0===b[c]&&void 0!==l?l[c]:b[c])}c=arguments.length-2;if(1===c)d.children=e;else if(1<c){l=Array(c);for(var m=0;m<c;m++)l[m]=arguments[m+2];d.children=l}return{$$typeof:t,type:a.type,key:g,ref:h,props:d,_owner:f}},createFactory:function(a){var b=M.bind(null,a);b.type=a;return b},isValidElement:N,version:"16.4.1",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentOwner:J,
 assign:k}},Y={default:X},Z=Y&&X||Y;module.exports=Z.default?Z.default:Z;
 
-},{"fbjs/lib/emptyFunction":59,"fbjs/lib/emptyObject":60,"fbjs/lib/invariant":61,"object-assign":63}],68:[function(require,module,exports){
+},{"fbjs/lib/emptyFunction":60,"fbjs/lib/emptyObject":61,"fbjs/lib/invariant":62,"object-assign":64}],69:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -7124,4 +7143,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react.development.js":66,"./cjs/react.production.min.js":67,"_process":1}]},{},[58]);
+},{"./cjs/react.development.js":67,"./cjs/react.production.min.js":68,"_process":1}]},{},[59]);

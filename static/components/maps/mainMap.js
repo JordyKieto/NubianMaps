@@ -1,8 +1,8 @@
 var Newsfeed = require("../newsfeed/newsfeed");
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 var styles = require("../../css/styles");
+var Controller = require("./controller")
 
 class MainMap extends React.Component {
     constructor(props) {
@@ -11,16 +11,19 @@ class MainMap extends React.Component {
             imgArray: []
         }
     }
+   
 // displays various groups of businesses based on the URL param supplied in props
-    async componentDidMount() {
-
+    componentDidMount() {
+        Controller.getMapsKey().then((data)=>{ 
+        GoogleMapsLoader.KEY = data; 
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:visible"
         var map;
         var imgArray = []        
         var self = this;
        
-        await fetch("/api/businesses?category=" + this.props.category).then(function(response){
+
+        fetch("/api/businesses?category=" + this.props.category).then(function(response){
                 response.json().then(function(allBusinesses){
         
                 allBusinesses.forEach(function(business, index, array) {
@@ -100,7 +103,8 @@ class MainMap extends React.Component {
        
     });
     });
-    };
+});
+};
 
     render() {
         return (

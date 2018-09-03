@@ -1,12 +1,14 @@
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-GoogleMapsLoader.KEY = 'AIzaSyANJoY1-ND72EtVf5AFXW6vkbmotvu4Y_c';
 var {AdminListView} = require("../adminForms")
 var styles = require("../../css/styles");
+var Controller = require("./controller")
 
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     componentDidMount() {
+        Controller.getMapsKey().then((data)=>{ 
+        GoogleMapsLoader.KEY = data;
         var newsfeed = document.getElementById("newsfeed")
         newsfeed.style = "visibility:hidden"
         GoogleMapsLoader.load(function(google)  {
@@ -62,7 +64,9 @@ class AdminMap extends React.Component {
                 infowindow.setContent(infowindowContent);
                 infowindow.open(map, marker)
         });
-    })}
+    });
+});
+};
 
     render() {
         return (
