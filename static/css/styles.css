@@ -10,7 +10,7 @@
 
 #form {
     top: 100px;
-    left: 400px;
+    left: 150px;
     z-index: 3;
 }
 
@@ -87,5 +87,6 @@ html {
 }
 
 .star {
-    margin-left: 16%;
+    display: block;
+    margin-left: 36%;
 }

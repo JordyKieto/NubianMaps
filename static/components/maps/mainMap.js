@@ -1,7 +1,7 @@
 var Newsfeed = require("../newsfeed/newsfeed");
 
 var styles = require("../../css/styles");
-var Controller = require("./controller");
+var Controller = require("../controller");
 
 
 class MainMap extends React.Component {

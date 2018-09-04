@@ -1,4 +1,5 @@
 var styles = require("../../css/styles");
+var Controller = require("../controller");
 
 class postFavourites extends React.Component{
     componentDidMount(){}
@@ -73,9 +74,8 @@ class AdminListView extends React.Component {
 
     // a simple text representation of the database
 
-    componentDidMount() {
-        fetch('/api/businesses?category=all').then(function(response){
-            response.json().then(function(allEntries){
+    async componentDidMount() {
+                var allEntries = await Controller.getBusinesses('all');
                 allEntries.forEach(function(entry, index, array) {
                     var node = document.createElement("DIV")
                     var textnode = document.createElement("INPUT")
@@ -108,9 +108,8 @@ class AdminListView extends React.Component {
                     document.getElementById("form").appendChild(node);
                     // adds the submit button to end of form
                     form.insertBefore(node, submit);
-
-        })
-    })})}
+                })
+    }
 
     handlesubmit  (event)  {
         var self = this;

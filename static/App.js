@@ -4769,6 +4769,7 @@ module.exports = warning;
 }).call(this,require('_process'))
 },{"_process":1}],50:[function(require,module,exports){
 var styles = require("../../css/styles");
+var Controller = require("../controller");
 
 class postFavourites extends React.Component{
     componentDidMount(){}
@@ -4843,9 +4844,8 @@ class AdminListView extends React.Component {
 
     // a simple text representation of the database
 
-    componentDidMount() {
-        fetch('/api/businesses?category=all').then(function(response){
-            response.json().then(function(allEntries){
+    async componentDidMount() {
+                var allEntries = await Controller.getBusinesses('all');
                 allEntries.forEach(function(entry, index, array) {
                     var node = document.createElement("DIV")
                     var textnode = document.createElement("INPUT")
@@ -4878,9 +4878,8 @@ class AdminListView extends React.Component {
                     document.getElementById("form").appendChild(node);
                     // adds the submit button to end of form
                     form.insertBefore(node, submit);
-
-        })
-    })})}
+                })
+    }
 
     handlesubmit  (event)  {
         var self = this;
@@ -4920,60 +4919,7 @@ module.exports = {
     AdminListView: AdminListView
 }
 
-},{"../../css/styles":58}],51:[function(require,module,exports){
-var styles = require("../../css/styles");
-
-class Header extends React.Component {
-    render() {
-        return(
-            React.createElement("header", {style: styles.header}, 
-            React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "./images/favourite.png", id: "favouriteStar"})), 
-            React.createElement("img", {style: styles.logo, src: "./images/africaLogo.png"}), 
-            React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
-            )
-    )};
-};
-module.exports = Header;
-
-},{"../../css/styles":58}],52:[function(require,module,exports){
-var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-var {AdminListView} = require("../adminForms")
-var styles = require("../../css/styles");
-var Controller = require("./controller")
-
-class AdminMap extends React.Component {
-    // creates a map with autocomplete search bar
-    async componentDidMount() {
-        GoogleMapsLoader.KEY = await Controller.getMapsKey();
-        var map = await Controller.initMap(43.642567, -79.387054);
-        Controller.visibleNewsfeed(false);
-        Controller.bindAutoComp(map);
-};
-
-    render() {
-        return (
-        React.createElement("div", {id: "mapdiv"}, 
-
-        React.createElement("div", {id: "map", style: styles.map}), 
-
-        React.createElement("div", {id: "infowindow-content"}
-        ), 
-
-        React.createElement("input", {id: "pac-input", className: "controls", type: "text", style: styles.controls, 
-        placeholder: "Enter a location"}), 
-        React.createElement(AdminListView, null)
-        )
-         //   React.createElement("div", {id: "map", style: mapStyle},
-         //   React.createElement("input", {id: "pac-input", type: "text", placeholder: "Enter a location"})
-          //  )
-        )
-    }
-}
-
-module.exports = AdminMap;
-
-},{"../../css/styles":58,"../adminForms":50,"./controller":53,"google-maps":2}],53:[function(require,module,exports){
+},{"../../css/styles":58,"../controller":51}],51:[function(require,module,exports){
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 // call getMapsKey before using GoogleMapsLoader
@@ -4989,7 +4935,7 @@ const Controller = {
                 var promise = new Promise((resolve, reject)=>{
                 GoogleMapsLoader.load(function(google)  {
                     var map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat: lat, lng: lng},
+                    center: {lat: lat || 43.642567, lng: lng || -79.387054},
                     zoom: 13
                 }); resolve(map)
                     });
@@ -5010,74 +4956,79 @@ const Controller = {
                 }
                 else{newsfeed.style = "visibility:hidden"}
     },
+    createMarkers: (place, map, infowindowContent)=>{
+                var promise = new Promise((resolve, reject)=>{
+                    var infowindow = new google.maps.InfoWindow();
+                    var marker = new google.maps.Marker({
+                        position: place.geometry.location,
+                        map: map,
+                        });
+                    marker.addListener('click', function(){
+                        infowindow.open(map, marker);
+                        });
+                //   marker.setVisible(true);
+                    infowindow.setContent(infowindowContent);
+                    resolve({marker: marker, infowindow: infowindow})
+                }); return promise;
+    },
+    createPlaceImg: (place, map, infowindow, marker)=>{
+                var promise = new Promise((resolve, reject)=>{
+                var placeImg = {};
+                try {
+                    placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
+                }
+                catch(err) {
+                // no image for this place, setting default
+                    placeImg.src = '../images/altLogo.png'
+                }
+                placeImg.id = place.name.replace(/ /, '-');
+                placeImg.onmouseover = function(){
+                    google.maps.event.trigger(marker, 'click');
+                    map.setZoom(15);
+                    map.panTo(place.geometry.location)
+                };
+                placeImg.onmouseout = function(){
+                    map.setZoom(14);
+                    map.panTo(place.geometry.location)                                    
+                    infowindow.close();
+                };
+                resolve(placeImg);
+                }); return promise;
+    },
     populateMap: async (allBusinesses, map, self)=>{
                 GoogleMapsLoader.KEY = await Controller.getMapsKey();    
                 var imgArray = [];
                 allBusinesses.forEach(function(business, index, array) {
-                    var request = {
-                        placeId: business.placeID,
-                        fields: ['name', 'geometry', 'photos']
-                    };      
-                    GoogleMapsLoader.load(function(google)  {
+                    var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
+                    GoogleMapsLoader.load(function(google){service = new google.maps.places.PlacesService(map);});
+                    service.getDetails(request, populate);
                     
-                    var bounds = new google.maps.LatLngBounds();
-                    var service = new google.maps.places.PlacesService(map);
-                    service.getDetails(request, callback);
-                    
-                    function callback(place, status) {
+                    async function populate(place, status) {
                         if (status == google.maps.places.PlacesServiceStatus.OK) {
-                                var imgDiv = document.createElement("div");
-                                var placeImg = {}
-                                try {
-                                    placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
-                                }
-                                catch(err) {
-                                // no image for this place, setting default
-                                    placeImg.src = '../images/altLogo.png'
-                                }
-                                var name = place.name
-                                placeImg.id = name.replace(/ /, '-');
-                                
-                                var lat = place.geometry.location.lat()
-                                var lng = place.geometry.location.lng()
-
-                                var marker = new google.maps.Marker({
-                                position: place.geometry.location,
-                                map: map,
-                                });
-                                var infowindow = new google.maps.InfoWindow({
-                                content: ('<span class="infoTitle">' + place.name + '</span><br/><div style="height:43px">'
+                                var infowindowContent = '<span class="infoTitle">' + place.name 
+                                +'</span><br/><div style="height:43px">'
                                 +'<form action="/api/favourites" method="post">'
-                                +'<button style="width:80%" class="star"><img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
+                                +'<button style="width:80px" class="star">'
+                                +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
                                 +'<input name="id" type="hidden" value='+business._id+ ' />'
-                                +'</form>'
-                                )});
-                                marker.addListener('click', function(){
-                                infowindow.open(map, marker);
-                                });
+                                +'</form>';
+                                var {marker, infowindow} = await Controller.createMarkers(place, map, infowindowContent);
+                                var placeImg = await Controller.createPlaceImg(place, map, infowindow, marker);
+
+                                var lat = place.geometry.location.lat();
+                                var lng = place.geometry.location.lng();
+                                var bounds = new google.maps.LatLngBounds();
                                 bounds.extend(new google.maps.LatLng(lat, lng));
-                                
-                                placeImg.onmouseover = function(){
-                                    google.maps.event.trigger(marker, 'click');
-                                    map.setZoom(15);
-                                    map.panTo(place.geometry.location)
-                                };
-                                placeImg.onmouseout = function(){
-                                    map.setZoom(14);
-                                    map.panTo(place.geometry.location)                                    
-                                    infowindow.close();};
+
                                 imgArray.push(placeImg);
-                                (() => {
-                                    self.setState({
-                                    imgArray: imgArray
-                                })
-                            })()
-                            
+                                self.setState({
+                                imgArray: imgArray
+                                });
+                              
                         }
-                            map.fitBounds(bounds)
-                            map.setZoom(13)
+                    map.fitBounds(bounds)
+                    map.setZoom(13)
                     };
-                });
             });
     },
     bindAutoComp: async (map)=>{
@@ -5090,33 +5041,8 @@ const Controller = {
 
                 map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-                var infowindow = new google.maps.InfoWindow();
-                var marker = new google.maps.Marker({
-                    map: map
-                });
-                marker.addListener('click', function(){
-                    infowindow.open(map, marker);
-                })
-
-                autocomplete.addListener('place_changed', function(){
-                    infowindow.close();
+                autocomplete.addListener('place_changed', async function(){
                     var place = autocomplete.getPlace();
-                    if (!place.geometry){
-                        return;
-                    }
-
-                    if (place.geometry.viewport) {
-                        map.fitBounds(place.geometry.viewport);
-                    } else {
-                        map.setCenter(place.geometry.location);
-                        map.setZoom(17);
-                    }
-
-                    marker.setPlace({
-                        placeId: place.place_id,
-                        location: place.geometry.location
-                    });
-                    marker.setVisible(true);
                     // fills the infowindow with a form to add selected business
                     var infowindowContent = (place.name +'<br>'+ place.formatted_address +'<br><br>'
                     +'<form action="/api/businesses" method="POST">'
@@ -5127,20 +5053,79 @@ const Controller = {
                     +'<input type="radio" name="category" value="food">Food</input><br></br>'
                     +'<input type="radio" name="category" value="cosmetics">Cosmetics</input><br></br>'
                     +'<input type="submit" value="Submit"></input>'
-                    +'</form>')
-                    infowindow.setContent(infowindowContent);
-                    infowindow.open(map, marker)
+                    +'</form>');
+                    var {marker, infowindow} = await Controller.createMarkers(place, map, infowindowContent);
+                    
+                    infowindow.close();
+                    if (!place.geometry){
+                        return;
+                    }
+                    if (place.geometry.viewport) {
+                        map.fitBounds(place.geometry.viewport);
+                    } else {
+                        map.setCenter(place.geometry.location);
+                        map.setZoom(17);
+                    }
+                    marker.setVisible(true);
+                    infowindow.open(map, marker);
                 });
             });
     },
 };
 module.exports = Controller;
 
-},{"google-maps":2}],54:[function(require,module,exports){
+},{"google-maps":2}],52:[function(require,module,exports){
+var styles = require("../../css/styles");
+
+class Header extends React.Component {
+    render() {
+        return(
+            React.createElement("header", {style: styles.header}, 
+            React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "./images/favourite.png", id: "favouriteStar"})), 
+            React.createElement("img", {style: styles.logo, src: "./images/africaLogo.png"}), 
+            React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
+            )
+    )};
+};
+module.exports = Header;
+
+},{"../../css/styles":58}],53:[function(require,module,exports){
+var GoogleMapsLoader = require('google-maps');
+GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+var {AdminListView} = require("../adminForms")
+var styles = require("../../css/styles");
+var Controller = require("../controller");
+
+class AdminMap extends React.Component {
+    // creates a map with autocomplete search bar
+    async componentDidMount() {
+        GoogleMapsLoader.KEY = await Controller.getMapsKey();
+        var map = await Controller.initMap();
+        Controller.visibleNewsfeed(false);
+        Controller.bindAutoComp(map);
+};
+
+    render() {
+        return (
+        React.createElement("div", {id: "mapdiv"}, 
+        React.createElement("div", {id: "map", style: styles.map}), 
+        React.createElement("div", {id: "infowindow-content"}
+        ), 
+        React.createElement("input", {id: "pac-input", className: "controls", type: "text", style: styles.controls, 
+        placeholder: "Enter a location"}), 
+        React.createElement(AdminListView, null)
+        )
+        )
+    }
+}
+
+module.exports = AdminMap;
+
+},{"../../css/styles":58,"../adminForms":50,"../controller":51,"google-maps":2}],54:[function(require,module,exports){
 var Newsfeed = require("../newsfeed/newsfeed");
 
 var styles = require("../../css/styles");
-var Controller = require("./controller");
+var Controller = require("../controller");
 
 
 class MainMap extends React.Component {
@@ -5170,7 +5155,7 @@ class MainMap extends React.Component {
 
 module.exports = MainMap
 
-},{"../../css/styles":58,"../newsfeed/newsfeed":56,"./controller":53}],55:[function(require,module,exports){
+},{"../../css/styles":58,"../controller":51,"../newsfeed/newsfeed":56}],55:[function(require,module,exports){
 var styles = require("../../css/styles");
 var Link = require('react-router-dom').Link;
 
@@ -5276,17 +5261,22 @@ class Navbar extends React.Component {
 var styles = require("../../css/styles");
 
 function Newsfeed(props) {
-    var feed = props.imgArray.map(function (feedItem) {
-        return React.createElement("div", {style: styles.imgDiv, className: "imgDiv"}, 
+    var Feed = props.imgArray.map(function (feedItem) {
+        return (React.createElement("div", {style: styles.imgDiv, className: "imgDiv"}, 
                     React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
-                    style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
-                    onMouseOut: feedItem.onmouseout})
-                        )});
+                        style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
+                        onMouseOut: feedItem.onmouseout})
+                )
+                )});
                                             
     return (
-        React.createElement("div", {id: "newsfeed"}, feed)
+        React.createElement("div", {id: "newsfeed"}, 
+        Feed
+        )
     )
 };
+
+
 module.exports = Newsfeed
 
 },{"../../css/styles":58}],57:[function(require,module,exports){
@@ -5318,7 +5308,7 @@ class Routing extends React.Component {
 
 module.exports = Routing
 
-},{"../adminForms":50,"../maps/adminMap":52,"../maps/mainMap":54,"react-router-dom":33}],58:[function(require,module,exports){
+},{"../adminForms":50,"../maps/adminMap":53,"../maps/mainMap":54,"react-router-dom":33}],58:[function(require,module,exports){
 const styles = {};
 
 styles.map = {
@@ -5444,7 +5434,7 @@ ReactDOM.render(
 
 // watchify -t reactify index.js -o App.js -v
 
-},{"./components/header":51,"./components/navbar":55,"./components/routing":57,"react-router-dom":33}],60:[function(require,module,exports){
+},{"./components/header":52,"./components/navbar":55,"./components/routing":57,"react-router-dom":33}],60:[function(require,module,exports){
 "use strict";
 
 /**
