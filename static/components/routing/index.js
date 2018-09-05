@@ -1,4 +1,4 @@
-var {postFavourites, Login, Register, Authenticate} = require("../adminForms");
+var {postFavourites, Login, Register, Authenticate, Logout} = require("../adminForms");
 var MainMap = require("../maps/mainMap");
 var AdminMap = require("../maps/adminMap");
 var Route = require('react-router-dom').Route;
@@ -19,6 +19,7 @@ class Routing extends React.Component {
                 <Route path="/admin" component={AdminMap}/>
                 <Route path="/authenticate" component={Authenticate}/>
                 <Route path="/login" component={Login}/>
+                <Route path="/logout" component={Logout}/>
                 <Route path="/register" component={Register}/>
             </div>
         )}

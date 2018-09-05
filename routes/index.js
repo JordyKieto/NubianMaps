@@ -87,7 +87,7 @@ router.get('/api/logout', function(request, response) {
      //   request.session = null;
         request.logout();
     //    request.user = null,
-        response.redirect('/admin')
+     //   response.redirect('/admin')
     }
 });
 router.get('/api/register', passport.authenticate('register', {successRedirect: '/admin',

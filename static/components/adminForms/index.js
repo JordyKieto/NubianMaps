@@ -66,6 +66,16 @@ class Authenticate extends React.Component{
     }
 };
 
+class Logout extends React.Component{
+    componentDidMount(){
+        fetch('/api/logout');
+    }
+    render() {
+        window.location.href = "/admin"
+        return null
+    }
+};
+
 class AdminListView extends React.Component {
 
     constructor(props){
@@ -145,6 +155,7 @@ module.exports = {
     postFavourites: postFavourites,
     Register: Register,
     Login: Login,
+    Logout: Logout,
     Authenticate: Authenticate,
     AdminListView: AdminListView
 }

@@ -1,6 +1,6 @@
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-// call getMapsKey before using GoogleMapsLoader
+// call initMap before other methods to retrive mapsKey
 const Controller = {
     getMapsKey : ()=>{
                 var promise = new Promise((resolve, reject)=>{
@@ -34,11 +34,10 @@ const Controller = {
                 }
                 else{newsfeed.style = "visibility:hidden"}
     },
-    createMarkers: (place, map, infowindowContent)=>{
-                var promise = new Promise((resolve, reject)=>{
+    createMarkers: (location, map, infowindowContent)=>{
                     var infowindow = new google.maps.InfoWindow();
                     var marker = new google.maps.Marker({
-                        position: place.geometry.location,
+                        position: location,
                         map: map,
                         });
                     marker.addListener('click', function(){
@@ -46,11 +45,9 @@ const Controller = {
                         });
                 //   marker.setVisible(true);
                     infowindow.setContent(infowindowContent);
-                    resolve({marker: marker, infowindow: infowindow})
-                }); return promise;
+                    return {marker: marker, infowindow: infowindow}
     },
     createPlaceImg: (place, map, infowindow, marker)=>{
-                var promise = new Promise((resolve, reject)=>{
                 var placeImg = {};
                 try {
                     placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
@@ -70,11 +67,9 @@ const Controller = {
                     map.panTo(place.geometry.location)                                    
                     infowindow.close();
                 };
-                resolve(placeImg);
-                }); return promise;
+                return placeImg;
     },
     populateMap: async (allBusinesses, map, self)=>{
-                GoogleMapsLoader.KEY = await Controller.getMapsKey();    
                 var imgArray = [];
                 allBusinesses.forEach(function(business, index, array) {
                     var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
@@ -86,12 +81,15 @@ const Controller = {
                                 var infowindowContent = '<span class="infoTitle">' + place.name 
                                 +'</span><br/><div style="height:43px">'
                                 +'<form action="/api/favourites" method="post">'
-                                +'<button style="width:80px" class="star">'
+                                +'<div style="width:100%;background-color:black" class="star">'
+                                +'<button style="width:80px">'
                                 +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
+                                +'<span style="color:white;font-size:150%">  Nubian  </span>'
+                                +'</div>'
                                 +'<input name="id" type="hidden" value='+business._id+ ' />'
-                                +'</form>';
-                                var {marker, infowindow} = await Controller.createMarkers(place, map, infowindowContent);
-                                var placeImg = await Controller.createPlaceImg(place, map, infowindow, marker);
+                                +'</form>'; 
+                                var {marker, infowindow} = Controller.createMarkers(place.geometry.location, map, infowindowContent);
+                                var placeImg = Controller.createPlaceImg(place, map, infowindow, marker);
 
                                 var lat = place.geometry.location.lat();
                                 var lng = place.geometry.location.lng();
@@ -110,7 +108,6 @@ const Controller = {
             });
     },
     bindAutoComp: async (map)=>{
-                GoogleMapsLoader.KEY = await Controller.getMapsKey();    
                 GoogleMapsLoader.load(function(google)  {
                 var input = document.getElementById('pac-input');
 
@@ -132,7 +129,7 @@ const Controller = {
                     +'<input type="radio" name="category" value="cosmetics">Cosmetics</input><br></br>'
                     +'<input type="submit" value="Submit"></input>'
                     +'</form>');
-                    var {marker, infowindow} = await Controller.createMarkers(place, map, infowindowContent);
+                    var {marker, infowindow} = Controller.createMarkers(place.geometry.location, map, infowindowContent);
                     
                     infowindow.close();
                     if (!place.geometry){
