@@ -4967,7 +4967,22 @@ const Controller = {
                 }
                 else{newsfeed.style = "visibility:hidden"}
     },
-    createMarkers: (location, map, infowindowContent)=>{
+    createCircle: (location, map)=>{
+        GoogleMapsLoader.load(function(google)  {
+        var circleOptions = {
+            fillColor: 'black',
+            fillOpacity: 0.50,
+            strokeColor: 'black',
+            strokeOpacity: 0.70,
+            strokeWeight: 1,
+            center: location,
+            radius: 200,
+        };
+        var circle = new google.maps.Circle(circleOptions);
+        circle.setMap(map);
+        });
+    },
+    createMarker: (location, map, infowindowContent)=>{
                     var infowindow = new google.maps.InfoWindow();
                     var marker = new google.maps.Marker({
                         position: location,
@@ -5021,7 +5036,7 @@ const Controller = {
                                 +'</div>'
                                 +'<input name="id" type="hidden" value='+business._id+ ' />'
                                 +'</form>'; 
-                                var {marker, infowindow} = Controller.createMarkers(place.geometry.location, map, infowindowContent);
+                                var {marker, infowindow} = Controller.createMarker(place.geometry.location, map, infowindowContent);
                                 var placeImg = Controller.createPlaceImg(place, map, infowindow, marker);
 
                                 var lat = place.geometry.location.lat();
@@ -5062,7 +5077,7 @@ const Controller = {
                     +'<input type="radio" name="category" value="cosmetics">Cosmetics</input><br></br>'
                     +'<input type="submit" value="Submit"></input>'
                     +'</form>');
-                    var {marker, infowindow} = Controller.createMarkers(place.geometry.location, map, infowindowContent);
+                    var {marker, infowindow} = Controller.createMarker(place.geometry.location, map, infowindowContent);
                     
                     infowindow.close();
                     if (!place.geometry){
@@ -5079,6 +5094,20 @@ const Controller = {
                 });
             });
     },
+    markLocation: (map)=>{
+        if("geolocation" in navigator){
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var infowindowContent = "You Are Here";
+                var location = {lat: position.coords.latitude, lng: position.coords.longitude}
+                Controller.createMarker(location, map, infowindowContent);
+                Controller.createCircle(location, map);
+
+            })
+        } else {
+            //Geolocation is not available
+        }
+
+    }
 };
 module.exports = Controller;
 
@@ -5149,6 +5178,7 @@ class MainMap extends React.Component {
         var allBusinesses = await Controller.getBusinesses(this.props.category);
         Controller.visibleNewsfeed(true);
         Controller.populateMap(allBusinesses, map, self);
+        Controller.markLocation(map);
     };
     render() {
         return (

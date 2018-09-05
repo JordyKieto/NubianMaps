@@ -17,6 +17,7 @@ class MainMap extends React.Component {
         var allBusinesses = await Controller.getBusinesses(this.props.category);
         Controller.visibleNewsfeed(true);
         Controller.populateMap(allBusinesses, map, self);
+        Controller.markLocation(map);
     };
     render() {
         return (
