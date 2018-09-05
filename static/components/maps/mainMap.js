@@ -14,10 +14,12 @@ class MainMap extends React.Component {
     async componentDidMount() {
         var self = this;
         var map = await Controller.initMap();
+        var myLocation = await Controller.markMyLocation(map);
         var allBusinesses = await Controller.getBusinesses(this.props.category);
-        Controller.visibleNewsfeed(true);
         Controller.populateMap(allBusinesses, map, self);
-        Controller.markLocation(map);
+        Controller.visibleNewsfeed(true);
+        console.log(await Controller.getAllMarkers());
+
     };
     render() {
         return (

@@ -4941,6 +4941,7 @@ const Controller = {
                         });
                 return promise;
     },
+    print:(value) => {console.log(value); return value},
     initMap    :async (lat, lng)=>{
                 GoogleMapsLoader.KEY = await Controller.getMapsKey();
                 var promise = new Promise((resolve, reject)=>{
@@ -4968,32 +4969,35 @@ const Controller = {
                 else{newsfeed.style = "visibility:hidden"}
     },
     createCircle: (location, map)=>{
-        GoogleMapsLoader.load(function(google)  {
-        var circleOptions = {
-            fillColor: 'black',
-            fillOpacity: 0.50,
-            strokeColor: 'black',
-            strokeOpacity: 0.70,
-            strokeWeight: 1,
-            center: location,
-            radius: 200,
-        };
-        var circle = new google.maps.Circle(circleOptions);
-        circle.setMap(map);
+                GoogleMapsLoader.load(function(google)  {
+                var circleOptions = {
+                    fillColor: 'black',
+                    fillOpacity: 0.50,
+                    strokeColor: 'black',
+                    strokeOpacity: 0.70,
+                    strokeWeight: 1,
+                    center: location,
+                    radius: 200,
+                };
+                var circle = new google.maps.Circle(circleOptions);
+                circle.setMap(map);
         });
     },
     createMarker: (location, map, infowindowContent)=>{
-                    var infowindow = new google.maps.InfoWindow();
-                    var marker = new google.maps.Marker({
-                        position: location,
-                        map: map,
-                        });
-                    marker.addListener('click', function(){
-                        infowindow.open(map, marker);
-                        });
-                //   marker.setVisible(true);
-                    infowindow.setContent(infowindowContent);
-                    return {marker: marker, infowindow: infowindow}
+                var infowindow = new google.maps.InfoWindow();
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    });
+                marker.addListener('click', function(){
+                    infowindow.open(map, marker);
+                    });
+            //   marker.setVisible(true);
+                infowindow.setContent(infowindowContent);
+                return {marker: marker, infowindow: infowindow}
+    },
+    getAllMarkers: ()=>{
+        return myMarkers;
     },
     createPlaceImg: (place, map, infowindow, marker)=>{
                 var placeImg = {};
@@ -5018,12 +5022,17 @@ const Controller = {
                 return placeImg;
     },
     populateMap: async (allBusinesses, map, self)=>{
+        // slight delay in loading markers
+        // this is so we can wait for ALL markers
+        // must be better of loading markers
                 var imgArray = [];
-                allBusinesses.forEach(function(business, index, array) {
+                myMarkers = [];
+                var bounds;
+                for ( business of allBusinesses) {
                     var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
+                    var subPromise = new Promise((resolve, reject)=>{
                     GoogleMapsLoader.load(function(google){service = new google.maps.places.PlacesService(map);});
                     service.getDetails(request, populate);
-                    
                     async function populate(place, status) {
                         if (status == google.maps.places.PlacesServiceStatus.OK) {
                                 var infowindowContent = '<span class="infoTitle">' + place.name 
@@ -5041,19 +5050,23 @@ const Controller = {
 
                                 var lat = place.geometry.location.lat();
                                 var lng = place.geometry.location.lng();
-                                var bounds = new google.maps.LatLngBounds();
+                                bounds = new google.maps.LatLngBounds();
                                 bounds.extend(new google.maps.LatLng(lat, lng));
 
                                 imgArray.push(placeImg);
                                 self.setState({
                                 imgArray: imgArray
                                 });
-                              
-                        }
-                    map.fitBounds(bounds)
-                    map.setZoom(13)
-                    };
-            });
+                                myMarkers.push(marker);
+                                resolve(marker)
+                        }};  
+                    });
+                    await subPromise;
+                }; 
+                // outside for                    
+                map.fitBounds(bounds);
+                map.setZoom(13);
+                console.log(myMarkers)
     },
     bindAutoComp: async (map)=>{
                 GoogleMapsLoader.load(function(google)  {
@@ -5094,21 +5107,23 @@ const Controller = {
                 });
             });
     },
-    markLocation: (map)=>{
-        // this is called Asynchronously, we don't await it because we don't want
-        // to hold up the queue for an event that might come at anytime
-        if("geolocation" in navigator){
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var infowindowContent = "You Are Here";
-                var location = {lat: position.coords.latitude, lng: position.coords.longitude}
-                Controller.createMarker(location, map, infowindowContent);
-                Controller.createCircle(location, map);
-            })
-        } else {
-            //Geolocation is not available
-        }
-
-    }
+    markMyLocation: (map)=>{
+                var promise = new Promise((resolve, reject)=>{
+                // this is called Asynchronously, we don't await it because we don't want
+                // to hold up the queue for an event that might come at anytime
+                if("geolocation" in navigator){
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var infowindowContent = "You Are Here";
+                        var location = {lat: position.coords.latitude, lng: position.coords.longitude}
+                        var {marker} = Controller.createMarker(location, map, infowindowContent);
+                        Controller.createCircle(location, map);
+                        resolve(marker);
+                    })
+                } else {
+                    //Geolocation is not available
+                }
+                }); return promise;
+            },
 };
 module.exports = Controller;
 
@@ -5176,10 +5191,12 @@ class MainMap extends React.Component {
     async componentDidMount() {
         var self = this;
         var map = await Controller.initMap();
+        var myLocation = await Controller.markMyLocation(map);
         var allBusinesses = await Controller.getBusinesses(this.props.category);
-        Controller.visibleNewsfeed(true);
         Controller.populateMap(allBusinesses, map, self);
-        Controller.markLocation(map);
+        Controller.visibleNewsfeed(true);
+        console.log(await Controller.getAllMarkers());
+
     };
     render() {
         return (
