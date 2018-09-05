@@ -2,7 +2,7 @@
 
 ## Goal
 
-[a link]https://nubian-maps.herokuapp.com/
+https://nubian-maps.herokuapp.com/
 
 Share and save your favorite Black Businesses in Toronto
 
