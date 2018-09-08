@@ -16,9 +16,9 @@ class MainMap extends React.Component {
         var map = await Controller.initMap();
         var myLocation = await Controller.markMyLocation(map);
         var allBusinesses = await Controller.getBusinesses(this.props.category);
-        Controller.populateMap(allBusinesses, map, self);
+        var allMarkers = await Controller.populateMap(allBusinesses, map, self);
         Controller.visibleNewsfeed(true);
-        console.log(await Controller.getAllMarkers());
+        Controller.calcDistances(myLocation.position, allMarkers);
 
     };
     render() {

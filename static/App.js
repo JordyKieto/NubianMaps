@@ -4941,7 +4941,6 @@ const Controller = {
                         });
                 return promise;
     },
-    print:(value) => {console.log(value); return value},
     initMap    :async (lat, lng)=>{
                 GoogleMapsLoader.KEY = await Controller.getMapsKey();
                 var promise = new Promise((resolve, reject)=>{
@@ -4997,7 +4996,7 @@ const Controller = {
                 return {marker: marker, infowindow: infowindow}
     },
     getAllMarkers: ()=>{
-        return myMarkers;
+                return myMarkers;
     },
     createPlaceImg: (place, map, infowindow, marker)=>{
                 var placeImg = {};
@@ -5022,6 +5021,7 @@ const Controller = {
                 return placeImg;
     },
     populateMap: async (allBusinesses, map, self)=>{
+        var promise = new Promise(async(resolve, reject)=>{
         // slight delay in loading markers
         // this is so we can wait for ALL markers
         // must be better of loading markers
@@ -5066,7 +5066,10 @@ const Controller = {
                 // outside for                    
                 map.fitBounds(bounds);
                 map.setZoom(13);
-                console.log(myMarkers)
+               // console.log(myMarkers)
+               resolve(myMarkers)
+            })
+               return promise;
     },
     bindAutoComp: async (map)=>{
                 GoogleMapsLoader.load(function(google)  {
@@ -5106,6 +5109,18 @@ const Controller = {
                     infowindow.open(map, marker);
                 });
             });
+    },
+    calcDistance: (origin, destination)=>{
+        GoogleMapsLoader.load(function(google)  {
+            console.log('Distance between Meters: '+ google.maps.geometry.spherical.computeDistanceBetween(origin, destination));
+        })
+    },
+    calcDistances: (origin, destinations)=>{
+        for(destination of destinations){
+            GoogleMapsLoader.load(function(google)  {
+                console.log(`You are ${google.maps.geometry.spherical.computeDistanceBetween(origin, destination.position)} metres away from...`);
+            })
+        }
     },
     markMyLocation: (map)=>{
                 var promise = new Promise((resolve, reject)=>{
@@ -5193,9 +5208,9 @@ class MainMap extends React.Component {
         var map = await Controller.initMap();
         var myLocation = await Controller.markMyLocation(map);
         var allBusinesses = await Controller.getBusinesses(this.props.category);
-        Controller.populateMap(allBusinesses, map, self);
+        var allMarkers = await Controller.populateMap(allBusinesses, map, self);
         Controller.visibleNewsfeed(true);
-        console.log(await Controller.getAllMarkers());
+        Controller.calcDistances(myLocation.position, allMarkers);
 
     };
     render() {
@@ -5318,10 +5333,10 @@ var styles = require("../../css/styles");
 
 function Newsfeed(props) {
     var Feed = props.imgArray.map(function (feedItem) {
-        return (React.createElement("div", {style: styles.imgDiv, className: "imgDiv"}, 
+        return (React.createElement("div", {style: styles.imgDiv, className: "imgDiv", key: `div ${feedItem.id}`}, 
                     React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
                         style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
-                        onMouseOut: feedItem.onmouseout})
+                        onMouseOut: feedItem.onmouseout, key: `${feedItem.id}`})
                 )
                 )});
                                             
