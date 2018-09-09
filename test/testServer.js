@@ -39,10 +39,39 @@ describe('API', function () {
             // cookie patch to persist sessions https://github.com/visionmedia/supertest/issues/336
         cookie = res.headers['set-cookie'];
         request(app)
-        .get('/checkAuthentication')
+        .get('/api/checkAuthentication')
         .set('Cookie', cookie)
-        .end(function(err, res) {assert.equal(res.body, true, 'succesful authentication')})
+        .end(function(err, res) {assert.equal(res.body, true, 'succesful authentication');
         done();
-    });    
+        });
+    });
+    });
+    it('can logout', function(done){
+        request(app)
+        .get('/api/authenticate')
+        .send({username: admin.username, password: admin.password})
+        .then( function(res) {
+            // cookie patch to persist sessions https://github.com/visionmedia/supertest/issues/336
+        cookie = res.headers['set-cookie'];
+        console.log('halfway');
+        request(app)
+        .get('/api/checkAuthentication')
+        .set('Cookie', cookie)
+        .then(function(res) {console.log('quarter');assert.equal(res.body, true, 'successful authentication');})
+        .then(()=>{
+            console.log('eight');
+        request(app)
+        .get('/api/logout')  
+        .set('Cookie', cookie)
+        .then(function(res) {console.log('barely');assert.equal(res.body, true, 'logout API');
+        request(app)
+        .get('/api/checkAuthentication')
+        .set('Cookie', cookie)
+        .then(function(res) {console.log(res.body);assert.equal(res.body, false, 'successfully logged out');
+        done();
+        })
+        })
+        })
+    });
     });
 });

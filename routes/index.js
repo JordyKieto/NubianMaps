@@ -88,7 +88,9 @@ router.get('/api/logout', function(request, response) {
         request.logout();
     //    request.user = null,
      //   response.redirect('/admin')
+        response.json(true);    
     }
+    else {response.json(false)}
 });
 router.get('/api/register', passport.authenticate('register', {successRedirect: '/admin',
                                                             failureRedirect: '/register'
@@ -103,6 +105,7 @@ router.get('/api/checkAuthentication', function(request, response) {
         console.log(request.user.username);
         response.json(true);
     } else {response.json(false)}
+
 });
 router.post('/api/favourites', function(request, response) {
     console.log(request.body);
