@@ -32,7 +32,7 @@ mongoose.connection.on('connected', function (err) {
 mongoose.connect( uri || 'mongodb://localhost').then(() =>{
     app.server = app.listen(port, function(){
     console.log('Nubian Maps on '+ app.server.address().port)
-});
+    });
 });
 
 module.exports = {

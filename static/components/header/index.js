@@ -1,3 +1,5 @@
+var React = require('react');
+
 var styles = require("../../css/styles");
 
 class Header extends React.Component {
