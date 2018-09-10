@@ -1,3 +1,5 @@
+const React = require('react');
+
 var styles = require("../../css/styles");
 
 function Newsfeed(props) {

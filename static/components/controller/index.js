@@ -1,10 +1,12 @@
 var GoogleMapsLoader = require('google-maps');
+const fetch = require('isomorphic-fetch');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+host = process.env.CURRENT_DOMAIN || "" ;
 // call initMap before other methods to retrive mapsKey
 const Controller = {
     getMapsKey : ()=>{
                 var promise = new Promise((resolve, reject)=>{
-                fetch("/api/mapsKey").then((response)=>{response.json().then((data) =>{resolve(data)})});
+                fetch(`${host}/api/mapsKey`).then((response)=>{response.json().then((data) =>{resolve(data)})});
                         });
                 return promise;
     },
@@ -21,7 +23,7 @@ const Controller = {
     },
     getBusinesses:(category)=>{
                 var promise = new Promise((resolve, reject)=>{
-                fetch("/api/businesses?category=" + category).then((response)=>{
+                fetch(`${host}/api/businesses?category=${category}`).then((response)=>{
                     response.json().then((allBusinesses)=>{
                         resolve(allBusinesses)});
                     });
@@ -177,15 +179,10 @@ const Controller = {
                 });
             });
     },
-    calcDistance: (origin, destination)=>{
-        GoogleMapsLoader.load(function(google)  {
-            console.log('Distance between Meters: '+ google.maps.geometry.spherical.computeDistanceBetween(origin, destination));
-        })
-    },
     calcDistances: (origin, destinations)=>{
         for(destination of destinations){
             GoogleMapsLoader.load(function(google)  {
-                console.log(`You are ${google.maps.geometry.spherical.computeDistanceBetween(origin, destination.position)} metres away from...`);
+                console.log(`You are ${google.maps.geometry.spherical.computeDistanceBetween(origin.position, destination.position)} metres away from...`);
             })
         }
     },

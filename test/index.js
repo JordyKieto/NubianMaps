@@ -9,14 +9,17 @@ const Enzyme = require("enzyme");
 const shallow = require("enzyme").shallow;
 const Adapter = require('enzyme-adapter-react-16');
 const React = require('react');
+const http = require('http');
 const Header = require('../static/components/header');
+const Newsfeed = require('../static/components/newsfeed');
+const Controller = require('../static/components/controller');
 let db;
 let cookie;
 
 
 Enzyme.configure({adapter: new Adapter()});
 
-describe('API', function () {
+describe('Server Tests', function () {
     beforeEach( async function() {
         await MongoClient.connect('mongodb://localhost').then( async (client) =>{
         db = await client.db('blackBusinesses');
@@ -81,9 +84,36 @@ describe('API', function () {
             })
         });
     });
+});
+describe('Client Tests', function () {
+    beforeEach( async function() {
+        await MongoClient.connect('mongodb://localhost').then( async (client) =>{
+        db = await client.db('blackBusinesses');
+        });
+    });
+    afterEach(function () {
+        app.server.close();
+    });
     it('header has correct site title', ()=> {
         const header = shallow(<Header />);
         assert.equal(header.text(), ("NUBIAN MAPS"));
     });
-});
+    it('header imgs have correct src', ()=> {
+        const header = shallow(<Header />);
+        assert.equal(header.find('img').first().prop("src"), './images/favourite.png');
+        assert.equal(header.find('img').at(1).prop("src"), './images/africaLogo.png');
+
+    });
+    it('Newsfeed renders correct img', ()=> {
+        const newsfeed = shallow(<Newsfeed imgArray={[{src: "https://i.imgur.com/WBp5bHD.jpg", id: "123"}]} />);
+        assert.equal(newsfeed.find('img').first().prop("src"), 'https://i.imgur.com/WBp5bHD.jpg');
+    });
+    it('Can recieve Maps Key', (done)=> {
+        app.listen(8080, async function () {
+        const recievedKey = await Controller.getMapsKey();
+        assert.equal(recievedKey, mapsKey);
+        done();
+    });
+})
+})
 

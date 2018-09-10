@@ -1,4 +1,4 @@
-var Newsfeed = require("../newsfeed/newsfeed");
+var Newsfeed = require("../newsfeed");
 
 var styles = require("../../css/styles");
 var Controller = require("../controller");
@@ -18,7 +18,7 @@ class MainMap extends React.Component {
         var allBusinesses = await Controller.getBusinesses(this.props.category);
         var allMarkers = await Controller.populateMap(allBusinesses, map, self);
         Controller.visibleNewsfeed(true);
-        Controller.calcDistances(myLocation.position, allMarkers);
+        Controller.calcDistances(myLocation, allMarkers);
 
     };
     render() {
