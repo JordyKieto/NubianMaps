@@ -185,6 +185,184 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],2:[function(require,module,exports){
+"use strict";
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+module.exports = emptyFunction;
+},{}],3:[function(require,module,exports){
+(function (process){
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+'use strict';
+
+var emptyObject = {};
+
+if (process.env.NODE_ENV !== 'production') {
+  Object.freeze(emptyObject);
+}
+
+module.exports = emptyObject;
+}).call(this,require('_process'))
+},{"_process":1}],4:[function(require,module,exports){
+(function (process){
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+'use strict';
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var validateFormat = function validateFormat(format) {};
+
+if (process.env.NODE_ENV !== 'production') {
+  validateFormat = function validateFormat(format) {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  };
+}
+
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+}
+
+module.exports = invariant;
+}).call(this,require('_process'))
+},{"_process":1}],5:[function(require,module,exports){
+(function (process){
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+'use strict';
+
+var emptyFunction = require('./emptyFunction');
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = emptyFunction;
+
+if (process.env.NODE_ENV !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+}).call(this,require('_process'))
+},{"./emptyFunction":2,"_process":1}],6:[function(require,module,exports){
 (function(root, factory) {
 
 	if (root === null) {
@@ -270,7 +448,6 @@ process.umask = function() { return 0; };
 		script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.src = GoogleMapsLoader.createUrl();
-
 		document.body.appendChild(script);
 	};
 
@@ -409,7 +586,7 @@ process.umask = function() { return 0; };
 
 });
 
-},{}],3:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -465,7 +642,7 @@ var supportsGoWithoutReloadUsingHash = exports.supportsGoWithoutReloadUsingHash 
 var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
   return event.state === undefined && navigator.userAgent.indexOf('CriOS') === -1;
 };
-},{}],4:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -544,7 +721,7 @@ var createLocation = exports.createLocation = function createLocation(path, stat
 var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a, b) {
   return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash && a.key === b.key && (0, _valueEqual2.default)(a.state, b.state);
 };
-},{"./PathUtils":5,"resolve-pathname":47,"value-equal":48}],5:[function(require,module,exports){
+},{"./PathUtils":9,"resolve-pathname":55,"value-equal":56}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -606,7 +783,7 @@ var createPath = exports.createPath = function createPath(location) {
 
   return path;
 };
-},{}],6:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -914,7 +1091,7 @@ var createBrowserHistory = function createBrowserHistory() {
 };
 
 exports.default = createBrowserHistory;
-},{"./DOMUtils":3,"./LocationUtils":4,"./PathUtils":5,"./createTransitionManager":9,"invariant":13,"warning":11}],7:[function(require,module,exports){
+},{"./DOMUtils":7,"./LocationUtils":8,"./PathUtils":9,"./createTransitionManager":13,"invariant":17,"warning":15}],11:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1239,7 +1416,7 @@ var createHashHistory = function createHashHistory() {
 };
 
 exports.default = createHashHistory;
-},{"./DOMUtils":3,"./LocationUtils":4,"./PathUtils":5,"./createTransitionManager":9,"invariant":13,"warning":11}],8:[function(require,module,exports){
+},{"./DOMUtils":7,"./LocationUtils":8,"./PathUtils":9,"./createTransitionManager":13,"invariant":17,"warning":15}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1410,7 +1587,7 @@ var createMemoryHistory = function createMemoryHistory() {
 };
 
 exports.default = createMemoryHistory;
-},{"./LocationUtils":4,"./PathUtils":5,"./createTransitionManager":9,"warning":11}],9:[function(require,module,exports){
+},{"./LocationUtils":8,"./PathUtils":9,"./createTransitionManager":13,"warning":15}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1496,7 +1673,7 @@ var createTransitionManager = function createTransitionManager() {
 };
 
 exports.default = createTransitionManager;
-},{"warning":11}],10:[function(require,module,exports){
+},{"warning":15}],14:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1549,7 +1726,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.createBrowserHistory = _createBrowserHistory3.default;
 exports.createHashHistory = _createHashHistory3.default;
 exports.createMemoryHistory = _createMemoryHistory3.default;
-},{"./LocationUtils":4,"./PathUtils":5,"./createBrowserHistory":6,"./createHashHistory":7,"./createMemoryHistory":8}],11:[function(require,module,exports){
+},{"./LocationUtils":8,"./PathUtils":9,"./createBrowserHistory":10,"./createHashHistory":11,"./createMemoryHistory":12}],15:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -1613,7 +1790,7 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"_process":1}],12:[function(require,module,exports){
+},{"_process":1}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1683,7 +1860,7 @@ function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
 
 module.exports = hoistNonReactStatics;
 
-},{}],13:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -1736,12 +1913,20 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":1}],14:[function(require,module,exports){
+},{"_process":1}],18:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],15:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+// the whatwg-fetch polyfill installs the fetch() function
+// on the global object (window or self)
+//
+// Return that as the export for use in Webpack, Browserify etc.
+require('whatwg-fetch');
+module.exports = self.fetch.bind(self);
+
+},{"whatwg-fetch":58}],20:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -1833,7 +2018,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -1928,7 +2113,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 module.exports = checkPropTypes;
 
 }).call(this,require('_process'))
-},{"./lib/ReactPropTypesSecret":20,"_process":1}],17:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":25,"_process":1}],22:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -1989,7 +2174,7 @@ module.exports = function() {
   return ReactPropTypes;
 };
 
-},{"./lib/ReactPropTypesSecret":20}],18:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":25}],23:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -2548,7 +2733,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 };
 
 }).call(this,require('_process'))
-},{"./checkPropTypes":16,"./lib/ReactPropTypesSecret":20,"_process":1,"object-assign":15}],19:[function(require,module,exports){
+},{"./checkPropTypes":21,"./lib/ReactPropTypesSecret":25,"_process":1,"object-assign":20}],24:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -2580,7 +2765,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./factoryWithThrowingShims":17,"./factoryWithTypeCheckers":18,"_process":1}],20:[function(require,module,exports){
+},{"./factoryWithThrowingShims":22,"./factoryWithTypeCheckers":23,"_process":1}],25:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -2594,7 +2779,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-},{}],21:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2662,7 +2847,7 @@ BrowserRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = BrowserRouter;
-},{"./Router":29,"history":10,"prop-types":19,"react":69,"warning":49}],22:[function(require,module,exports){
+},{"./Router":34,"history":14,"prop-types":24,"react":54,"warning":57}],27:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2729,7 +2914,7 @@ HashRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = HashRouter;
-},{"./Router":29,"history":10,"prop-types":19,"react":69,"warning":49}],23:[function(require,module,exports){
+},{"./Router":34,"history":14,"prop-types":24,"react":54,"warning":57}],28:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2847,7 +3032,7 @@ Link.contextTypes = {
   }).isRequired
 };
 exports.default = Link;
-},{"history":10,"invariant":13,"prop-types":19,"react":69}],24:[function(require,module,exports){
+},{"history":14,"invariant":17,"prop-types":24,"react":54}],29:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2859,7 +3044,7 @@ var _MemoryRouter2 = _interopRequireDefault(_MemoryRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _MemoryRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/MemoryRouter":36}],25:[function(require,module,exports){
+},{"react-router/MemoryRouter":41}],30:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2951,7 +3136,7 @@ NavLink.defaultProps = {
 };
 
 exports.default = NavLink;
-},{"./Link":23,"./Route":28,"prop-types":19,"react":69}],26:[function(require,module,exports){
+},{"./Link":28,"./Route":33,"prop-types":24,"react":54}],31:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2963,7 +3148,7 @@ var _Prompt2 = _interopRequireDefault(_Prompt);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Prompt2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Prompt":37}],27:[function(require,module,exports){
+},{"react-router/Prompt":42}],32:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2975,7 +3160,7 @@ var _Redirect2 = _interopRequireDefault(_Redirect);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Redirect2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Redirect":38}],28:[function(require,module,exports){
+},{"react-router/Redirect":43}],33:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2987,7 +3172,7 @@ var _Route2 = _interopRequireDefault(_Route);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Route2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Route":39}],29:[function(require,module,exports){
+},{"react-router/Route":44}],34:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -2999,7 +3184,7 @@ var _Router2 = _interopRequireDefault(_Router);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Router2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Router":40}],30:[function(require,module,exports){
+},{"react-router/Router":45}],35:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3011,7 +3196,7 @@ var _StaticRouter2 = _interopRequireDefault(_StaticRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _StaticRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/StaticRouter":41}],31:[function(require,module,exports){
+},{"react-router/StaticRouter":46}],36:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3023,7 +3208,7 @@ var _Switch2 = _interopRequireDefault(_Switch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Switch2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Switch":42}],32:[function(require,module,exports){
+},{"react-router/Switch":47}],37:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3035,7 +3220,7 @@ var _generatePath2 = _interopRequireDefault(_generatePath);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _generatePath2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/generatePath":43}],33:[function(require,module,exports){
+},{"react-router/generatePath":48}],38:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3113,7 +3298,7 @@ exports.Switch = _Switch3.default;
 exports.generatePath = _generatePath3.default;
 exports.matchPath = _matchPath3.default;
 exports.withRouter = _withRouter3.default;
-},{"./BrowserRouter":21,"./HashRouter":22,"./Link":23,"./MemoryRouter":24,"./NavLink":25,"./Prompt":26,"./Redirect":27,"./Route":28,"./Router":29,"./StaticRouter":30,"./Switch":31,"./generatePath":32,"./matchPath":34,"./withRouter":35}],34:[function(require,module,exports){
+},{"./BrowserRouter":26,"./HashRouter":27,"./Link":28,"./MemoryRouter":29,"./NavLink":30,"./Prompt":31,"./Redirect":32,"./Route":33,"./Router":34,"./StaticRouter":35,"./Switch":36,"./generatePath":37,"./matchPath":39,"./withRouter":40}],39:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3125,7 +3310,7 @@ var _matchPath2 = _interopRequireDefault(_matchPath);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _matchPath2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/matchPath":44}],35:[function(require,module,exports){
+},{"react-router/matchPath":49}],40:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3137,7 +3322,7 @@ var _withRouter2 = _interopRequireDefault(_withRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _withRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/withRouter":46}],36:[function(require,module,exports){
+},{"react-router/withRouter":51}],41:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3205,7 +3390,7 @@ MemoryRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = MemoryRouter;
-},{"./Router":40,"history":10,"prop-types":19,"react":69,"warning":49}],37:[function(require,module,exports){
+},{"./Router":45,"history":14,"prop-types":24,"react":54,"warning":57}],42:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3296,7 +3481,7 @@ Prompt.contextTypes = {
   }).isRequired
 };
 exports.default = Prompt;
-},{"invariant":13,"prop-types":19,"react":69}],38:[function(require,module,exports){
+},{"invariant":17,"prop-types":24,"react":54}],43:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3428,7 +3613,7 @@ Redirect.contextTypes = {
   }).isRequired
 };
 exports.default = Redirect;
-},{"./generatePath":43,"history":10,"invariant":13,"prop-types":19,"react":69,"warning":49}],39:[function(require,module,exports){
+},{"./generatePath":48,"history":14,"invariant":17,"prop-types":24,"react":54,"warning":57}],44:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3586,7 +3771,7 @@ Route.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Route;
-},{"./matchPath":44,"invariant":13,"prop-types":19,"react":69,"warning":49}],40:[function(require,module,exports){
+},{"./matchPath":49,"invariant":17,"prop-types":24,"react":54,"warning":57}],45:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3706,7 +3891,7 @@ Router.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Router;
-},{"invariant":13,"prop-types":19,"react":69,"warning":49}],41:[function(require,module,exports){
+},{"invariant":17,"prop-types":24,"react":54,"warning":57}],46:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3876,7 +4061,7 @@ StaticRouter.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = StaticRouter;
-},{"./Router":40,"history":10,"invariant":13,"prop-types":19,"react":69,"warning":49}],42:[function(require,module,exports){
+},{"./Router":45,"history":14,"invariant":17,"prop-types":24,"react":54,"warning":57}],47:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3971,7 +4156,7 @@ Switch.propTypes = {
   location: _propTypes2.default.object
 };
 exports.default = Switch;
-},{"./matchPath":44,"invariant":13,"prop-types":19,"react":69,"warning":49}],43:[function(require,module,exports){
+},{"./matchPath":49,"invariant":17,"prop-types":24,"react":54,"warning":57}],48:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4017,7 +4202,7 @@ var generatePath = function generatePath() {
 };
 
 exports.default = generatePath;
-},{"path-to-regexp":45}],44:[function(require,module,exports){
+},{"path-to-regexp":50}],49:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4098,7 +4283,7 @@ var matchPath = function matchPath(pathname) {
 };
 
 exports.default = matchPath;
-},{"path-to-regexp":45}],45:[function(require,module,exports){
+},{"path-to-regexp":50}],50:[function(require,module,exports){
 var isarray = require('isarray')
 
 /**
@@ -4526,7 +4711,7 @@ function pathToRegexp (path, keys, options) {
   return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
 }
 
-},{"isarray":14}],46:[function(require,module,exports){
+},{"isarray":18}],51:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4580,1117 +4765,7 @@ var withRouter = function withRouter(Component) {
 };
 
 exports.default = withRouter;
-},{"./Route":39,"hoist-non-react-statics":12,"prop-types":19,"react":69}],47:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-function isAbsolute(pathname) {
-  return pathname.charAt(0) === '/';
-}
-
-// About 1.5x faster than the two-arg version of Array#splice()
-function spliceOne(list, index) {
-  for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1) {
-    list[i] = list[k];
-  }
-
-  list.pop();
-}
-
-// This implementation is based heavily on node's url.parse
-function resolvePathname(to) {
-  var from = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-
-  var toParts = to && to.split('/') || [];
-  var fromParts = from && from.split('/') || [];
-
-  var isToAbs = to && isAbsolute(to);
-  var isFromAbs = from && isAbsolute(from);
-  var mustEndAbs = isToAbs || isFromAbs;
-
-  if (to && isAbsolute(to)) {
-    // to is absolute
-    fromParts = toParts;
-  } else if (toParts.length) {
-    // to is relative, drop the filename
-    fromParts.pop();
-    fromParts = fromParts.concat(toParts);
-  }
-
-  if (!fromParts.length) return '/';
-
-  var hasTrailingSlash = void 0;
-  if (fromParts.length) {
-    var last = fromParts[fromParts.length - 1];
-    hasTrailingSlash = last === '.' || last === '..' || last === '';
-  } else {
-    hasTrailingSlash = false;
-  }
-
-  var up = 0;
-  for (var i = fromParts.length; i >= 0; i--) {
-    var part = fromParts[i];
-
-    if (part === '.') {
-      spliceOne(fromParts, i);
-    } else if (part === '..') {
-      spliceOne(fromParts, i);
-      up++;
-    } else if (up) {
-      spliceOne(fromParts, i);
-      up--;
-    }
-  }
-
-  if (!mustEndAbs) for (; up--; up) {
-    fromParts.unshift('..');
-  }if (mustEndAbs && fromParts[0] !== '' && (!fromParts[0] || !isAbsolute(fromParts[0]))) fromParts.unshift('');
-
-  var result = fromParts.join('/');
-
-  if (hasTrailingSlash && result.substr(-1) !== '/') result += '/';
-
-  return result;
-}
-
-exports.default = resolvePathname;
-module.exports = exports['default'];
-},{}],48:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function valueEqual(a, b) {
-  if (a === b) return true;
-
-  if (a == null || b == null) return false;
-
-  if (Array.isArray(a)) {
-    return Array.isArray(b) && a.length === b.length && a.every(function (item, index) {
-      return valueEqual(item, b[index]);
-    });
-  }
-
-  var aType = typeof a === 'undefined' ? 'undefined' : _typeof(a);
-  var bType = typeof b === 'undefined' ? 'undefined' : _typeof(b);
-
-  if (aType !== bType) return false;
-
-  if (aType === 'object') {
-    var aValue = a.valueOf();
-    var bValue = b.valueOf();
-
-    if (aValue !== a || bValue !== b) return valueEqual(aValue, bValue);
-
-    var aKeys = Object.keys(a);
-    var bKeys = Object.keys(b);
-
-    if (aKeys.length !== bKeys.length) return false;
-
-    return aKeys.every(function (key) {
-      return valueEqual(a[key], b[key]);
-    });
-  }
-
-  return false;
-}
-
-exports.default = valueEqual;
-module.exports = exports['default'];
-},{}],49:[function(require,module,exports){
-(function (process){
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @providesModule warning
- */
-
-'use strict';
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var __DEV__ = process.env.NODE_ENV !== 'production';
-
-var warning = function() {};
-
-if (__DEV__) {
-  var printWarning = function printWarning(format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    var argIndex = 0;
-    var message = 'Warning: ' +
-      format.replace(/%s/g, function() {
-        return args[argIndex++];
-      });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  }
-
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-          '`warning(condition, format, ...args)` requires a warning ' +
-          'message argument'
-      );
-    }
-    if (!condition) {
-      printWarning.apply(null, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-
-}).call(this,require('_process'))
-},{"_process":1}],50:[function(require,module,exports){
-var styles = require("../../css/styles");
-var Controller = require("../controller");
-
-class postFavourites extends React.Component{
-    componentDidMount(){}
-    render() {
-        return(
-            React.createElement("div", null, 
-                React.createElement("form", {action: "/api/favourites", method: "post"}, 
-                React.createElement("label", {htmlFor: "username"}, "New Favourites:"), 
-                    React.createElement("input", {type: "text", name: "newPlaces[]"}), 
-                    React.createElement("input", {type: "submit", value: "Submit"})
-                )
-            )
-        )}};
-class Login extends React.Component{
-    componentDidMount(){}
-    render() {
-        return(
-            React.createElement("div", null, 
-                React.createElement("form", {action: "/api/login", method: "get"}, 
-                React.createElement("label", {htmlFor: "username"}, "Username:"), 
-                    React.createElement("input", {type: "text", name: "username", id: "username"}), 
-                    React.createElement("br", null), 
-                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
-                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
-                    React.createElement("br", null), 
-                    React.createElement("input", {type: "submit", value: "Submit"})
-                )
-            )
-        )
-    }
-};
-
-class Register extends React.Component{
-    componentDidMount(){}
-    render() {
-        return(
-            React.createElement("div", null, 
-                React.createElement("form", {action: "/api/register", method: "get"}, 
-                React.createElement("label", {htmlFor: "username"}, "Username:"), 
-                    React.createElement("input", {type: "text", name: "username", id: "username"}), 
-                    React.createElement("br", null), 
-                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
-                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
-                    React.createElement("br", null), 
-                    React.createElement("input", {type: "submit", value: "Submit"})
-                )
-            )
-        )
-    }
-};
-class Authenticate extends React.Component{
-    componentDidMount(){}
-    render() {
-        return(
-            React.createElement("div", null, 
-                React.createElement("form", {action: "/api/authenticate", method: "get"}, 
-                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
-                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
-                    React.createElement("input", {type: "hidden", name: "username", value: "admin"}), 
-                    React.createElement("input", {type: "submit", value: "Submit"})
-                )
-            )
-        )
-    }
-};
-
-class Logout extends React.Component{
-    componentDidMount(){
-        fetch('/api/logout');
-    }
-    render() {
-        window.location.href = "/admin"
-        return null
-    }
-};
-
-class AdminListView extends React.Component {
-
-    constructor(props){
-        super(props);
-    }
-
-    // a simple text representation of the database
-
-    async componentDidMount() {
-                var allEntries = await Controller.getBusinesses('all');
-                allEntries.forEach(function(entry, index, array) {
-                    var node = document.createElement("DIV")
-                    var textnode = document.createElement("INPUT")
-                    var editButton = document.createElement("INPUT")
-                    editButton.onclick  = function(){
-                        fetch('/api/businesses/' + entry._id, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'},
-                        body: JSON.stringify({ "name": textnode.value}),
-                        method: "put",
-                    });
-    
-                }
-                    editButton.setAttribute('value', 'Update');
-                    editButton.setAttribute('type', 'button');
-                    textnode.setAttribute('type', 'text');
-                    textnode.setAttribute('value', entry.name);
-                    var form = document.getElementById("form");
-                    var submit = document.getElementById("submitID");
-                    node.appendChild(textnode);
-                    var input = document.createElement("INPUT");
-                    input.setAttribute('type', 'checkbox');
-                    input.setAttribute('name', entry.name);
-                    input.setAttribute('value', entry._id);
-                    input.setAttribute('class', "adminInput");
-
-                    node.appendChild(input);
-                    node.appendChild(editButton)
-                    document.getElementById("form").appendChild(node);
-                    // adds the submit button to end of form
-                    form.insertBefore(node, submit);
-                })
-    }
-
-    handlesubmit  (event)  {
-        var self = this;
-        event.preventDefault()
-        var entries = [];
-        var formData = new FormData(event.target)
-        for (let entry of formData.entries()) {
-            entries.push(entry[1]);
-        }
-        
-        fetch('/api/businesses', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'},
-            method: 'delete',
-            body: JSON.stringify(entries)}).then(function(){location.reload();}); 
-    }
-    render () {
-        return (
-            React.createElement("div", {id: "adminForm"}, 
-            React.createElement("form", {onSubmit: this.handlesubmit, id: "form", style: styles.admin}, 
-            React.createElement("div", {id: "submitID"}, 
-            React.createElement("br", null), 
-            React.createElement("input", {type: "submit", value: "Delete"})
-            )
-            )
-            )
-        )
-    }
-}
-
-module.exports = {
-    postFavourites: postFavourites,
-    Register: Register,
-    Login: Login,
-    Logout: Logout,
-    Authenticate: Authenticate,
-    AdminListView: AdminListView
-}
-
-},{"../../css/styles":58,"../controller":51}],51:[function(require,module,exports){
-var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-// call initMap before other methods to retrive mapsKey
-const Controller = {
-    getMapsKey : ()=>{
-                var promise = new Promise((resolve, reject)=>{
-                fetch("/api/mapsKey").then((response)=>{response.json().then((data) =>{resolve(data)})});
-                        });
-                return promise;
-    },
-    initMap    :async (lat, lng)=>{
-                GoogleMapsLoader.KEY = await Controller.getMapsKey();
-                var promise = new Promise((resolve, reject)=>{
-                GoogleMapsLoader.load(function(google)  {
-                    var map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat: lat || 43.642567, lng: lng || -79.387054},
-                    zoom: 13
-                }); resolve(map)
-                    });
-                }); return promise;
-    },
-    getBusinesses:(category)=>{
-                var promise = new Promise((resolve, reject)=>{
-                fetch("/api/businesses?category=" + category).then((response)=>{
-                    response.json().then((allBusinesses)=>{
-                        resolve(allBusinesses)});
-                    });
-                }); return promise;
-    },
-    visibleNewsfeed:(status)=>{
-                var newsfeed = document.getElementById("newsfeed");
-                if(status){
-                newsfeed.style = "visibility:visible";
-                }
-                else{newsfeed.style = "visibility:hidden"}
-    },
-    createCircle: (location, map)=>{
-                GoogleMapsLoader.load(function(google)  {
-                var circleOptions = {
-                    fillColor: 'black',
-                    fillOpacity: 0.50,
-                    strokeColor: 'black',
-                    strokeOpacity: 0.70,
-                    strokeWeight: 1,
-                    center: location,
-                    radius: 200,
-                };
-                var circle = new google.maps.Circle(circleOptions);
-                circle.setMap(map);
-        });
-    },
-    createMarker: (location, map, infowindowContent)=>{
-                var infowindow = new google.maps.InfoWindow();
-                var marker = new google.maps.Marker({
-                    position: location,
-                    map: map,
-                    });
-                marker.addListener('click', function(){
-                    infowindow.open(map, marker);
-                    });
-            //   marker.setVisible(true);
-                infowindow.setContent(infowindowContent);
-                return {marker: marker, infowindow: infowindow}
-    },
-    getAllMarkers: ()=>{
-                return myMarkers;
-    },
-    createPlaceImg: (place, map, infowindow, marker)=>{
-                var placeImg = {};
-                try {
-                    placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
-                }
-                catch(err) {
-                // no image for this place, setting default
-                    placeImg.src = '../images/altLogo.png'
-                }
-                placeImg.id = place.name.replace(/ /, '-');
-                placeImg.onmouseover = function(){
-                    google.maps.event.trigger(marker, 'click');
-                    map.setZoom(15);
-                    map.panTo(place.geometry.location)
-                };
-                placeImg.onmouseout = function(){
-                    map.setZoom(14);
-                    map.panTo(place.geometry.location)                                    
-                    infowindow.close();
-                };
-                return placeImg;
-    },
-    populateMap: async (allBusinesses, map, self)=>{
-        var promise = new Promise(async(resolve, reject)=>{
-        // slight delay in loading markers
-        // this is so we can wait for ALL markers
-        // must be better of loading markers
-                var imgArray = [];
-                myMarkers = [];
-                var bounds;
-                for ( business of allBusinesses) {
-                    var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
-                    var subPromise = new Promise((resolve, reject)=>{
-                    GoogleMapsLoader.load(function(google){service = new google.maps.places.PlacesService(map);});
-                    service.getDetails(request, populate);
-                    async function populate(place, status) {
-                        if (status == google.maps.places.PlacesServiceStatus.OK) {
-                                var infowindowContent = '<span class="infoTitle">' + place.name 
-                                +'</span><br/><div style="height:43px">'
-                                +'<form action="/api/favourites" method="post">'
-                                +'<div style="width:100%;background-color:black" class="star">'
-                                +'<button style="width:80px">'
-                                +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
-                                +'<span style="color:white;font-size:150%">  Nubian  </span>'
-                                +'</div>'
-                                +'<input name="id" type="hidden" value='+business._id+ ' />'
-                                +'</form>'; 
-                                var {marker, infowindow} = Controller.createMarker(place.geometry.location, map, infowindowContent);
-                                var placeImg = Controller.createPlaceImg(place, map, infowindow, marker);
-
-                                var lat = place.geometry.location.lat();
-                                var lng = place.geometry.location.lng();
-                                bounds = new google.maps.LatLngBounds();
-                                bounds.extend(new google.maps.LatLng(lat, lng));
-
-                                imgArray.push(placeImg);
-                                self.setState({
-                                imgArray: imgArray
-                                });
-                                myMarkers.push(marker);
-                                resolve(marker)
-                        }};  
-                    });
-                    await subPromise;
-                }; 
-                // outside for                    
-                map.fitBounds(bounds);
-                map.setZoom(13);
-               // console.log(myMarkers)
-               resolve(myMarkers)
-            })
-               return promise;
-    },
-    bindAutoComp: async (map)=>{
-                GoogleMapsLoader.load(function(google)  {
-                var input = document.getElementById('pac-input');
-
-                var autocomplete = new google.maps.places.Autocomplete(input);
-                autocomplete.bindTo('bounds', map);
-
-                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-                autocomplete.addListener('place_changed', async function(){
-                    var place = autocomplete.getPlace();
-                    // fills the infowindow with a form to add selected business
-                    var infowindowContent = (place.name +'<br>'+ place.formatted_address +'<br><br>'
-                    +'<form action="/api/businesses" method="POST">'
-                    +'<input type="hidden" name="placeID" value='+place.place_id+'></input>'
-                    +'<input type="hidden" name="name" value='+place.name+'></input>'
-                    +'<input type="radio" name="category" value="entertainment">Entertainment</input><br></br>'
-                    +'<input type="radio" name="category" value="networking">Networking</input><br></br>'
-                    +'<input type="radio" name="category" value="food">Food</input><br></br>'
-                    +'<input type="radio" name="category" value="cosmetics">Cosmetics</input><br></br>'
-                    +'<input type="submit" value="Submit"></input>'
-                    +'</form>');
-                    var {marker, infowindow} = Controller.createMarker(place.geometry.location, map, infowindowContent);
-                    
-                    infowindow.close();
-                    if (!place.geometry){
-                        return;
-                    }
-                    if (place.geometry.viewport) {
-                        map.fitBounds(place.geometry.viewport);
-                    } else {
-                        map.setCenter(place.geometry.location);
-                        map.setZoom(17);
-                    }
-                    marker.setVisible(true);
-                    infowindow.open(map, marker);
-                });
-            });
-    },
-    calcDistance: (origin, destination)=>{
-        GoogleMapsLoader.load(function(google)  {
-            console.log('Distance between Meters: '+ google.maps.geometry.spherical.computeDistanceBetween(origin, destination));
-        })
-    },
-    calcDistances: (origin, destinations)=>{
-        for(destination of destinations){
-            GoogleMapsLoader.load(function(google)  {
-                console.log(`You are ${google.maps.geometry.spherical.computeDistanceBetween(origin, destination.position)} metres away from...`);
-            })
-        }
-    },
-    markMyLocation: (map)=>{
-                var promise = new Promise((resolve, reject)=>{
-                // this is called Asynchronously, we don't await it because we don't want
-                // to hold up the queue for an event that might come at anytime
-                if("geolocation" in navigator){
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        var infowindowContent = "You Are Here";
-                        var location = {lat: position.coords.latitude, lng: position.coords.longitude}
-                        var {marker} = Controller.createMarker(location, map, infowindowContent);
-                        Controller.createCircle(location, map);
-                        resolve(marker);
-                    })
-                } else {
-                    //Geolocation is not available
-                }
-                }); return promise;
-            },
-};
-module.exports = Controller;
-
-},{"google-maps":2}],52:[function(require,module,exports){
-var styles = require("../../css/styles");
-
-class Header extends React.Component {
-    render() {
-        return(
-            React.createElement("header", {style: styles.header}, 
-            React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "./images/favourite.png", id: "favouriteStar"})), 
-            React.createElement("img", {style: styles.logo, src: "./images/africaLogo.png"}), 
-            React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
-            )
-    )};
-};
-module.exports = Header;
-
-},{"../../css/styles":58}],53:[function(require,module,exports){
-var GoogleMapsLoader = require('google-maps');
-GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-var {AdminListView} = require("../adminForms")
-var styles = require("../../css/styles");
-var Controller = require("../controller");
-
-class AdminMap extends React.Component {
-    // creates a map with autocomplete search bar
-    async componentDidMount() {
-        GoogleMapsLoader.KEY = await Controller.getMapsKey();
-        var map = await Controller.initMap();
-        Controller.visibleNewsfeed(false);
-        Controller.bindAutoComp(map);
-};
-
-    render() {
-        return (
-        React.createElement("div", {id: "mapdiv"}, 
-        React.createElement("div", {id: "map", style: styles.map}), 
-        React.createElement("div", {id: "infowindow-content"}
-        ), 
-        React.createElement("input", {id: "pac-input", className: "controls", type: "text", style: styles.controls, 
-        placeholder: "Enter a location"}), 
-        React.createElement(AdminListView, null)
-        )
-        )
-    }
-}
-
-module.exports = AdminMap;
-
-},{"../../css/styles":58,"../adminForms":50,"../controller":51,"google-maps":2}],54:[function(require,module,exports){
-var Newsfeed = require("../newsfeed/newsfeed");
-
-var styles = require("../../css/styles");
-var Controller = require("../controller");
-
-
-class MainMap extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            imgArray: []
-        }
-    };
-    async componentDidMount() {
-        var self = this;
-        var map = await Controller.initMap();
-        var myLocation = await Controller.markMyLocation(map);
-        var allBusinesses = await Controller.getBusinesses(this.props.category);
-        var allMarkers = await Controller.populateMap(allBusinesses, map, self);
-        Controller.visibleNewsfeed(true);
-        Controller.calcDistances(myLocation.position, allMarkers);
-
-    };
-    render() {
-        return (
-        React.createElement("div", null, 
-        React.createElement("div", {id: "map", style: styles.map}, " "), 
-        /** the Newsfeed is tightly coupled to update on every Map update */
-        React.createElement(Newsfeed, {imgArray: this.state.imgArray})
-        )
-        )
-    }
-};
-
-module.exports = MainMap
-
-},{"../../css/styles":58,"../controller":51,"../newsfeed/newsfeed":56}],55:[function(require,module,exports){
-var styles = require("../../css/styles");
-var Link = require('react-router-dom').Link;
-
-const NavLink = props => (
-    React.createElement("div", {className: "NavLink", style: styles.navItem, id: props.id, onMouseOver: props.onMouseOver, onMouseOut: props.onMouseOut}, 
-        React.createElement("li", null, 
-            React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
-        )
-)
-);
-
-{/** the nav Grid, to make a new sublevel create ul with class navbar */}
-{/** a link should make itself and every preceeding element invisible on MouseOut  */}
-{/** & make itself and a next element visible on MouseOver */}
-{/** following the above rules, FIRST pass select()/deselect() the NavLinks id */ }
-{/**    SECONDLY in an array, pass the id's of preceeding/proceeding NavLink's   */ }
-
-class Navbar extends React.Component {
-    select(thisNav, subNavs) {
-        if (subNavs) {
-            subNavs.forEach(function(subNav) {
-            let navItem = document.getElementById(subNav);
-            navItem.style.visibility = "visible";
-            })
-        }
-    let selectedItem = document.getElementById(thisNav);
-    selectedItem.style.visibility = "visible";
-    selectedItem.style.backgroundColor = "black";
-    selectedItem.style.color = "white";
-    }
-
-    deSelect(thisNav, subNavs) {
-        if (subNavs) {
-            subNavs.forEach(function(subNav) {
-            let navItem = document.getElementById(subNav);
-            navItem.style.visibility = "hidden"
-            });
-        }
-    let selectedItem = document.getElementById(thisNav);
-    selectedItem.style.backgroundColor = "#e6e6e6"
-    selectedItem.style.color = "black";
-    }
-
-    render() {
-    return (
-    React.createElement("navbar", null, 
-    React.createElement("ul", {id: "navbar", style: styles.nav}, 
-        React.createElement(NavLink, {to: "/", id: "homeNav", onMouseOver: () => this.select("homeNav", null), 
-            onMouseOut: ()=> this.deSelect("homeNav", null)
-        }, "Home"), 
-        React.createElement(NavLink, {to: "/entertainment", id: "entNav", onMouseOver: () => this.select("entNav", null), 
-            onMouseOut: ()=> this.deSelect("entNav", null)
-        }, "Entertainment"), 
-        React.createElement(NavLink, {to: "/networking", id: "netNav", onMouseOver: () => this.select("netNav", null), 
-            onMouseOut: ()=> this.deSelect("netNav", null)
-        }, "Networking"), 
-        React.createElement(NavLink, {to: "/food", id: "foodNav", onMouseOver: () => this.select("foodNav", null), 
-            onMouseOut: ()=> this.deSelect("foodNav", null)
-        }, "Food"), 
-        React.createElement(NavLink, {to: "/cosmetics", id: "cosNav", onMouseOver: () => this.select("cosNav", null), 
-            onMouseOut: ()=> this.deSelect("cosNav", null)
-        }, "Cosmetics"), 
-        React.createElement(NavLink, {to: "/admin", id: "adminNav", onMouseOver: () => this.select("adminNav", ["registerNav"]), 
-            onMouseOut: ()=> this.deSelect("adminNav", ["registerNav"])
-        }, "Admin")
-    ), 
-    React.createElement("ul", {id: "navbar", className: "mainNavBar", style: styles.subNav}, 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/register", id: "registerNav", onMouseOver: () => this.select("registerNav", ["loginNav"]), 
-            onMouseOut: ()=> this.deSelect("registerNav", ["loginNav", "registerNav"])
-        }, "Register")
-    ), 
-    React.createElement("ul", {id: "navbar", style: styles.subNav}, 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/login", id: "loginNav", onMouseOver: () => this.select("loginNav", ["registerNav",  "logoutNav"]), 
-            onMouseOut: ()=> this.deSelect("loginNav", ["loginNav", "registerNav", "logoutNav"])
-        }, "Login")
-    ), 
-    React.createElement("ul", {id: "subNav", style: styles.subNav}, 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/"}), 
-        React.createElement(NavLink, {to: "/logout", id: "logoutNav", onMouseOver: () => this.select("logoutNav", ["loginNav", "registerNav"]), 
-            onMouseOut: ()=> this.deSelect("logoutNav", ["logoutNav", "loginNav","registerNav"])
-        }, "Logout")
-    )
-    )
-    )}}
-
-    module.exports = Navbar
-
-},{"../../css/styles":58,"react-router-dom":33}],56:[function(require,module,exports){
-var styles = require("../../css/styles");
-
-function Newsfeed(props) {
-    var Feed = props.imgArray.map(function (feedItem) {
-        return (React.createElement("div", {style: styles.imgDiv, className: "imgDiv", key: `div ${feedItem.id}`}, 
-                    React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
-                        style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
-                        onMouseOut: feedItem.onmouseout, key: `${feedItem.id}`})
-                )
-                )});
-                                            
-    return (
-        React.createElement("div", {id: "newsfeed"}, 
-        Feed
-        )
-    )
-};
-
-
-module.exports = Newsfeed
-
-},{"../../css/styles":58}],57:[function(require,module,exports){
-var {postFavourites, Login, Register, Authenticate, Logout} = require("../adminForms");
-var MainMap = require("../maps/mainMap");
-var AdminMap = require("../maps/adminMap");
-var Route = require('react-router-dom').Route;
-
-class Routing extends React.Component {
-    render() {
-        return(
-            React.createElement("div", null, 
-                /** https://zhenyong.github.io/react/docs/jsx-spread.html */
-                /** https://reacttraining.com/react-router/web/api/Route/render-func */
-                React.createElement(Route, {exact: true, path: "/", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'all'}))}), 
-                React.createElement(Route, {exact: true, path: "/entertainment", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'entertainment'}))}), 
-                React.createElement(Route, {exact: true, path: "/food", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'food'}))}), 
-                React.createElement(Route, {exact: true, path: "/cosmetics", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'cosmetics'}))}), 
-                React.createElement(Route, {exact: true, path: "/networking", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'networking'}))}), 
-                React.createElement(Route, {exact: true, path: "/favourites", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'favourites'}))}), 
-                React.createElement(Route, {path: "/postFavourites", component: postFavourites}), 
-                React.createElement(Route, {path: "/admin", component: AdminMap}), 
-                React.createElement(Route, {path: "/authenticate", component: Authenticate}), 
-                React.createElement(Route, {path: "/login", component: Login}), 
-                React.createElement(Route, {path: "/logout", component: Logout}), 
-                React.createElement(Route, {path: "/register", component: Register})
-            )
-        )}
-};
-
-module.exports = Routing
-
-},{"../adminForms":50,"../maps/adminMap":53,"../maps/mainMap":54,"react-router-dom":33}],58:[function(require,module,exports){
-const styles = {};
-
-styles.map = {
-    position: "relative",
-    top: -120,
-    width: "100%",
-    height: "800px"
-}
-
-styles.nav = {
-    padding: 0,
-    margin: 0,
-    position: "relative",
-    top: 0,
-    height: "40px",
-    width: "100%",
-    display: "flex"
-  };
-
-  styles.subNav = {
-    padding: 0,
-    margin: 0,
-    position: "relative",
-    top: 0,
-    height: "40px",
-    width: "100%",
-    display: "flex",
-    visibility: "hidden"
-  };
-
-  styles.navItem = {
-    
-    textAlign: "center",
-    flex: 1,
-    listStyleType: "none",
-    padding: "5px",
-    backgroundColor: "#e6e6e6",
-    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-    zIndex: 4,
-  };
-
-  styles.header = {
- //     textAlign: "center",
-      width: "100%",
-      height: "50px",
-      padding: 0,
-      margin: 0,
-      backgroundColor: "black",
-      color: "white"
-
-  }
-
-  styles.controls = {
-      backgroundColor: "#fff",
-      borderRadius: "2px",
-      broder: "1px solid transparent",
-      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-      boxSizing: "border-box",
-      marginLeft: "17px",
-      height: "29px",
-      marginTop:"10px",
-      padding: "0 11px 0 13px",
-      width: "400px"
-
-  }
-
-  styles.logo = {
-      width: 50,
-  }
-
-  styles.h1 = {
-    textAlign: "left",
-    top: -5,
-    width: "100%",
-    left: "70px",
-    zIndex: 1,
-    position: "absolute"
-  }
-
-  styles.admin = {
-  //    backgroundColor: "black",
-      top: -300,
-      position: "relative",
-      width: "270px",
-  }
-
-  styles.placeImg = {
-
-  }
-
-  styles.imgDiv = { 
-      marginLeft: "auto",
-      marginRight: "auto",
-  };
-  
-  module.exports = styles
-
-},{}],59:[function(require,module,exports){
-var BrowserRouter = require('react-router-dom').BrowserRouter;
-var Navbar = require("./components/navbar");
-var Routing = require("./components/routing");
-var Header = require("./components/header");
-
-// main App
-class App extends React.Component {
-    componentDidMount(){
-    }
-    render() {
-        return(
-    React.createElement("main", null, 
-        React.createElement(Header, null), 
-        React.createElement(Navbar, null), 
-        React.createElement(Routing, null)
-    )
-    )};
-};
-
-ReactDOM.render(
-    React.createElement(BrowserRouter, null, 
-        React.createElement(App, null)
-    ), document.getElementById('root')
-);
-
-// watchify -t reactify index.js -o App.js -v
-
-},{"./components/header":52,"./components/navbar":55,"./components/routing":57,"react-router-dom":33}],60:[function(require,module,exports){
-"use strict";
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-module.exports = emptyFunction;
-},{}],61:[function(require,module,exports){
-(function (process){
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-'use strict';
-
-var emptyObject = {};
-
-if (process.env.NODE_ENV !== 'production') {
-  Object.freeze(emptyObject);
-}
-
-module.exports = emptyObject;
-}).call(this,require('_process'))
-},{"_process":1}],62:[function(require,module,exports){
-(function (process){
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-'use strict';
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (process.env.NODE_ENV !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-}).call(this,require('_process'))
-},{"_process":1}],63:[function(require,module,exports){
-(function (process){
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-'use strict';
-
-var emptyFunction = require('./emptyFunction');
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-}).call(this,require('_process'))
-},{"./emptyFunction":60,"_process":1}],64:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}],65:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"./lib/ReactPropTypesSecret":66,"_process":1,"dup":16}],66:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"dup":20}],67:[function(require,module,exports){
+},{"./Route":44,"hoist-non-react-statics":16,"prop-types":24,"react":54}],52:[function(require,module,exports){
 (function (process){
 /** @license React v16.4.1
  * react.development.js
@@ -7180,7 +6255,7 @@ module.exports = react;
 }
 
 }).call(this,require('_process'))
-},{"_process":1,"fbjs/lib/emptyFunction":60,"fbjs/lib/emptyObject":61,"fbjs/lib/invariant":62,"fbjs/lib/warning":63,"object-assign":64,"prop-types/checkPropTypes":65}],68:[function(require,module,exports){
+},{"_process":1,"fbjs/lib/emptyFunction":2,"fbjs/lib/emptyObject":3,"fbjs/lib/invariant":4,"fbjs/lib/warning":5,"object-assign":20,"prop-types/checkPropTypes":21}],53:[function(require,module,exports){
 /** @license React v16.4.1
  * react.production.min.js
  *
@@ -7204,7 +6279,7 @@ _calculateChangedBits:b,_defaultValue:a,_currentValue:a,_currentValue2:a,_change
 b.key&&(g=""+b.key);var l=void 0;a.type&&a.type.defaultProps&&(l=a.type.defaultProps);for(c in b)K.call(b,c)&&!L.hasOwnProperty(c)&&(d[c]=void 0===b[c]&&void 0!==l?l[c]:b[c])}c=arguments.length-2;if(1===c)d.children=e;else if(1<c){l=Array(c);for(var m=0;m<c;m++)l[m]=arguments[m+2];d.children=l}return{$$typeof:t,type:a.type,key:g,ref:h,props:d,_owner:f}},createFactory:function(a){var b=M.bind(null,a);b.type=a;return b},isValidElement:N,version:"16.4.1",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentOwner:J,
 assign:k}},Y={default:X},Z=Y&&X||Y;module.exports=Z.default?Z.default:Z;
 
-},{"fbjs/lib/emptyFunction":60,"fbjs/lib/emptyObject":61,"fbjs/lib/invariant":62,"object-assign":64}],69:[function(require,module,exports){
+},{"fbjs/lib/emptyFunction":2,"fbjs/lib/emptyObject":3,"fbjs/lib/invariant":4,"object-assign":20}],54:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -7215,4 +6290,1482 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react.development.js":67,"./cjs/react.production.min.js":68,"_process":1}]},{},[59]);
+},{"./cjs/react.development.js":52,"./cjs/react.production.min.js":53,"_process":1}],55:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+function isAbsolute(pathname) {
+  return pathname.charAt(0) === '/';
+}
+
+// About 1.5x faster than the two-arg version of Array#splice()
+function spliceOne(list, index) {
+  for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1) {
+    list[i] = list[k];
+  }
+
+  list.pop();
+}
+
+// This implementation is based heavily on node's url.parse
+function resolvePathname(to) {
+  var from = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  var toParts = to && to.split('/') || [];
+  var fromParts = from && from.split('/') || [];
+
+  var isToAbs = to && isAbsolute(to);
+  var isFromAbs = from && isAbsolute(from);
+  var mustEndAbs = isToAbs || isFromAbs;
+
+  if (to && isAbsolute(to)) {
+    // to is absolute
+    fromParts = toParts;
+  } else if (toParts.length) {
+    // to is relative, drop the filename
+    fromParts.pop();
+    fromParts = fromParts.concat(toParts);
+  }
+
+  if (!fromParts.length) return '/';
+
+  var hasTrailingSlash = void 0;
+  if (fromParts.length) {
+    var last = fromParts[fromParts.length - 1];
+    hasTrailingSlash = last === '.' || last === '..' || last === '';
+  } else {
+    hasTrailingSlash = false;
+  }
+
+  var up = 0;
+  for (var i = fromParts.length; i >= 0; i--) {
+    var part = fromParts[i];
+
+    if (part === '.') {
+      spliceOne(fromParts, i);
+    } else if (part === '..') {
+      spliceOne(fromParts, i);
+      up++;
+    } else if (up) {
+      spliceOne(fromParts, i);
+      up--;
+    }
+  }
+
+  if (!mustEndAbs) for (; up--; up) {
+    fromParts.unshift('..');
+  }if (mustEndAbs && fromParts[0] !== '' && (!fromParts[0] || !isAbsolute(fromParts[0]))) fromParts.unshift('');
+
+  var result = fromParts.join('/');
+
+  if (hasTrailingSlash && result.substr(-1) !== '/') result += '/';
+
+  return result;
+}
+
+exports.default = resolvePathname;
+module.exports = exports['default'];
+},{}],56:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function valueEqual(a, b) {
+  if (a === b) return true;
+
+  if (a == null || b == null) return false;
+
+  if (Array.isArray(a)) {
+    return Array.isArray(b) && a.length === b.length && a.every(function (item, index) {
+      return valueEqual(item, b[index]);
+    });
+  }
+
+  var aType = typeof a === 'undefined' ? 'undefined' : _typeof(a);
+  var bType = typeof b === 'undefined' ? 'undefined' : _typeof(b);
+
+  if (aType !== bType) return false;
+
+  if (aType === 'object') {
+    var aValue = a.valueOf();
+    var bValue = b.valueOf();
+
+    if (aValue !== a || bValue !== b) return valueEqual(aValue, bValue);
+
+    var aKeys = Object.keys(a);
+    var bKeys = Object.keys(b);
+
+    if (aKeys.length !== bKeys.length) return false;
+
+    return aKeys.every(function (key) {
+      return valueEqual(a[key], b[key]);
+    });
+  }
+
+  return false;
+}
+
+exports.default = valueEqual;
+module.exports = exports['default'];
+},{}],57:[function(require,module,exports){
+(function (process){
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @providesModule warning
+ */
+
+'use strict';
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var __DEV__ = process.env.NODE_ENV !== 'production';
+
+var warning = function() {};
+
+if (__DEV__) {
+  var printWarning = function printWarning(format, args) {
+    var len = arguments.length;
+    args = new Array(len > 2 ? len - 2 : 0);
+    for (var key = 2; key < len; key++) {
+      args[key - 2] = arguments[key];
+    }
+    var argIndex = 0;
+    var message = 'Warning: ' +
+      format.replace(/%s/g, function() {
+        return args[argIndex++];
+      });
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  }
+
+  warning = function(condition, format, args) {
+    var len = arguments.length;
+    args = new Array(len > 2 ? len - 2 : 0);
+    for (var key = 2; key < len; key++) {
+      args[key - 2] = arguments[key];
+    }
+    if (format === undefined) {
+      throw new Error(
+          '`warning(condition, format, ...args)` requires a warning ' +
+          'message argument'
+      );
+    }
+    if (!condition) {
+      printWarning.apply(null, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+
+}).call(this,require('_process'))
+},{"_process":1}],58:[function(require,module,exports){
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.WHATWGFetch = {})));
+}(this, (function (exports) { 'use strict';
+
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob:
+      'FileReader' in self &&
+      'Blob' in self &&
+      (function() {
+        try {
+          new Blob();
+          return true
+        } catch (e) {
+          return false
+        }
+      })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  };
+
+  function isDataView(obj) {
+    return obj && DataView.prototype.isPrototypeOf(obj)
+  }
+
+  if (support.arrayBuffer) {
+    var viewClasses = [
+      '[object Int8Array]',
+      '[object Uint8Array]',
+      '[object Uint8ClampedArray]',
+      '[object Int16Array]',
+      '[object Uint16Array]',
+      '[object Int32Array]',
+      '[object Uint32Array]',
+      '[object Float32Array]',
+      '[object Float64Array]'
+    ];
+
+    var isArrayBufferView =
+      ArrayBuffer.isView ||
+      function(obj) {
+        return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+      };
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name);
+    }
+    if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value);
+    }
+    return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift();
+        return {done: value === undefined, value: value}
+      }
+    };
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      };
+    }
+
+    return iterator
+  }
+
+  function Headers(headers) {
+    this.map = {};
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value);
+      }, this);
+    } else if (Array.isArray(headers)) {
+      headers.forEach(function(header) {
+        this.append(header[0], header[1]);
+      }, this);
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name]);
+      }, this);
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name);
+    value = normalizeValue(value);
+    var oldValue = this.map[name];
+    this.map[name] = oldValue ? oldValue + ', ' + value : value;
+  };
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)];
+  };
+
+  Headers.prototype.get = function(name) {
+    name = normalizeName(name);
+    return this.has(name) ? this.map[name] : null
+  };
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  };
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = normalizeValue(value);
+  };
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    for (var name in this.map) {
+      if (this.map.hasOwnProperty(name)) {
+        callback.call(thisArg, this.map[name], name, this);
+      }
+    }
+  };
+
+  Headers.prototype.keys = function() {
+    var items = [];
+    this.forEach(function(value, name) {
+      items.push(name);
+    });
+    return iteratorFor(items)
+  };
+
+  Headers.prototype.values = function() {
+    var items = [];
+    this.forEach(function(value) {
+      items.push(value);
+    });
+    return iteratorFor(items)
+  };
+
+  Headers.prototype.entries = function() {
+    var items = [];
+    this.forEach(function(value, name) {
+      items.push([name, value]);
+    });
+    return iteratorFor(items)
+  };
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true;
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result);
+      };
+      reader.onerror = function() {
+        reject(reader.error);
+      };
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader();
+    var promise = fileReaderReady(reader);
+    reader.readAsArrayBuffer(blob);
+    return promise
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader();
+    var promise = fileReaderReady(reader);
+    reader.readAsText(blob);
+    return promise
+  }
+
+  function readArrayBufferAsText(buf) {
+    var view = new Uint8Array(buf);
+    var chars = new Array(view.length);
+
+    for (var i = 0; i < view.length; i++) {
+      chars[i] = String.fromCharCode(view[i]);
+    }
+    return chars.join('')
+  }
+
+  function bufferClone(buf) {
+    if (buf.slice) {
+      return buf.slice(0)
+    } else {
+      var view = new Uint8Array(buf.byteLength);
+      view.set(new Uint8Array(buf));
+      return view.buffer
+    }
+  }
+
+  function Body() {
+    this.bodyUsed = false;
+
+    this._initBody = function(body) {
+      this._bodyInit = body;
+      if (!body) {
+        this._bodyText = '';
+      } else if (typeof body === 'string') {
+        this._bodyText = body;
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body;
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body;
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString();
+      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+        this._bodyArrayBuffer = bufferClone(body.buffer);
+        // IE 10-11 can't handle a DataView body.
+        this._bodyInit = new Blob([this._bodyArrayBuffer]);
+      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+        this._bodyArrayBuffer = bufferClone(body);
+      } else {
+        this._bodyText = body = Object.prototype.toString.call(body);
+      }
+
+      if (!this.headers.get('content-type')) {
+        if (typeof body === 'string') {
+          this.headers.set('content-type', 'text/plain;charset=UTF-8');
+        } else if (this._bodyBlob && this._bodyBlob.type) {
+          this.headers.set('content-type', this._bodyBlob.type);
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+        }
+      }
+    };
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this);
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyArrayBuffer) {
+          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      };
+
+      this.arrayBuffer = function() {
+        if (this._bodyArrayBuffer) {
+          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
+        } else {
+          return this.blob().then(readBlobAsArrayBuffer)
+        }
+      };
+    }
+
+    this.text = function() {
+      var rejected = consumed(this);
+      if (rejected) {
+        return rejected
+      }
+
+      if (this._bodyBlob) {
+        return readBlobAsText(this._bodyBlob)
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+      } else if (this._bodyFormData) {
+        throw new Error('could not read FormData body as text')
+      } else {
+        return Promise.resolve(this._bodyText)
+      }
+    };
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      };
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    };
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase();
+    return methods.indexOf(upcased) > -1 ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {};
+    var body = options.body;
+
+    if (input instanceof Request) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url;
+      this.credentials = input.credentials;
+      if (!options.headers) {
+        this.headers = new Headers(input.headers);
+      }
+      this.method = input.method;
+      this.mode = input.mode;
+      this.signal = input.signal;
+      if (!body && input._bodyInit != null) {
+        body = input._bodyInit;
+        input.bodyUsed = true;
+      }
+    } else {
+      this.url = String(input);
+    }
+
+    this.credentials = options.credentials || this.credentials || 'same-origin';
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers);
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET');
+    this.mode = options.mode || this.mode || null;
+    this.signal = options.signal || this.signal;
+    this.referrer = null;
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body);
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this, {body: this._bodyInit})
+  };
+
+  function decode(body) {
+    var form = new FormData();
+    body
+      .trim()
+      .split('&')
+      .forEach(function(bytes) {
+        if (bytes) {
+          var split = bytes.split('=');
+          var name = split.shift().replace(/\+/g, ' ');
+          var value = split.join('=').replace(/\+/g, ' ');
+          form.append(decodeURIComponent(name), decodeURIComponent(value));
+        }
+      });
+    return form
+  }
+
+  function parseHeaders(rawHeaders) {
+    var headers = new Headers();
+    // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
+    // https://tools.ietf.org/html/rfc7230#section-3.2
+    var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
+    preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
+      var parts = line.split(':');
+      var key = parts.shift().trim();
+      if (key) {
+        var value = parts.join(':').trim();
+        headers.append(key, value);
+      }
+    });
+    return headers
+  }
+
+  Body.call(Request.prototype);
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {};
+    }
+
+    this.type = 'default';
+    this.status = options.status === undefined ? 200 : options.status;
+    this.ok = this.status >= 200 && this.status < 300;
+    this.statusText = 'statusText' in options ? options.statusText : 'OK';
+    this.headers = new Headers(options.headers);
+    this.url = options.url || '';
+    this._initBody(bodyInit);
+  }
+
+  Body.call(Response.prototype);
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  };
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''});
+    response.type = 'error';
+    return response
+  };
+
+  var redirectStatuses = [301, 302, 303, 307, 308];
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  };
+
+  exports.DOMException = self.DOMException;
+  try {
+    new exports.DOMException();
+  } catch (err) {
+    exports.DOMException = function(message, name) {
+      this.message = message;
+      this.name = name;
+      var error = Error(message);
+      this.stack = error.stack;
+    };
+    exports.DOMException.prototype = Object.create(Error.prototype);
+    exports.DOMException.prototype.constructor = exports.DOMException;
+  }
+
+  function fetch(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request = new Request(input, init);
+
+      if (request.signal && request.signal.aborted) {
+        return reject(new exports.DOMException('Aborted', 'AbortError'))
+      }
+
+      var xhr = new XMLHttpRequest();
+
+      function abortXhr() {
+        xhr.abort();
+      }
+
+      xhr.onload = function() {
+        var options = {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+        };
+        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
+        var body = 'response' in xhr ? xhr.response : xhr.responseText;
+        resolve(new Response(body, options));
+      };
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'));
+      };
+
+      xhr.ontimeout = function() {
+        reject(new TypeError('Network request failed'));
+      };
+
+      xhr.onabort = function() {
+        reject(new exports.DOMException('Aborted', 'AbortError'));
+      };
+
+      xhr.open(request.method, request.url, true);
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true;
+      } else if (request.credentials === 'omit') {
+        xhr.withCredentials = false;
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob';
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value);
+      });
+
+      if (request.signal) {
+        request.signal.addEventListener('abort', abortXhr);
+
+        xhr.onreadystatechange = function() {
+          // DONE (success or failure)
+          if (xhr.readyState === 4) {
+            request.signal.removeEventListener('abort', abortXhr);
+          }
+        };
+      }
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
+    })
+  }
+
+  fetch.polyfill = true;
+
+  if (!self.fetch) {
+    self.fetch = fetch;
+    self.Headers = Headers;
+    self.Request = Request;
+    self.Response = Response;
+  }
+
+  exports.Headers = Headers;
+  exports.Request = Request;
+  exports.Response = Response;
+  exports.fetch = fetch;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+},{}],59:[function(require,module,exports){
+var styles = require("../../css/styles");
+var Controller = require("../controller");
+
+class postFavourites extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/favourites", method: "post"}, 
+                React.createElement("label", {htmlFor: "username"}, "New Favourites:"), 
+                    React.createElement("input", {type: "text", name: "newPlaces[]"}), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )}};
+class Login extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/login", method: "get"}, 
+                React.createElement("label", {htmlFor: "username"}, "Username:"), 
+                    React.createElement("input", {type: "text", name: "username", id: "username"}), 
+                    React.createElement("br", null), 
+                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
+                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
+                    React.createElement("br", null), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )
+    }
+};
+
+class Register extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/register", method: "get"}, 
+                React.createElement("label", {htmlFor: "username"}, "Username:"), 
+                    React.createElement("input", {type: "text", name: "username", id: "username"}), 
+                    React.createElement("br", null), 
+                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
+                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
+                    React.createElement("br", null), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )
+    }
+};
+class Authenticate extends React.Component{
+    componentDidMount(){}
+    render() {
+        return(
+            React.createElement("div", null, 
+                React.createElement("form", {action: "/api/authenticate", method: "get"}, 
+                    React.createElement("label", {htmlFor: "password"}, "Password:"), 
+                    React.createElement("input", {type: "password", name: "password", id: "password"}), 
+                    React.createElement("input", {type: "hidden", name: "username", value: "admin"}), 
+                    React.createElement("input", {type: "submit", value: "Submit"})
+                )
+            )
+        )
+    }
+};
+
+class Logout extends React.Component{
+    componentDidMount(){
+        fetch('/api/logout');
+    }
+    render() {
+        window.location.href = "/admin"
+        return null
+    }
+};
+
+class AdminListView extends React.Component {
+
+    constructor(props){
+        super(props);
+    }
+
+    // a simple text representation of the database
+
+    async componentDidMount() {
+                var allEntries = await Controller.getBusinesses('all');
+                allEntries.forEach(function(entry, index, array) {
+                    var node = document.createElement("DIV")
+                    var textnode = document.createElement("INPUT")
+                    var editButton = document.createElement("INPUT")
+                    editButton.onclick  = function(){
+                        fetch('/api/businesses/' + entry._id, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'},
+                        body: JSON.stringify({ "name": textnode.value}),
+                        method: "put",
+                    });
+    
+                }
+                    editButton.setAttribute('value', 'Update');
+                    editButton.setAttribute('type', 'button');
+                    textnode.setAttribute('type', 'text');
+                    textnode.setAttribute('value', entry.name);
+                    var form = document.getElementById("form");
+                    var submit = document.getElementById("submitID");
+                    node.appendChild(textnode);
+                    var input = document.createElement("INPUT");
+                    input.setAttribute('type', 'checkbox');
+                    input.setAttribute('name', entry.name);
+                    input.setAttribute('value', entry._id);
+                    input.setAttribute('class', "adminInput");
+
+                    node.appendChild(input);
+                    node.appendChild(editButton)
+                    document.getElementById("form").appendChild(node);
+                    // adds the submit button to end of form
+                    form.insertBefore(node, submit);
+                })
+    }
+
+    handlesubmit  (event)  {
+        var self = this;
+        event.preventDefault()
+        var entries = [];
+        var formData = new FormData(event.target)
+        for (let entry of formData.entries()) {
+            entries.push(entry[1]);
+        }
+        
+        fetch('/api/businesses', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'},
+            method: 'delete',
+            body: JSON.stringify(entries)}).then(function(){location.reload();}); 
+    }
+    render () {
+        return (
+            React.createElement("div", {id: "adminForm"}, 
+            React.createElement("form", {onSubmit: this.handlesubmit, id: "form", style: styles.admin}, 
+            React.createElement("div", {id: "submitID"}, 
+            React.createElement("br", null), 
+            React.createElement("input", {type: "submit", value: "Delete"})
+            )
+            )
+            )
+        )
+    }
+}
+
+module.exports = {
+    postFavourites: postFavourites,
+    Register: Register,
+    Login: Login,
+    Logout: Logout,
+    Authenticate: Authenticate,
+    AdminListView: AdminListView
+}
+
+},{"../../css/styles":67,"../controller":60}],60:[function(require,module,exports){
+(function (process){
+const fetch = require('isomorphic-fetch');
+const host = process.env.CURRENT_DOMAIN || "" ;
+var google;
+
+// call initMap before other methods to retrive mapsKey
+const Controller = {
+    getMapsKey : ()=>{
+                var promise = new Promise((resolve, reject)=>{
+                fetch(`${host}/api/mapsKey`).then((response)=>{response.json().then((data) =>{resolve(data)})});
+                        });
+                return promise;
+    },
+    setupAPI: async(loader)=> {
+        if(!loader) {
+        var promise = new Promise(async(resolve, reject)=>{
+                let key = await Controller.getMapsKey();
+                let script = document.createElement("script");
+                let src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places,geometry&callback=googleReady`
+                script.src =  src;
+                script.type = "text/javascript";
+                document.body.appendChild(script);
+                window.googleReady = () => {
+                    google = window.google; 
+                    resolve();
+                };
+        });
+        return promise;
+        } else {google = loader;}
+    },
+    initMap    :async (lat, lng)=>{
+                var promise = new Promise((resolve, reject)=>{
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: lat || 43.642567, lng: lng || -79.387054},
+                    zoom: 13
+                    }); resolve(map)
+                }); return promise;
+    },
+    getBusinesses:(category)=>{
+                var promise = new Promise((resolve, reject)=>{
+                fetch(`${host}/api/businesses?category=${category}`).then((response)=>{
+                    response.json().then((allBusinesses)=>{
+                        resolve(allBusinesses)});
+                    });
+                }); return promise;
+    },
+    visibleNewsfeed:(status)=>{
+                var newsfeed = document.getElementById("newsfeed");
+                if(status){
+                newsfeed.style = "visibility:visible";
+                }
+                else{newsfeed.style = "visibility:hidden"}
+    },
+    createCircle: (location, map)=>{
+                var circleOptions = {
+                    fillColor: 'black',
+                    fillOpacity: 0.50,
+                    strokeColor: 'black',
+                    strokeOpacity: 0.70,
+                    strokeWeight: 1,
+                    center: location,
+                    radius: 200,
+                };
+                var circle = new google.maps.Circle(circleOptions);
+                circle.setMap(map);
+    },
+    createMarker: (location, map, infowindowContent)=>{
+                var infowindow = new google.maps.InfoWindow();
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    });
+                marker.addListener('click', function(){
+                    infowindow.open(map, marker);
+                    });
+            //   marker.setVisible(true);
+                infowindow.setContent(infowindowContent);
+                return {marker: marker, infowindow: infowindow}
+    },
+    getAllMarkers: ()=>{
+                return myMarkers;
+    },
+    createPlaceImg: (place, map, infowindow, marker)=>{
+                var placeImg = {};
+                try {
+                    placeImg.src = place.photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
+                }
+                catch(err) {
+                // no image for this place, setting default
+                    placeImg.src = '../images/altLogo.png'
+                }
+                placeImg.id = place.name.replace(/ /, '-');
+                placeImg.onmouseover = function(){
+                    google.maps.event.trigger(marker, 'click');
+                    map.setZoom(15);
+                    map.panTo(place.geometry.location)
+                };
+                placeImg.onmouseout = function(){
+                    map.setZoom(14);
+                    map.panTo(place.geometry.location)                                    
+                    infowindow.close();
+                };
+                return placeImg;
+    },
+    populateMap: async (allBusinesses, map, self)=>{
+        var promise = new Promise(async(resolve, reject)=>{
+        // slight delay in loading markers
+        // this is so we can wait for ALL markers
+        // must be better of loading markers
+                var imgArray = [];
+                myMarkers = [];
+                var bounds;
+                for ( business of allBusinesses) {
+                    var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
+                    var subPromise = new Promise((resolve, reject)=>{
+                    service = new google.maps.places.PlacesService(map);
+                    service.getDetails(request, populate);
+                    async function populate(place, status) {
+                        if (status == google.maps.places.PlacesServiceStatus.OK) {
+                                var infowindowContent = '<span class="infoTitle">' + place.name 
+                                +'</span><br/><div style="height:43px">'
+                                +'<form action="/api/favourites" method="post">'
+                                +'<div style="width:100%;background-color:black" class="star">'
+                                +'<button style="width:80px">'
+                                +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
+                                +'<span style="color:white;font-size:150%">  Nubian  </span>'
+                                +'</div>'
+                                +'<input name="id" type="hidden" value='+business._id+ ' />'
+                                +'</form>'; 
+                                var {marker, infowindow} = Controller.createMarker(place.geometry.location, map, infowindowContent);
+                                var placeImg = Controller.createPlaceImg(place, map, infowindow, marker);
+
+                                var lat = place.geometry.location.lat();
+                                var lng = place.geometry.location.lng();
+                                bounds = new google.maps.LatLngBounds();
+                                bounds.extend(new google.maps.LatLng(lat, lng));
+
+                                imgArray.push(placeImg);
+                                self.setState({
+                                imgArray: imgArray
+                                });
+                                myMarkers.push(marker);
+                                resolve(marker)
+                        }};  
+                    });
+                    await subPromise;
+                }; 
+                // outside for                    
+                map.fitBounds(bounds);
+                map.setZoom(13);
+               // console.log(myMarkers)
+                self.setState({
+                myMarkers: myMarkers
+                });
+                resolve(myMarkers)
+            })
+               return promise;
+    },
+    bindAutoComp: async (map)=>{
+                var input = document.getElementById('pac-input');
+
+                var autocomplete = new google.maps.places.Autocomplete(input);
+                autocomplete.bindTo('bounds', map);
+
+                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+                autocomplete.addListener('place_changed', async function(){
+                    var place = autocomplete.getPlace();
+                    // fills the infowindow with a form to add selected business
+                    var infowindowContent = (place.name +'<br>'+ place.formatted_address +'<br><br>'
+                    +'<form action="/api/businesses" method="POST">'
+                    +'<input type="hidden" name="placeID" value='+place.place_id+'></input>'
+                    +'<input type="hidden" name="name" value='+place.name+'></input>'
+                    +'<input type="radio" name="category" value="entertainment">Entertainment</input><br></br>'
+                    +'<input type="radio" name="category" value="networking">Networking</input><br></br>'
+                    +'<input type="radio" name="category" value="food">Food</input><br></br>'
+                    +'<input type="radio" name="category" value="cosmetics">Cosmetics</input><br></br>'
+                    +'<input type="submit" value="Submit"></input>'
+                    +'</form>');
+                    var {marker, infowindow} = Controller.createMarker(place.geometry.location, map, infowindowContent);
+                    
+                    infowindow.close();
+                    if (!place.geometry){
+                        return;
+                    }
+                    if (place.geometry.viewport) {
+                        map.fitBounds(place.geometry.viewport);
+                    } else {
+                        map.setCenter(place.geometry.location);
+                        map.setZoom(17);
+                    }
+                    marker.setVisible(true);
+                    infowindow.open(map, marker);
+                });
+    },
+    calcDistances: async(origin, destinations)=>{
+        document.domain = "localhost";
+        console.log(document.referrer);
+        for(destination of destinations){
+                console.log(`You are ${google.maps.geometry.spherical.computeDistanceBetween(origin.position, destination.position)} metres away from...`);
+        }
+    },
+    markMyLocation: (map)=>{
+                var promise = new Promise((resolve, reject)=>{
+                // this is called Asynchronously, we don't await it because we don't want
+                // to hold up the queue for an event that might come at anytime
+                if("geolocation" in navigator){
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var infowindowContent = "You Are Here";
+                        var location = {lat: position.coords.latitude, lng: position.coords.longitude}
+                        var {marker} = Controller.createMarker(location, map, infowindowContent);
+                        Controller.createCircle(location, map);
+                        resolve(marker);
+                    })
+                } else {
+                    //Geolocation is not available
+                    resolve('no geo');
+                }
+                }); return promise;
+            },
+};
+module.exports = Controller;
+
+}).call(this,require('_process'))
+},{"_process":1,"isomorphic-fetch":19}],61:[function(require,module,exports){
+var React = require('react');
+
+var styles = require("../../css/styles");
+
+class Header extends React.Component {
+    render() {
+        return(
+            React.createElement("header", {style: styles.header}, 
+            React.createElement("a", {href: "/favourites"}, React.createElement("img", {src: "./images/favourite.png", id: "favouriteStar"})), 
+            React.createElement("img", {style: styles.logo, src: "./images/africaLogo.png"}), 
+            React.createElement("h1", {style: styles.h1}, "NUBIAN MAPS")
+            )
+    )};
+};
+module.exports = Header;
+
+},{"../../css/styles":67,"react":54}],62:[function(require,module,exports){
+var GoogleMapsLoader = require('google-maps');
+GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+var {AdminListView} = require("../adminForms")
+var styles = require("../../css/styles");
+var Controller = require("../controller");
+
+class AdminMap extends React.Component {
+    // creates a map with autocomplete search bar
+    async componentDidMount() {
+        GoogleMapsLoader.KEY = await Controller.getMapsKey();
+        var map = await Controller.initMap();
+        Controller.visibleNewsfeed(false);
+        Controller.bindAutoComp(map);
+};
+
+    render() {
+        return (
+        React.createElement("div", {id: "mapdiv"}, 
+        React.createElement("div", {id: "map", style: styles.map}), 
+        React.createElement("div", {id: "infowindow-content"}
+        ), 
+        React.createElement("input", {id: "pac-input", className: "controls", type: "text", style: styles.controls, 
+        placeholder: "Enter a location"}), 
+        React.createElement(AdminListView, null)
+        )
+        )
+    }
+}
+
+module.exports = AdminMap;
+
+},{"../../css/styles":67,"../adminForms":59,"../controller":60,"google-maps":6}],63:[function(require,module,exports){
+var Newsfeed = require("../newsfeed");
+const React = require('react');
+var styles = require("../../css/styles");
+var Controller = require("../controller");
+
+
+class MainMap extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            imgArray: [],
+            myMarkers: [],
+        }
+    };
+    async componentDidMount() {
+        var self = this;
+        await Controller.setupAPI(this.props.google);
+        var map = await Controller.initMap();
+        var myLocation = await Controller.markMyLocation(map);
+        var allBusinesses = await Controller.getBusinesses(this.props.category);
+        var allMarkers = await Controller.populateMap(allBusinesses, map, self);
+        Controller.visibleNewsfeed(true);
+        Controller.calcDistances(myLocation, allMarkers);
+    };
+    render() {
+        return (
+        React.createElement("div", null, 
+        React.createElement("div", {id: "map", style: styles.map}, " "), 
+        /** the Newsfeed is tightly coupled to update on every Map update */
+        React.createElement(Newsfeed, {imgArray: this.state.imgArray})
+        )
+        )
+    }
+};
+
+module.exports = MainMap
+
+},{"../../css/styles":67,"../controller":60,"../newsfeed":65,"react":54}],64:[function(require,module,exports){
+var styles = require("../../css/styles");
+var Link = require('react-router-dom').Link;
+
+const NavLink = props => (
+    React.createElement("div", {className: "NavLink", style: styles.navItem, id: props.id, onMouseOver: props.onMouseOver, onMouseOut: props.onMouseOut}, 
+        React.createElement("li", null, 
+            React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
+        )
+)
+);
+
+{/** the nav Grid, to make a new sublevel create ul with class navbar */}
+{/** a link should make itself and every preceeding element invisible on MouseOut  */}
+{/** & make itself and a next element visible on MouseOver */}
+{/** following the above rules, FIRST pass select()/deselect() the NavLinks id */ }
+{/**    SECONDLY in an array, pass the id's of preceeding/proceeding NavLink's   */ }
+
+class Navbar extends React.Component {
+    select(thisNav, subNavs) {
+        if (subNavs) {
+            subNavs.forEach(function(subNav) {
+            let navItem = document.getElementById(subNav);
+            navItem.style.visibility = "visible";
+            })
+        }
+    let selectedItem = document.getElementById(thisNav);
+    selectedItem.style.visibility = "visible";
+    selectedItem.style.backgroundColor = "black";
+    selectedItem.style.color = "white";
+    }
+
+    deSelect(thisNav, subNavs) {
+        if (subNavs) {
+            subNavs.forEach(function(subNav) {
+            let navItem = document.getElementById(subNav);
+            navItem.style.visibility = "hidden"
+            });
+        }
+    let selectedItem = document.getElementById(thisNav);
+    selectedItem.style.backgroundColor = "#e6e6e6"
+    selectedItem.style.color = "black";
+    }
+
+    render() {
+    return (
+    React.createElement("navbar", null, 
+    React.createElement("ul", {id: "navbar", style: styles.nav}, 
+        React.createElement(NavLink, {to: "/", id: "homeNav", onMouseOver: () => this.select("homeNav", null), 
+            onMouseOut: ()=> this.deSelect("homeNav", null)
+        }, "Home"), 
+        React.createElement(NavLink, {to: "/entertainment", id: "entNav", onMouseOver: () => this.select("entNav", null), 
+            onMouseOut: ()=> this.deSelect("entNav", null)
+        }, "Entertainment"), 
+        React.createElement(NavLink, {to: "/networking", id: "netNav", onMouseOver: () => this.select("netNav", null), 
+            onMouseOut: ()=> this.deSelect("netNav", null)
+        }, "Networking"), 
+        React.createElement(NavLink, {to: "/food", id: "foodNav", onMouseOver: () => this.select("foodNav", null), 
+            onMouseOut: ()=> this.deSelect("foodNav", null)
+        }, "Food"), 
+        React.createElement(NavLink, {to: "/cosmetics", id: "cosNav", onMouseOver: () => this.select("cosNav", null), 
+            onMouseOut: ()=> this.deSelect("cosNav", null)
+        }, "Cosmetics"), 
+        React.createElement(NavLink, {to: "/admin", id: "adminNav", onMouseOver: () => this.select("adminNav", ["registerNav"]), 
+            onMouseOut: ()=> this.deSelect("adminNav", ["registerNav"])
+        }, "Admin")
+    ), 
+    React.createElement("ul", {id: "navbar", className: "mainNavBar", style: styles.subNav}, 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/register", id: "registerNav", onMouseOver: () => this.select("registerNav", ["loginNav"]), 
+            onMouseOut: ()=> this.deSelect("registerNav", ["loginNav", "registerNav"])
+        }, "Register")
+    ), 
+    React.createElement("ul", {id: "navbar", style: styles.subNav}, 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/login", id: "loginNav", onMouseOver: () => this.select("loginNav", ["registerNav",  "logoutNav"]), 
+            onMouseOut: ()=> this.deSelect("loginNav", ["loginNav", "registerNav", "logoutNav"])
+        }, "Login")
+    ), 
+    React.createElement("ul", {id: "subNav", style: styles.subNav}, 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/"}), 
+        React.createElement(NavLink, {to: "/logout", id: "logoutNav", onMouseOver: () => this.select("logoutNav", ["loginNav", "registerNav"]), 
+            onMouseOut: ()=> this.deSelect("logoutNav", ["logoutNav", "loginNav","registerNav"])
+        }, "Logout")
+    )
+    )
+    )}}
+
+    module.exports = Navbar
+
+},{"../../css/styles":67,"react-router-dom":38}],65:[function(require,module,exports){
+const React = require('react');
+
+var styles = require("../../css/styles");
+
+function Newsfeed(props) {
+    var Feed = props.imgArray.map(function (feedItem) {
+        return (React.createElement("div", {style: styles.imgDiv, className: "imgDiv", key: `div ${feedItem.id}`}, 
+                    React.createElement("img", {id: feedItem.id.concat('-feedImg'), className: "feedItem", 
+                        style: styles.placeImg, src: feedItem.src, onMouseOver: feedItem.onmouseover, 
+                        onMouseOut: feedItem.onmouseout, key: `${feedItem.id}`})
+                )
+                )});
+                                            
+    return (
+        React.createElement("div", {id: "newsfeed"}, 
+        Feed
+        )
+    )
+};
+
+
+module.exports = Newsfeed
+
+},{"../../css/styles":67,"react":54}],66:[function(require,module,exports){
+var {postFavourites, Login, Register, Authenticate, Logout} = require("../adminForms");
+var MainMap = require("../maps/mainMap");
+var AdminMap = require("../maps/adminMap");
+var Route = require('react-router-dom').Route;
+
+class Routing extends React.Component {
+    render() {
+        return(
+            React.createElement("div", null, 
+                /** https://zhenyong.github.io/react/docs/jsx-spread.html */
+                /** https://reacttraining.com/react-router/web/api/Route/render-func */
+                React.createElement(Route, {exact: true, path: "/", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'all'}))}), 
+                React.createElement(Route, {exact: true, path: "/entertainment", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'entertainment'}))}), 
+                React.createElement(Route, {exact: true, path: "/food", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'food'}))}), 
+                React.createElement(Route, {exact: true, path: "/cosmetics", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'cosmetics'}))}), 
+                React.createElement(Route, {exact: true, path: "/networking", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'networking'}))}), 
+                React.createElement(Route, {exact: true, path: "/favourites", render: (props) => React.createElement(MainMap, React.__spread({},  props, {category: 'favourites'}))}), 
+                React.createElement(Route, {path: "/postFavourites", component: postFavourites}), 
+                React.createElement(Route, {path: "/admin", component: AdminMap}), 
+                React.createElement(Route, {path: "/authenticate", component: Authenticate}), 
+                React.createElement(Route, {path: "/login", component: Login}), 
+                React.createElement(Route, {path: "/logout", component: Logout}), 
+                React.createElement(Route, {path: "/register", component: Register})
+            )
+        )}
+};
+
+module.exports = Routing
+
+},{"../adminForms":59,"../maps/adminMap":62,"../maps/mainMap":63,"react-router-dom":38}],67:[function(require,module,exports){
+const styles = {};
+
+styles.map = {
+    position: "relative",
+    top: -120,
+    width: "100%",
+    height: "800px"
+}
+
+styles.nav = {
+    padding: 0,
+    margin: 0,
+    position: "relative",
+    top: 0,
+    height: "40px",
+    width: "100%",
+    display: "flex"
+  };
+
+  styles.subNav = {
+    padding: 0,
+    margin: 0,
+    position: "relative",
+    top: 0,
+    height: "40px",
+    width: "100%",
+    display: "flex",
+    visibility: "hidden"
+  };
+
+  styles.navItem = {
+    
+    textAlign: "center",
+    flex: 1,
+    listStyleType: "none",
+    padding: "5px",
+    backgroundColor: "#e6e6e6",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+    zIndex: 4,
+  };
+
+  styles.header = {
+ //     textAlign: "center",
+      width: "100%",
+      height: "50px",
+      padding: 0,
+      margin: 0,
+      backgroundColor: "black",
+      color: "white"
+
+  }
+
+  styles.controls = {
+      backgroundColor: "#fff",
+      borderRadius: "2px",
+      broder: "1px solid transparent",
+      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+      boxSizing: "border-box",
+      marginLeft: "17px",
+      height: "29px",
+      marginTop:"10px",
+      padding: "0 11px 0 13px",
+      width: "400px"
+
+  }
+
+  styles.logo = {
+      width: 50,
+  }
+
+  styles.h1 = {
+    textAlign: "left",
+    top: -5,
+    width: "100%",
+    left: "70px",
+    zIndex: 1,
+    position: "absolute"
+  }
+
+  styles.admin = {
+  //    backgroundColor: "black",
+      top: -300,
+      position: "relative",
+      width: "270px",
+  }
+
+  styles.placeImg = {
+
+  }
+
+  styles.imgDiv = { 
+      marginLeft: "auto",
+      marginRight: "auto",
+  };
+  
+  module.exports = styles
+
+},{}],68:[function(require,module,exports){
+var BrowserRouter = require('react-router-dom').BrowserRouter;
+var Navbar = require("./components/navbar");
+var Routing = require("./components/routing");
+var Header = require("./components/header");
+
+
+// main App
+class App extends React.Component {
+    componentDidMount(){
+    }
+    render() {
+        return(
+    React.createElement("main", null, 
+        React.createElement(Header, null), 
+        React.createElement(Navbar, null), 
+        React.createElement(Routing, null)
+    )
+    )};
+};
+
+ReactDOM.render(
+    React.createElement(BrowserRouter, null, 
+        React.createElement(App, null)
+    ), document.getElementById('root')
+);
+
+// watchify -t reactify index.js -o App.js -v
+
+},{"./components/header":61,"./components/navbar":64,"./components/routing":66,"react-router-dom":38}]},{},[68]);

@@ -21,7 +21,7 @@ const Controller = {
                 document.body.appendChild(script);
                 window.googleReady = () => {
                     google = window.google; 
-                    resolve(google);
+                    resolve();
                 };
         });
         return promise;
@@ -213,6 +213,7 @@ const Controller = {
                     })
                 } else {
                     //Geolocation is not available
+                    resolve('no geo');
                 }
                 }); return promise;
             },
