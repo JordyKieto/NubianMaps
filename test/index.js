@@ -10,13 +10,13 @@ const shallow = require("enzyme").shallow;
 const mount = require("enzyme").mount;
 const Adapter = require('enzyme-adapter-react-16');
 const React = require('react');
-const http = require('http');
 const Header = require('../static/components/header');
 const Newsfeed = require('../static/components/newsfeed');
 const Controller = require('../static/components/controller');
 const MainMap = require('../static/components/maps/mainMap');
-const getGoogleApi = require('../jsdomConfig/mapsDom')
+const getGoogleApi = require('../test/config/mapsDom')
 const { JSDOM } = require('jsdom');
+const {copyProps} = require('../test/config/setup');
 var google;
 
 let db;
@@ -93,59 +93,14 @@ describe('Server Tests', function () {
 });
 describe('Client Tests', function () {
     beforeEach( async function() {
-        function copyProps(src, target) {
-            const props = Object.getOwnPropertyNames(src).filter(prop => typeof target[prop] === 'undefined').reduce((result, prop) => _extends({}, result, {
-              [prop]: Object.getOwnPropertyDescriptor(src, prop)
-            }), {});
-            Object.defineProperties(target, props);
-          }
-        var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
         await MongoClient.connect('mongodb://localhost').then( async (client) =>{
-        db = await client.db('blackBusinesses');
-        google = await getGoogleApi();
-        global.window = window;
-        global.document = window.document;
-        document.domain = "localhost";
-        // https://github.com/jsdom/jsdom/issues/1782
-        window.HTMLCanvasElement.prototype.getContext = function () {
-            return {
-                fillRect: function() {},
-                clearRect: function(){},
-                getImageData: function(x, y, w, h) {
-                    return  {
-                        data: new Array(w*h*4)
-                    };
-                },
-                putImageData: function() {},
-                createImageData: function(){ return []},
-                setTransform: function(){},
-                drawImage: function(){},
-                save: function(){},
-                fillText: function(){},
-                restore: function(){},
-                beginPath: function(){},
-                moveTo: function(){},
-                lineTo: function(){},
-                closePath: function(){},
-                stroke: function(){},
-                translate: function(){},
-                scale: function(){},
-                rotate: function(){},
-                arc: function(){},
-                fill: function(){},
-                measureText: function(){
-                    return { width: 0 };
-                },
-                transform: function(){},
-                rect: function(){},
-                clip: function(){},
-            };
-        }
-    
-        window.HTMLCanvasElement.prototype.toDataURL = function () {
-            return "";
-        }
-        copyProps(window, global);
+            db = await client.db('blackBusinesses');
+            google = await getGoogleApi();
+            global.window = window;
+            global.document = window.document;
+            document.domain = "localhost";
+            require('../test/config/canvasPatch')(window);
+            copyProps(window, global);
         });
     });
     afterEach(function () {

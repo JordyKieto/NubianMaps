@@ -3,8 +3,6 @@
 const { JSDOM } = require('jsdom');
 var tough = require('tough-cookie');
 
-
-
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const jsdom = new JSDOM(`<!doctype html><head>
@@ -27,17 +25,11 @@ function copyProps(src, target) {
   Object.defineProperties(target, props);
 }
 
-jsdom.raise = function (type, message, data) {
-  if (data.error) {
-      throw data.error;
-  } else {
-      console.error('ERROR', message);
-  }
-};
-
 global.window = window;
 global.document = window.document;
 global.navigator = {
   userAgent: 'node.js'
 };
 copyProps(window, global);
+
+module.exports = {copyProps}
