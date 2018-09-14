@@ -1,7 +1,7 @@
-var GoogleMapsLoader = require('google-maps');
 const fetch = require('isomorphic-fetch');
-GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
-host = process.env.CURRENT_DOMAIN || "" ;
+const host = process.env.CURRENT_DOMAIN || "" ;
+var google;
+
 // call initMap before other methods to retrive mapsKey
 const Controller = {
     getMapsKey : ()=>{
@@ -10,15 +10,29 @@ const Controller = {
                         });
                 return promise;
     },
+    setupAPI: async(loader)=> {
+        if(!loader) {
+        var promise = new Promise(async(resolve, reject)=>{
+                let key = await Controller.getMapsKey();
+                let script = document.createElement("script");
+                let src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places,geometry&callback=googleReady`
+                script.src =  src;
+                script.type = "text/javascript";
+                document.body.appendChild(script);
+                window.googleReady = () => {
+                    google = window.google; 
+                    resolve(google);
+                };
+        });
+        return promise;
+        } else {google = loader;}
+    },
     initMap    :async (lat, lng)=>{
-                GoogleMapsLoader.KEY = await Controller.getMapsKey();
                 var promise = new Promise((resolve, reject)=>{
-                GoogleMapsLoader.load(function(google)  {
                     var map = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: lat || 43.642567, lng: lng || -79.387054},
                     zoom: 13
-                }); resolve(map)
-                    });
+                    }); resolve(map)
                 }); return promise;
     },
     getBusinesses:(category)=>{
@@ -37,7 +51,6 @@ const Controller = {
                 else{newsfeed.style = "visibility:hidden"}
     },
     createCircle: (location, map)=>{
-                GoogleMapsLoader.load(function(google)  {
                 var circleOptions = {
                     fillColor: 'black',
                     fillOpacity: 0.50,
@@ -49,7 +62,6 @@ const Controller = {
                 };
                 var circle = new google.maps.Circle(circleOptions);
                 circle.setMap(map);
-        });
     },
     createMarker: (location, map, infowindowContent)=>{
                 var infowindow = new google.maps.InfoWindow();
@@ -100,7 +112,7 @@ const Controller = {
                 for ( business of allBusinesses) {
                     var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
                     var subPromise = new Promise((resolve, reject)=>{
-                    GoogleMapsLoader.load(function(google){service = new google.maps.places.PlacesService(map);});
+                    service = new google.maps.places.PlacesService(map);
                     service.getDetails(request, populate);
                     async function populate(place, status) {
                         if (status == google.maps.places.PlacesServiceStatus.OK) {
@@ -136,12 +148,14 @@ const Controller = {
                 map.fitBounds(bounds);
                 map.setZoom(13);
                // console.log(myMarkers)
-               resolve(myMarkers)
+                self.setState({
+                myMarkers: myMarkers
+                });
+                resolve(myMarkers)
             })
                return promise;
     },
     bindAutoComp: async (map)=>{
-                GoogleMapsLoader.load(function(google)  {
                 var input = document.getElementById('pac-input');
 
                 var autocomplete = new google.maps.places.Autocomplete(input);
@@ -177,13 +191,12 @@ const Controller = {
                     marker.setVisible(true);
                     infowindow.open(map, marker);
                 });
-            });
     },
-    calcDistances: (origin, destinations)=>{
+    calcDistances: async(origin, destinations)=>{
+        document.domain = "localhost";
+        console.log(document.referrer);
         for(destination of destinations){
-            GoogleMapsLoader.load(function(google)  {
                 console.log(`You are ${google.maps.geometry.spherical.computeDistanceBetween(origin.position, destination.position)} metres away from...`);
-            })
         }
     },
     markMyLocation: (map)=>{
