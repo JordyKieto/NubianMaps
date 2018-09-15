@@ -17,7 +17,7 @@ app.use(bodyParser());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.text({type: 'json'}));
 app.use(bodyParser.json());
-app.use(express.static('static'));
+app.use(express.static('../client'));
 // needs to call app.use(session BEFORE app.use(passport.session
 app.use(session({ secret: 'black'}));
 

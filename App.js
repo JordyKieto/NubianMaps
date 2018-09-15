@@ -1,1 +1,0 @@
-console.error("Error: Cannot find module 'C:\\Users\\Jordy\\Documents\\DEV\\Javascript_Projects\\nubianMaps\\index.js' from 'C:\\Users\\Jordy\\Documents\\DEV\\Javascript_Projects\\nubianMaps'");
