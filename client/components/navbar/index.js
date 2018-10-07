@@ -2,7 +2,7 @@ var styles = require("../../css/styles");
 var Link = require('react-router-dom').Link;
 
 const NavLink = props => (
-    <div className="NavLink" style={styles.navItem} id={props.id} onMouseOver={props.onMouseOver} onMouseOut={props.onMouseOut}>
+    <div className="NavLink" id={props.id}>
         <li >
             <Link {...props} style={{ color: "inherit" }} />
         </li>
@@ -17,6 +17,8 @@ const NavLink = props => (
 
 class Navbar extends React.Component {
     select(thisNav, subNavs) {
+        /*
+
         if (subNavs) {
             subNavs.forEach(function(subNav) {
             let navItem = document.getElementById(subNav);
@@ -27,26 +29,29 @@ class Navbar extends React.Component {
     selectedItem.style.visibility = "visible";
     selectedItem.style.backgroundColor = "black";
     selectedItem.style.color = "white";
+        */
     }
 
     deSelect(thisNav, subNavs) {
+        /*
         if (subNavs) {
             subNavs.forEach(function(subNav) {
             let navItem = document.getElementById(subNav);
             navItem.style.visibility = "hidden"
             });
-        }
+
+        return}
     let selectedItem = document.getElementById(thisNav);
     selectedItem.style.backgroundColor = "#e6e6e6"
     selectedItem.style.color = "black";
+        */
     }
 
     render() {
     return (
     <navbar>
     <ul id="navbar" style={styles.nav}>
-        <NavLink to="/" id="homeNav" onMouseOver={() => this.select("homeNav", null)} 
-            onMouseOut={()=> this.deSelect("homeNav", null)}
+        <NavLink to="/" id="homeNav" 
         >Home</NavLink>
         <NavLink to="/entertainment" id="entNav" onMouseOver={() => this.select("entNav", null)} 
             onMouseOut={()=> this.deSelect("entNav", null)}

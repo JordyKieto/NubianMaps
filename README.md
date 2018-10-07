@@ -62,4 +62,8 @@ for local deployment, initialize an instance of
 >mongod
 
 ## Future Updates
-Implement a method to mark a locations as visited, & a view for favourite locations that users use to track locations they've been. 
+>Implement a method to mark a locations as visited, & a view for favourite locations that users use to track locations they've been. 
+
+>Also must style login/register pages
+
+>Add caching layer to reduce number of API calls to DB; store all businesnes aftef first page pageload, also must work with update

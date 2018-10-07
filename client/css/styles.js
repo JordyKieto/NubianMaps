@@ -36,7 +36,11 @@ styles.nav = {
     padding: "5px",
     backgroundColor: "#e6e6e6",
     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+    transition: "all ease .5s",
     zIndex: 4,
+    "&:hover": {
+        backgroundColor: "black",
+      }
   };
 
   styles.header = {

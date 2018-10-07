@@ -17,6 +17,7 @@ const MainMap = require('../client/components/maps/mainMap');
 const getGoogleApi = require('../test/config/mapsDom')
 const { JSDOM } = require('jsdom');
 const {copyProps} = require('../test/config/setup');
+
 var google;
 
 let db;
@@ -140,10 +141,12 @@ describe('Client Tests', function () {
         var mockSelf = {setState: ()=>{return;}}
         Controller.setupAPI(google)
         .then(()=>{Controller.initMap()
-            .then(async (map)=>
-                {var allBusinesses = await Controller.getBusinesses('all');
-                 var allMarkers = await Controller.populateMap(allBusinesses, map, mockSelf);
-                 assert.equal(allBusinesses.length, allMarkers.length);
+            .then(async (map)=>{
+                var allBusinesses = await Controller.getBusinesses('all');
+                var allPlaces = await Controller.getPlaces(allBusinesses, map);
+                var {markers, infoWindows} =  await Controller.createMarkers(allPlaces, map);
+                assert.equal(allBusinesses.length, markers.length);
+                assert.equal(allBusinesses.length, infoWindows.length);
                 return;
                 })
                     .then(()=>{done();

@@ -3,7 +3,6 @@ const React = require('react');
 var styles = require("../../css/styles");
 var Controller = require("../controller");
 
-
 class MainMap extends React.Component {
     constructor(props) {
         super(props);
@@ -16,11 +15,14 @@ class MainMap extends React.Component {
         var self = this;
         await Controller.setupAPI(this.props.google);
         var map = await Controller.initMap();
-        var myLocation = await Controller.markMyLocation(map);
         var allBusinesses = await Controller.getBusinesses(this.props.category);
-        var allMarkers = await Controller.populateMap(allBusinesses, map, self);
+        var allPlaces = await Controller.getPlaces(allBusinesses, map);
+        var {markers, infoWindows} =  await Controller.createMarkers(allPlaces, map);
+        Controller.createPlaceImgs(allPlaces, map, infoWindows, markers, self)
         Controller.visibleNewsfeed(true);
-        Controller.calcDistances(myLocation, allMarkers);
+        var myLocation = await Controller.getMyLocation();
+        var myLocationMarker = Controller.markMyLocation(myLocation, map);
+        Controller.calcDistances(myLocationMarker, markers);
     };
     render() {
         return (
