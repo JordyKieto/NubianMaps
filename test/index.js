@@ -13,6 +13,7 @@ const React = require('react');
 const Header = require('../client/components/header');
 const Newsfeed = require('../client/components/newsfeed');
 const Controller = require('../client/components/controller');
+const Navbar = require('../client/components/navbar');
 const MainMap = require('../client/components/maps/mainMap');
 const getGoogleApi = require('../test/config/mapsDom')
 const { JSDOM } = require('jsdom');
@@ -137,21 +138,42 @@ describe('Client Tests', function () {
             });
         });
     });
-    it('controller populates map from databse', (done)=> {
-        var mockSelf = {setState: ()=>{return;}}
+    it('creates marker for each place in array', (done)=> {
+        var allPlaces = [{geometry: {location: {lat: 44, lng: 44}},}]
         Controller.setupAPI(google)
         .then(()=>{Controller.initMap()
-            .then(async (map)=>{
-                var allBusinesses = await Controller.getBusinesses('all');
-                var allPlaces = await Controller.getPlaces(allBusinesses, map);
-                var {markers, infoWindows} =  await Controller.createMarkers(allPlaces, map);
-                assert.equal(allBusinesses.length, markers.length);
-                assert.equal(allBusinesses.length, infoWindows.length);
-                return;
+            .then((map)=>{
+                return Controller.createMarkers(allPlaces, map);
                 })
-                    .then(()=>{done();
-                });
-        });
+                    .then((markers)=>{
+                        console.log(markers[0]);
+                        assert.equal(allPlaces.length, markers.length);
+                        done();
+                    });
+            });
+    });
+    it('navbar correctly selects elements', (done)=> {
+        var navbar = shallow(<Navbar />);
+        var mockDocument = {getElementById: function(id){return {id: id, style: { visibility: 'hidden', backgroundColor: 'white', color: 'black' }};}};
+        document = mockDocument;
+        var {thisNav, subNavs} = navbar.instance().select(123, [456]);
+        assert.equal(thisNav.style.backgroundColor, 'black');
+        assert.equal(thisNav.style.visibility, 'visible');
+        assert.equal(thisNav.style.color, 'white');
+        assert.equal(subNavs[0].id, 456);
+        assert.equal(subNavs[0].style.visibility, 'visible');
+        done();
+    });
+    it('navbar correctly deselects elements', (done)=> {
+        var navbar = shallow(<Navbar />);
+        var mockDocument = {getElementById: function(id){return {id: id, style: { visibility: 'visible', backgroundColor: 'black', color: 'white' }};}};
+        document = mockDocument;
+        var {thisNav, subNavs} = navbar.instance().deSelect(123, [456]);
+        assert.equal(thisNav.style.backgroundColor, '#e6e6e6');
+        assert.equal(thisNav.style.color, 'black');
+        assert.equal(subNavs[0].id, 456);
+        assert.equal(subNavs[0].style.visibility, 'hidden');
+        done();
     });
 })
 

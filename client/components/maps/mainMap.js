@@ -1,5 +1,4 @@
 var Newsfeed = require("../newsfeed");
-const React = require('react');
 var styles = require("../../css/styles");
 var Controller = require("../controller");
 
@@ -17,8 +16,10 @@ class MainMap extends React.Component {
         var map = await Controller.initMap();
         var allBusinesses = await Controller.getBusinesses(this.props.category);
         var allPlaces = await Controller.getPlaces(allBusinesses, map);
-        var {markers, infoWindows} =  await Controller.createMarkers(allPlaces, map);
-        Controller.createPlaceImgs(allPlaces, map, infoWindows, markers, self)
+        var markers =  await Controller.createMarkers(allPlaces, map);
+        var infowindows = Controller.createMainInfoWs(allPlaces);
+        markers = Controller.bindMarkersInfoW(markers, infowindows, map);
+        Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
         Controller.visibleNewsfeed(true);
         var myLocation = await Controller.getMyLocation();
         var myLocationMarker = Controller.markMyLocation(myLocation, map);

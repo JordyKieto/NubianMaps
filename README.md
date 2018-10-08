@@ -67,3 +67,6 @@ for local deployment, initialize an instance of
 >Also must style login/register pages
 
 >Add caching layer to reduce number of API calls to DB; store all businesnes aftef first page pageload, also must work with update
+
+>Create Tests for Navbar select & deselect
+>Implement babel-plugin-react-require

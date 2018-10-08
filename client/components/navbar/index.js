@@ -2,7 +2,7 @@ var styles = require("../../css/styles");
 var Link = require('react-router-dom').Link;
 
 const NavLink = props => (
-    <div className="NavLink" id={props.id}>
+    <div className="NavLink" style={styles.navItem} id={props.id} onMouseOver={props.onMouseOver} onMouseOut={props.onMouseOut}>
         <li >
             <Link {...props} style={{ color: "inherit" }} />
         </li>
@@ -17,41 +17,47 @@ const NavLink = props => (
 
 class Navbar extends React.Component {
     select(thisNav, subNavs) {
-        /*
-
+        var selectedSubs;
         if (subNavs) {
-            subNavs.forEach(function(subNav) {
+            selectedSubs = subNavs.map((subNav)=> {
             let navItem = document.getElementById(subNav);
             navItem.style.visibility = "visible";
+            return navItem;
             })
         }
-    let selectedItem = document.getElementById(thisNav);
-    selectedItem.style.visibility = "visible";
-    selectedItem.style.backgroundColor = "black";
-    selectedItem.style.color = "white";
-        */
+        let selectedItem = document.getElementById(thisNav);
+        selectedItem.style.visibility = "visible";
+        selectedItem.style.backgroundColor = "black";
+        selectedItem.style.color = "white";
+        return {thisNav: selectedItem,
+                subNavs: selectedSubs
+               };
     }
+    print(){return true}
 
     deSelect(thisNav, subNavs) {
-        /*
+        var selectedSubs;
         if (subNavs) {
-            subNavs.forEach(function(subNav) {
+            selectedSubs = subNavs.map((subNav)=> {
             let navItem = document.getElementById(subNav);
-            navItem.style.visibility = "hidden"
+            navItem.style.visibility = "hidden";
+            return navItem;
             });
-
-        return}
-    let selectedItem = document.getElementById(thisNav);
-    selectedItem.style.backgroundColor = "#e6e6e6"
-    selectedItem.style.color = "black";
-        */
+        }
+        let selectedItem = document.getElementById(thisNav);
+        selectedItem.style.backgroundColor = "#e6e6e6"
+        selectedItem.style.color = "black";
+        return {thisNav: selectedItem,
+                subNavs: selectedSubs
+        };
     }
 
     render() {
     return (
     <navbar>
     <ul id="navbar" style={styles.nav}>
-        <NavLink to="/" id="homeNav" 
+        <NavLink to="/" id="homeNav" onMouseOver={() => this.select("homeNav", null)} 
+            onMouseOut={()=> this.deSelect("homeNav", null)}
         >Home</NavLink>
         <NavLink to="/entertainment" id="entNav" onMouseOver={() => this.select("entNav", null)} 
             onMouseOut={()=> this.deSelect("entNav", null)}

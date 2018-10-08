@@ -347,7 +347,7 @@ module.exports = {
     AdminListView: AdminListView
 }
 
-},{"../../css/styles":23,"../controller":14}],3:[function(require,module,exports){
+},{"../../css/styles":25,"../controller":16}],3:[function(require,module,exports){
 (function (process){
 const host = process.env.CURRENT_DOMAIN || "" ;
 
@@ -423,34 +423,47 @@ module.exports = {
     createPlaceImgs: (places, map, infowindows, markers, self)=>{
     let imgArray = [];    
     for(let i = 0; i < places.length ; i++){
-    let placeImg = {};
-    try {
-        placeImg.src = places[i].photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
-    }
-    catch(err) {
-    // no image for this place, setting default
-        placeImg.src = '../images/altLogo.png'
-    }
-    placeImg.id = places[i].name.replace(/ /, '-');
-    placeImg.onmouseover = function(){
-        window.google.maps.event.trigger(markers[i], 'click');
-        map.setZoom(15);
-        map.panTo(places[i].geometry.location)
-    };
-    placeImg.onmouseout = function(){
-        map.setZoom(14);
-        map.panTo(places[i].geometry.location)                                    
-        infowindows[i].close();
-    };
-   // return placeImg;
-    imgArray.push(placeImg);
+        let placeImg = {};
+        try {
+            placeImg.src = places[i].photos[0].getUrl({'maxWidth': 650, 'maxHeight': 650});
+        }
+        catch(err) {
+        // no image for this place, setting default
+            placeImg.src = '../images/altLogo.png'
+        }
+        placeImg.id = places[i].name.replace(/ /, '-');
+        placeImg.onmouseover = function(){
+            window.google.maps.event.trigger(markers[i], 'click');
+            map.setZoom(15);
+            map.panTo(places[i].geometry.location);
+            infowindows[i].open(map, markers[i]);
+        };
+        placeImg.onmouseout = function(){
+            map.setZoom(14);
+            map.panTo(places[i].geometry.location);                                    
+            infowindows[i].close(map, markers[i]);
+        };
+    // return placeImg;
+        imgArray.push(placeImg);
+  };
     self.setState({
-    imgArray: imgArray
+        imgArray: imgArray
     });
-  }
 }}
 
 },{}],7:[function(require,module,exports){
+module.exports = {    
+    bindMarkersInfoW: (markers, infowindows, map)=>{
+        for(let i = 0; i < markers.length; i++) {
+            markers[i].addListener('click', function(){
+            infowindows[i].open(map, markers[i]);
+            })
+        };
+        return markers;
+    }
+}
+
+},{}],8:[function(require,module,exports){
 module.exports = {createCircle: (location, map)=>{
     var circleOptions = {
         fillColor: 'black',
@@ -465,30 +478,35 @@ module.exports = {createCircle: (location, map)=>{
     circle.setMap(map);
 }}
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+module.exports = {    
+    createMainInfoWs: (places)=>{
+        return places.map(place =>{
+            let infowindowContent = '<span class="infoTitle">' + place.name 
+            +'</span><br/><div style="height:43px">'
+            +'<form action="/api/favourites" method="post">'
+            +'<div style="width:100%;background-color:black" class="star">'
+            +'<button style="width:80px">'
+            +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
+            +'<span style="color:white;font-size:150%">  Nubian  </span>'
+            +'</div>'
+            +'<input name="id" type="hidden" value='+place.business._id+ ' />'
+            +'</form>';    
+            let infowindow = new window.google.maps.InfoWindow();
+            infowindow.setContent(infowindowContent);
+            return infowindow;
+        });
+    }
+}
+
+},{}],10:[function(require,module,exports){
 module.exports = {    
     createMarkers: (places, map)=>{
     let markers = [];
-    let infoWindows = [];
     for(let i = 0; i < places.length; i++) {
-        let infowindowContent = '<span class="infoTitle">' + places[i].name 
-        +'</span><br/><div style="height:43px">'
-        +'<form action="/api/favourites" method="post">'
-        +'<div style="width:100%;background-color:black" class="star">'
-        +'<button style="width:80px">'
-        +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
-        +'<span style="color:white;font-size:150%">  Nubian  </span>'
-        +'</div>'
-        +'<input name="id" type="hidden" value='+places[i].business._id+ ' />'
-        +'</form>';    
-    let infowindow = new window.google.maps.InfoWindow();
-    infowindow.setContent(infowindowContent);
     let marker = new window.google.maps.Marker({
         position: places[i].geometry.location,
         map: map,
-        });
-    marker.addListener('click', function(){
-        infowindow.open(map, marker);
         });
     marker.addListener('dblclick', function(){
         map.panTo(marker.position);
@@ -496,12 +514,13 @@ module.exports = {
         });
     marker.setVisible(true);
     markers.push(marker);
-    infoWindows.push(infowindow);
     //return {marker: marker, infowindow: infowindow}
     };   
-    return {markers: markers, infoWindows: infoWindows};},}
+    return markers;
+    },
+}
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = {
     getMyLocation: (map)=>{
         var promise = new Promise((resolve, reject)=>{
@@ -523,7 +542,7 @@ module.exports = {
     }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const getPlaces = {
     getPlaces: async (allBusinesses, map)=>{
         var promise = new Promise(async(resolve, reject)=>{
@@ -570,7 +589,7 @@ const getPlaces = {
 
 module.exports = getPlaces;
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 const getPlaces = require('./getPlaces');
 const initMap = require('./initMap');
@@ -578,11 +597,15 @@ const createCircle = require('./createCircle');
 const createMarkers = require('./createMarkers');
 const getMyLocation = require('./getMyLocation');
 const markMyLocation = require('./markMyLocation');
+const createMainInfoW = require('./createMainInfoW');
+const bindMarkersInfoW = require('./bindMarkersInfoW')
 
 const editMap = _extends({}, 
     createMarkers, 
     getMyLocation, 
-    markMyLocation, 
+    markMyLocation,
+    createMainInfoW,
+    bindMarkersInfoW, 
     createCircle, 
     initMap, 
     getPlaces
@@ -590,7 +613,7 @@ const editMap = _extends({},
 
 module.exports = editMap;
 
-},{"./createCircle":7,"./createMarkers":8,"./getMyLocation":9,"./getPlaces":10,"./initMap":12,"./markMyLocation":13}],12:[function(require,module,exports){
+},{"./bindMarkersInfoW":7,"./createCircle":8,"./createMainInfoW":9,"./createMarkers":10,"./getMyLocation":11,"./getPlaces":12,"./initMap":14,"./markMyLocation":15}],14:[function(require,module,exports){
 const initMap = {
     initMap    :async (lat, lng)=>{
         var promise = new Promise((resolve, reject)=>{
@@ -604,7 +627,7 @@ const initMap = {
 
 module.exports = initMap;
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = {
     markMyLocation: (myLocation, map)=>{
         let infowindowContent = 'You Are Here'  
@@ -625,7 +648,7 @@ module.exports = {
     }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (process){
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 const fetch = require('isomorphic-fetch');
@@ -652,7 +675,7 @@ const Controller = _extends({},
 module.exports = Controller;
 
 }).call(this,require('_process'))
-},{"./accessApi":3,"./bindAutoComp":4,"./calcDistances":5,"./createPlaceImgs":6,"./editMap":11,"./setupGoogle":15,"./visibleNewsfeed":16,"_process":1,"isomorphic-fetch":42}],15:[function(require,module,exports){
+},{"./accessApi":3,"./bindAutoComp":4,"./calcDistances":5,"./createPlaceImgs":6,"./editMap":13,"./setupGoogle":17,"./visibleNewsfeed":18,"_process":1,"isomorphic-fetch":44}],17:[function(require,module,exports){
 (function (process){
 const host = process.env.CURRENT_DOMAIN || "" ;
 
@@ -685,7 +708,7 @@ const setupGoogle = {
 module.exports = setupGoogle;
 
 }).call(this,require('_process'))
-},{"_process":1}],16:[function(require,module,exports){
+},{"_process":1}],18:[function(require,module,exports){
 module.exports = {
     visibleNewsfeed:(status)=>{
         var newsfeed = document.getElementById("newsfeed");
@@ -696,7 +719,7 @@ module.exports = {
     }
 }
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var React = require('react');
 
 var styles = require("../../css/styles");
@@ -713,7 +736,7 @@ class Header extends React.Component {
 };
 module.exports = Header;
 
-},{"../../css/styles":23,"react":77}],18:[function(require,module,exports){
+},{"../../css/styles":25,"react":79}],20:[function(require,module,exports){
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 var {AdminListView} = require("../adminForms")
@@ -745,9 +768,8 @@ class AdminMap extends React.Component {
 
 module.exports = AdminMap;
 
-},{"../../css/styles":23,"../adminForms":2,"../controller":14,"google-maps":29}],19:[function(require,module,exports){
+},{"../../css/styles":25,"../adminForms":2,"../controller":16,"google-maps":31}],21:[function(require,module,exports){
 var Newsfeed = require("../newsfeed");
-const React = require('react');
 var styles = require("../../css/styles");
 var Controller = require("../controller");
 
@@ -765,8 +787,10 @@ class MainMap extends React.Component {
         var map = await Controller.initMap();
         var allBusinesses = await Controller.getBusinesses(this.props.category);
         var allPlaces = await Controller.getPlaces(allBusinesses, map);
-        var {markers, infoWindows} =  await Controller.createMarkers(allPlaces, map);
-        Controller.createPlaceImgs(allPlaces, map, infoWindows, markers, self)
+        var markers =  await Controller.createMarkers(allPlaces, map);
+        var infowindows = Controller.createMainInfoWs(allPlaces);
+        markers = Controller.bindMarkersInfoW(markers, infowindows, map);
+        Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
         Controller.visibleNewsfeed(true);
         var myLocation = await Controller.getMyLocation();
         var myLocationMarker = Controller.markMyLocation(myLocation, map);
@@ -785,12 +809,12 @@ class MainMap extends React.Component {
 
 module.exports = MainMap
 
-},{"../../css/styles":23,"../controller":14,"../newsfeed":21,"react":77}],20:[function(require,module,exports){
+},{"../../css/styles":25,"../controller":16,"../newsfeed":23}],22:[function(require,module,exports){
 var styles = require("../../css/styles");
 var Link = require('react-router-dom').Link;
 
 const NavLink = props => (
-    React.createElement("div", {className: "NavLink", id: props.id}, 
+    React.createElement("div", {className: "NavLink", style: styles.navItem, id: props.id, onMouseOver: props.onMouseOver, onMouseOut: props.onMouseOut}, 
         React.createElement("li", null, 
             React.createElement(Link, React.__spread({},  props, {style: { color: "inherit"}}))
         )
@@ -805,41 +829,47 @@ const NavLink = props => (
 
 class Navbar extends React.Component {
     select(thisNav, subNavs) {
-        /*
-
+        var selectedSubs;
         if (subNavs) {
-            subNavs.forEach(function(subNav) {
+            selectedSubs = subNavs.map((subNav)=> {
             let navItem = document.getElementById(subNav);
             navItem.style.visibility = "visible";
+            return navItem;
             })
         }
-    let selectedItem = document.getElementById(thisNav);
-    selectedItem.style.visibility = "visible";
-    selectedItem.style.backgroundColor = "black";
-    selectedItem.style.color = "white";
-        */
+        let selectedItem = document.getElementById(thisNav);
+        selectedItem.style.visibility = "visible";
+        selectedItem.style.backgroundColor = "black";
+        selectedItem.style.color = "white";
+        return {thisNav: selectedItem,
+                subNavs: selectedSubs
+               };
     }
+    print(){return true}
 
     deSelect(thisNav, subNavs) {
-        /*
+        var selectedSubs;
         if (subNavs) {
-            subNavs.forEach(function(subNav) {
+            selectedSubs = subNavs.map((subNav)=> {
             let navItem = document.getElementById(subNav);
-            navItem.style.visibility = "hidden"
+            navItem.style.visibility = "hidden";
+            return navItem;
             });
-
-        return}
-    let selectedItem = document.getElementById(thisNav);
-    selectedItem.style.backgroundColor = "#e6e6e6"
-    selectedItem.style.color = "black";
-        */
+        }
+        let selectedItem = document.getElementById(thisNav);
+        selectedItem.style.backgroundColor = "#e6e6e6"
+        selectedItem.style.color = "black";
+        return {thisNav: selectedItem,
+                subNavs: selectedSubs
+        };
     }
 
     render() {
     return (
     React.createElement("navbar", null, 
     React.createElement("ul", {id: "navbar", style: styles.nav}, 
-        React.createElement(NavLink, {to: "/", id: "homeNav"
+        React.createElement(NavLink, {to: "/", id: "homeNav", onMouseOver: () => this.select("homeNav", null), 
+            onMouseOut: ()=> this.deSelect("homeNav", null)
         }, "Home"), 
         React.createElement(NavLink, {to: "/entertainment", id: "entNav", onMouseOver: () => this.select("entNav", null), 
             onMouseOut: ()=> this.deSelect("entNav", null)
@@ -892,9 +922,7 @@ class Navbar extends React.Component {
 
     module.exports = Navbar
 
-},{"../../css/styles":23,"react-router-dom":61}],21:[function(require,module,exports){
-const React = require('react');
-
+},{"../../css/styles":25,"react-router-dom":63}],23:[function(require,module,exports){
 var styles = require("../../css/styles");
 
 function Newsfeed(props) {
@@ -916,7 +944,7 @@ function Newsfeed(props) {
 
 module.exports = Newsfeed
 
-},{"../../css/styles":23,"react":77}],22:[function(require,module,exports){
+},{"../../css/styles":25}],24:[function(require,module,exports){
 var {postFavourites, Login, Register, Authenticate, Logout} = require("../adminForms");
 var MainMap = require("../maps/mainMap");
 var AdminMap = require("../maps/adminMap");
@@ -946,7 +974,7 @@ class Routing extends React.Component {
 
 module.exports = Routing
 
-},{"../adminForms":2,"../maps/adminMap":18,"../maps/mainMap":19,"react-router-dom":61}],23:[function(require,module,exports){
+},{"../adminForms":2,"../maps/adminMap":20,"../maps/mainMap":21,"react-router-dom":63}],25:[function(require,module,exports){
 const styles = {};
 
 styles.map = {
@@ -1048,7 +1076,7 @@ styles.nav = {
   
   module.exports = styles
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var BrowserRouter = require('react-router-dom').BrowserRouter;
 var Navbar = require("./components/navbar");
 var Routing = require("./components/routing");
@@ -1077,7 +1105,7 @@ ReactDOM.render(
 
 // watchify -t reactify index.js -o App.js -v
 
-},{"./components/header":17,"./components/navbar":20,"./components/routing":22,"react-router-dom":61}],25:[function(require,module,exports){
+},{"./components/header":19,"./components/navbar":22,"./components/routing":24,"react-router-dom":63}],27:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1114,7 +1142,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -1134,7 +1162,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":1}],27:[function(require,module,exports){
+},{"_process":1}],29:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -1190,7 +1218,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":1}],28:[function(require,module,exports){
+},{"_process":1}],30:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -1255,7 +1283,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":25,"_process":1}],29:[function(require,module,exports){
+},{"./emptyFunction":27,"_process":1}],31:[function(require,module,exports){
 (function(root, factory) {
 
 	if (root === null) {
@@ -1479,7 +1507,7 @@ module.exports = warning;
 
 });
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1535,7 +1563,7 @@ var supportsGoWithoutReloadUsingHash = exports.supportsGoWithoutReloadUsingHash 
 var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
   return event.state === undefined && navigator.userAgent.indexOf('CriOS') === -1;
 };
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1614,7 +1642,7 @@ var createLocation = exports.createLocation = function createLocation(path, stat
 var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a, b) {
   return a.pathname === b.pathname && a.search === b.search && a.hash === b.hash && a.key === b.key && (0, _valueEqual2.default)(a.state, b.state);
 };
-},{"./PathUtils":32,"resolve-pathname":78,"value-equal":79}],32:[function(require,module,exports){
+},{"./PathUtils":34,"resolve-pathname":80,"value-equal":81}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1676,7 +1704,7 @@ var createPath = exports.createPath = function createPath(location) {
 
   return path;
 };
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1984,7 +2012,7 @@ var createBrowserHistory = function createBrowserHistory() {
 };
 
 exports.default = createBrowserHistory;
-},{"./DOMUtils":30,"./LocationUtils":31,"./PathUtils":32,"./createTransitionManager":36,"invariant":40,"warning":38}],34:[function(require,module,exports){
+},{"./DOMUtils":32,"./LocationUtils":33,"./PathUtils":34,"./createTransitionManager":38,"invariant":42,"warning":40}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2309,7 +2337,7 @@ var createHashHistory = function createHashHistory() {
 };
 
 exports.default = createHashHistory;
-},{"./DOMUtils":30,"./LocationUtils":31,"./PathUtils":32,"./createTransitionManager":36,"invariant":40,"warning":38}],35:[function(require,module,exports){
+},{"./DOMUtils":32,"./LocationUtils":33,"./PathUtils":34,"./createTransitionManager":38,"invariant":42,"warning":40}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2480,7 +2508,7 @@ var createMemoryHistory = function createMemoryHistory() {
 };
 
 exports.default = createMemoryHistory;
-},{"./LocationUtils":31,"./PathUtils":32,"./createTransitionManager":36,"warning":38}],36:[function(require,module,exports){
+},{"./LocationUtils":33,"./PathUtils":34,"./createTransitionManager":38,"warning":40}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2566,7 +2594,7 @@ var createTransitionManager = function createTransitionManager() {
 };
 
 exports.default = createTransitionManager;
-},{"warning":38}],37:[function(require,module,exports){
+},{"warning":40}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2619,7 +2647,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.createBrowserHistory = _createBrowserHistory3.default;
 exports.createHashHistory = _createHashHistory3.default;
 exports.createMemoryHistory = _createMemoryHistory3.default;
-},{"./LocationUtils":31,"./PathUtils":32,"./createBrowserHistory":33,"./createHashHistory":34,"./createMemoryHistory":35}],38:[function(require,module,exports){
+},{"./LocationUtils":33,"./PathUtils":34,"./createBrowserHistory":35,"./createHashHistory":36,"./createMemoryHistory":37}],40:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -2683,7 +2711,7 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"_process":1}],39:[function(require,module,exports){
+},{"_process":1}],41:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2753,7 +2781,7 @@ function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
 
 module.exports = hoistNonReactStatics;
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -2806,12 +2834,12 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":1}],41:[function(require,module,exports){
+},{"_process":1}],43:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 // the whatwg-fetch polyfill installs the fetch() function
 // on the global object (window or self)
 //
@@ -2819,7 +2847,7 @@ module.exports = Array.isArray || function (arr) {
 require('whatwg-fetch');
 module.exports = self.fetch.bind(self);
 
-},{"whatwg-fetch":81}],43:[function(require,module,exports){
+},{"whatwg-fetch":83}],45:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -2911,7 +2939,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -3006,7 +3034,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 module.exports = checkPropTypes;
 
 }).call(this,require('_process'))
-},{"./lib/ReactPropTypesSecret":48,"_process":1}],45:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":50,"_process":1}],47:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -3067,7 +3095,7 @@ module.exports = function() {
   return ReactPropTypes;
 };
 
-},{"./lib/ReactPropTypesSecret":48}],46:[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":50}],48:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -3626,7 +3654,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 };
 
 }).call(this,require('_process'))
-},{"./checkPropTypes":44,"./lib/ReactPropTypesSecret":48,"_process":1,"object-assign":43}],47:[function(require,module,exports){
+},{"./checkPropTypes":46,"./lib/ReactPropTypesSecret":50,"_process":1,"object-assign":45}],49:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -3658,7 +3686,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./factoryWithThrowingShims":45,"./factoryWithTypeCheckers":46,"_process":1}],48:[function(require,module,exports){
+},{"./factoryWithThrowingShims":47,"./factoryWithTypeCheckers":48,"_process":1}],50:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -3672,7 +3700,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3740,7 +3768,7 @@ BrowserRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = BrowserRouter;
-},{"./Router":57,"history":37,"prop-types":47,"react":77,"warning":80}],50:[function(require,module,exports){
+},{"./Router":59,"history":39,"prop-types":49,"react":79,"warning":82}],52:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3807,7 +3835,7 @@ HashRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = HashRouter;
-},{"./Router":57,"history":37,"prop-types":47,"react":77,"warning":80}],51:[function(require,module,exports){
+},{"./Router":59,"history":39,"prop-types":49,"react":79,"warning":82}],53:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3925,7 +3953,7 @@ Link.contextTypes = {
   }).isRequired
 };
 exports.default = Link;
-},{"history":37,"invariant":40,"prop-types":47,"react":77}],52:[function(require,module,exports){
+},{"history":39,"invariant":42,"prop-types":49,"react":79}],54:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -3937,7 +3965,7 @@ var _MemoryRouter2 = _interopRequireDefault(_MemoryRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _MemoryRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/MemoryRouter":64}],53:[function(require,module,exports){
+},{"react-router/MemoryRouter":66}],55:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4029,7 +4057,7 @@ NavLink.defaultProps = {
 };
 
 exports.default = NavLink;
-},{"./Link":51,"./Route":56,"prop-types":47,"react":77}],54:[function(require,module,exports){
+},{"./Link":53,"./Route":58,"prop-types":49,"react":79}],56:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4041,7 +4069,7 @@ var _Prompt2 = _interopRequireDefault(_Prompt);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Prompt2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Prompt":65}],55:[function(require,module,exports){
+},{"react-router/Prompt":67}],57:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4053,7 +4081,7 @@ var _Redirect2 = _interopRequireDefault(_Redirect);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Redirect2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Redirect":66}],56:[function(require,module,exports){
+},{"react-router/Redirect":68}],58:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4065,7 +4093,7 @@ var _Route2 = _interopRequireDefault(_Route);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Route2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Route":67}],57:[function(require,module,exports){
+},{"react-router/Route":69}],59:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4077,7 +4105,7 @@ var _Router2 = _interopRequireDefault(_Router);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Router2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Router":68}],58:[function(require,module,exports){
+},{"react-router/Router":70}],60:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4089,7 +4117,7 @@ var _StaticRouter2 = _interopRequireDefault(_StaticRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _StaticRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/StaticRouter":69}],59:[function(require,module,exports){
+},{"react-router/StaticRouter":71}],61:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4101,7 +4129,7 @@ var _Switch2 = _interopRequireDefault(_Switch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _Switch2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/Switch":70}],60:[function(require,module,exports){
+},{"react-router/Switch":72}],62:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4113,7 +4141,7 @@ var _generatePath2 = _interopRequireDefault(_generatePath);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _generatePath2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/generatePath":71}],61:[function(require,module,exports){
+},{"react-router/generatePath":73}],63:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4191,7 +4219,7 @@ exports.Switch = _Switch3.default;
 exports.generatePath = _generatePath3.default;
 exports.matchPath = _matchPath3.default;
 exports.withRouter = _withRouter3.default;
-},{"./BrowserRouter":49,"./HashRouter":50,"./Link":51,"./MemoryRouter":52,"./NavLink":53,"./Prompt":54,"./Redirect":55,"./Route":56,"./Router":57,"./StaticRouter":58,"./Switch":59,"./generatePath":60,"./matchPath":62,"./withRouter":63}],62:[function(require,module,exports){
+},{"./BrowserRouter":51,"./HashRouter":52,"./Link":53,"./MemoryRouter":54,"./NavLink":55,"./Prompt":56,"./Redirect":57,"./Route":58,"./Router":59,"./StaticRouter":60,"./Switch":61,"./generatePath":62,"./matchPath":64,"./withRouter":65}],64:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4203,7 +4231,7 @@ var _matchPath2 = _interopRequireDefault(_matchPath);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _matchPath2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/matchPath":72}],63:[function(require,module,exports){
+},{"react-router/matchPath":74}],65:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4215,7 +4243,7 @@ var _withRouter2 = _interopRequireDefault(_withRouter);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _withRouter2.default; // Written in this round about way for babel-transform-imports
-},{"react-router/withRouter":74}],64:[function(require,module,exports){
+},{"react-router/withRouter":76}],66:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4283,7 +4311,7 @@ MemoryRouter.propTypes = {
   children: _propTypes2.default.node
 };
 exports.default = MemoryRouter;
-},{"./Router":68,"history":37,"prop-types":47,"react":77,"warning":80}],65:[function(require,module,exports){
+},{"./Router":70,"history":39,"prop-types":49,"react":79,"warning":82}],67:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4374,7 +4402,7 @@ Prompt.contextTypes = {
   }).isRequired
 };
 exports.default = Prompt;
-},{"invariant":40,"prop-types":47,"react":77}],66:[function(require,module,exports){
+},{"invariant":42,"prop-types":49,"react":79}],68:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4506,7 +4534,7 @@ Redirect.contextTypes = {
   }).isRequired
 };
 exports.default = Redirect;
-},{"./generatePath":71,"history":37,"invariant":40,"prop-types":47,"react":77,"warning":80}],67:[function(require,module,exports){
+},{"./generatePath":73,"history":39,"invariant":42,"prop-types":49,"react":79,"warning":82}],69:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4664,7 +4692,7 @@ Route.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Route;
-},{"./matchPath":72,"invariant":40,"prop-types":47,"react":77,"warning":80}],68:[function(require,module,exports){
+},{"./matchPath":74,"invariant":42,"prop-types":49,"react":79,"warning":82}],70:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4784,7 +4812,7 @@ Router.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = Router;
-},{"invariant":40,"prop-types":47,"react":77,"warning":80}],69:[function(require,module,exports){
+},{"invariant":42,"prop-types":49,"react":79,"warning":82}],71:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4954,7 +4982,7 @@ StaticRouter.childContextTypes = {
   router: _propTypes2.default.object.isRequired
 };
 exports.default = StaticRouter;
-},{"./Router":68,"history":37,"invariant":40,"prop-types":47,"react":77,"warning":80}],70:[function(require,module,exports){
+},{"./Router":70,"history":39,"invariant":42,"prop-types":49,"react":79,"warning":82}],72:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -5049,7 +5077,7 @@ Switch.propTypes = {
   location: _propTypes2.default.object
 };
 exports.default = Switch;
-},{"./matchPath":72,"invariant":40,"prop-types":47,"react":77,"warning":80}],71:[function(require,module,exports){
+},{"./matchPath":74,"invariant":42,"prop-types":49,"react":79,"warning":82}],73:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -5095,7 +5123,7 @@ var generatePath = function generatePath() {
 };
 
 exports.default = generatePath;
-},{"path-to-regexp":73}],72:[function(require,module,exports){
+},{"path-to-regexp":75}],74:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -5176,7 +5204,7 @@ var matchPath = function matchPath(pathname) {
 };
 
 exports.default = matchPath;
-},{"path-to-regexp":73}],73:[function(require,module,exports){
+},{"path-to-regexp":75}],75:[function(require,module,exports){
 var isarray = require('isarray')
 
 /**
@@ -5604,7 +5632,7 @@ function pathToRegexp (path, keys, options) {
   return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
 }
 
-},{"isarray":41}],74:[function(require,module,exports){
+},{"isarray":43}],76:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -5658,7 +5686,7 @@ var withRouter = function withRouter(Component) {
 };
 
 exports.default = withRouter;
-},{"./Route":67,"hoist-non-react-statics":39,"prop-types":47,"react":77}],75:[function(require,module,exports){
+},{"./Route":69,"hoist-non-react-statics":41,"prop-types":49,"react":79}],77:[function(require,module,exports){
 (function (process){
 /** @license React v16.4.1
  * react.development.js
@@ -7148,7 +7176,7 @@ module.exports = react;
 }
 
 }).call(this,require('_process'))
-},{"_process":1,"fbjs/lib/emptyFunction":25,"fbjs/lib/emptyObject":26,"fbjs/lib/invariant":27,"fbjs/lib/warning":28,"object-assign":43,"prop-types/checkPropTypes":44}],76:[function(require,module,exports){
+},{"_process":1,"fbjs/lib/emptyFunction":27,"fbjs/lib/emptyObject":28,"fbjs/lib/invariant":29,"fbjs/lib/warning":30,"object-assign":45,"prop-types/checkPropTypes":46}],78:[function(require,module,exports){
 /** @license React v16.4.1
  * react.production.min.js
  *
@@ -7172,7 +7200,7 @@ _calculateChangedBits:b,_defaultValue:a,_currentValue:a,_currentValue2:a,_change
 b.key&&(g=""+b.key);var l=void 0;a.type&&a.type.defaultProps&&(l=a.type.defaultProps);for(c in b)K.call(b,c)&&!L.hasOwnProperty(c)&&(d[c]=void 0===b[c]&&void 0!==l?l[c]:b[c])}c=arguments.length-2;if(1===c)d.children=e;else if(1<c){l=Array(c);for(var m=0;m<c;m++)l[m]=arguments[m+2];d.children=l}return{$$typeof:t,type:a.type,key:g,ref:h,props:d,_owner:f}},createFactory:function(a){var b=M.bind(null,a);b.type=a;return b},isValidElement:N,version:"16.4.1",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentOwner:J,
 assign:k}},Y={default:X},Z=Y&&X||Y;module.exports=Z.default?Z.default:Z;
 
-},{"fbjs/lib/emptyFunction":25,"fbjs/lib/emptyObject":26,"fbjs/lib/invariant":27,"object-assign":43}],77:[function(require,module,exports){
+},{"fbjs/lib/emptyFunction":27,"fbjs/lib/emptyObject":28,"fbjs/lib/invariant":29,"object-assign":45}],79:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -7183,7 +7211,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this,require('_process'))
-},{"./cjs/react.development.js":75,"./cjs/react.production.min.js":76,"_process":1}],78:[function(require,module,exports){
+},{"./cjs/react.development.js":77,"./cjs/react.production.min.js":78,"_process":1}],80:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7258,7 +7286,7 @@ function resolvePathname(to) {
 
 exports.default = resolvePathname;
 module.exports = exports['default'];
-},{}],79:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7302,7 +7330,7 @@ function valueEqual(a, b) {
 
 exports.default = valueEqual;
 module.exports = exports['default'];
-},{}],80:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -7370,7 +7398,7 @@ if (__DEV__) {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"_process":1}],81:[function(require,module,exports){
+},{"_process":1}],83:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -7903,4 +7931,4 @@ module.exports = warning;
 
 })));
 
-},{}]},{},[24]);
+},{}]},{},[26]);
