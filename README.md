@@ -68,9 +68,9 @@ for local deployment, initialize an instance of
 
 >Add caching layer to reduce number of API calls to DB; store all businesnes aftef first page pageload, also must work with update
 
-*~~Create Tests for Navbar select & deselect~~
-*~~Implement babel-plugin-react-require~~
-*~~Create test for checking that index is always served~~
-*~~Create test for checking Admin Maps component.didMount is succesful~~
-*Seperate Client & Unit Tests is seperate files
-*Change ports to allow simultaneous testing and running of server
+  - ~~Create Tests for Navbar select & deselect~~
+  - ~~Implement babel-plugin-react-require~~
+  - ~~Create test for checking that index is always served~~
+  - ~~Create test for checking Admin Maps component.didMount is succesful~~
+  - Seperate Client & Unit Tests is seperate files
+  - Change ports to allow simultaneous testing and running of server
