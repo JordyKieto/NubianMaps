@@ -16,6 +16,7 @@ const Controller = require('../client/components/controller');
 const Navbar = require('../client/components/navbar');
 const MainMap = require('../client/components/maps/mainMap');
 const AdminMap = require('../client/components/maps/adminMap');
+const HTMLParser = require('node-html-parser');
 
 const getGoogleApi = require('../test/config/mapsDom')
 const { JSDOM } = require('jsdom');
@@ -95,12 +96,16 @@ describe('Server Tests', function () {
         });
     });
     for(let i =0; i < 4; i++) {
-        it('always send index.html for random URLs', function(done){
-            var randomUrl = '/random' + Math.floor(Math.random() * 99999).toString();
+        it('always sends index.html for random URLs', function(done){
+            const expectedTitle = '<title>Nubian Maps</title>';
+            let randomUrl = '/randomUrl' + Math.floor(Math.random() * 99999).toString();
             request(app).get(randomUrl)
                 .end(function(err, res) {
                     assert.notEqual(res.statusCode, 500);
                     assert.notEqual(res.serverError, true);
+                    var resText = HTMLParser.parse(res.text);
+                    var currentTitle = resText.querySelector('title');
+                    assert.equal(currentTitle, expectedTitle);
                     done();
                 });
         });

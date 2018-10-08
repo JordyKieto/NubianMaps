@@ -53,7 +53,7 @@ const jsdom = new JSDOM(`<!doctype html><head>
 });
 ```
 
-Next task is figuring out how to test my asychronous components. Examples seem to point towards mocking fetch requests.
+~~Next task is figuring out how to test my asychronous components. Examples seem to point towards mocking fetch requests.~~
 
 ## How to Run
 > npm install
