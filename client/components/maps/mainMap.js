@@ -11,19 +11,28 @@ class MainMap extends React.Component {
         }
     };
     async componentDidMount() {
-        var self = this;
-        await Controller.setupAPI(this.props.google);
-        var map = await Controller.initMap();
-        var allBusinesses = await Controller.getBusinesses(this.props.category);
-        var allPlaces = await Controller.getPlaces(allBusinesses, map);
-        var markers =  await Controller.createMarkers(allPlaces, map);
-        var infowindows = Controller.createMainInfoWs(allPlaces);
-        markers = Controller.bindMarkersInfoW(markers, infowindows, map);
-        Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
-        Controller.visibleNewsfeed(true);
-        var myLocation = await Controller.getMyLocation();
-        var myLocationMarker = Controller.markMyLocation(myLocation, map);
-        Controller.calcDistances(myLocationMarker, markers);
+        var promise = new Promise(async(resolve, reject)=>{
+            var self = this;
+            await Controller.setupAPI(this.props.google);
+            var map = await Controller.initMap();
+            var allBusinesses = await Controller.getBusinesses(this.props.category);
+            var allPlaces = await Controller.getPlaces(allBusinesses, map);
+            var markers =  await Controller.createMarkers(allPlaces, map);
+            var infowindows = Controller.createMainInfoWs(allPlaces);
+            markers = Controller.bindMarkersInfoW(markers, infowindows, map);
+            Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
+        //    / Controller.visibleNewsfeed(true);
+            var myLocation = await Controller.getMyLocation();
+            var myLocationMarker = Controller.markMyLocation(myLocation, map);
+            Controller.calcDistances(myLocationMarker, markers);
+            resolve({
+                map: map,
+                allBusinesses: allBusinesses,
+                markers: markers,
+                infowindows: infowindows
+            });
+        });
+        return promise;
     };
     render() {
         return (

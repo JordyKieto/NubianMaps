@@ -7,10 +7,15 @@ var Controller = require("../controller");
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     async componentDidMount() {
-        await Controller.setupAPI(this.props.google);
-        var map = await Controller.initMap();
-        Controller.visibleNewsfeed(false);
-        Controller.bindAutoComp(map);
+        
+        var promise = new Promise(async(resolve, reject)=>{
+            await Controller.setupAPI(this.props.google);
+            var map = await Controller.initMap();
+            Controller.visibleNewsfeed(false);
+            var autocomplete = Controller.bindAutoComp(map);
+            resolve(autocomplete);
+        });
+        return promise;
 };
 
     render() {

@@ -15,6 +15,8 @@ const Newsfeed = require('../client/components/newsfeed');
 const Controller = require('../client/components/controller');
 const Navbar = require('../client/components/navbar');
 const MainMap = require('../client/components/maps/mainMap');
+const AdminMap = require('../client/components/maps/adminMap');
+
 const getGoogleApi = require('../test/config/mapsDom')
 const { JSDOM } = require('jsdom');
 const {copyProps} = require('../test/config/setup');
@@ -48,7 +50,7 @@ describe('Server Tests', function () {
         request(app).get('/api/businesses?category=all')
             .end(function(err, res) {
                 assert.isArray(res.body, 'Database response is  an Array');
-                done()
+                done();
             });
     });
     it('authenticates base admin', function(done){
@@ -92,6 +94,17 @@ describe('Server Tests', function () {
             })
         });
     });
+    for(let i =0; i < 4; i++) {
+        it('always send index.html for random URLs', function(done){
+            var randomUrl = '/random' + Math.floor(Math.random() * 99999).toString();
+            request(app).get(randomUrl)
+                .end(function(err, res) {
+                    assert.notEqual(res.statusCode, 500);
+                    assert.notEqual(res.serverError, true);
+                    done();
+                });
+        });
+    }
 });
 describe('Client Tests', function () {
     beforeEach( async function() {
@@ -134,7 +147,7 @@ describe('Client Tests', function () {
         .then(()=>{Controller.initMap()
             .then((map)=>
                 {assert.equal(map.mapTypeId, 'roadmap' );
-                    done()
+                    done();
             });
         });
     });
@@ -146,7 +159,7 @@ describe('Client Tests', function () {
                 return Controller.createMarkers(allPlaces, map);
                 })
                     .then((markers)=>{
-                        console.log(markers[0]);
+                      //  console.log(markers[0]);
                         assert.equal(allPlaces.length, markers.length);
                         done();
                     });
@@ -174,6 +187,56 @@ describe('Client Tests', function () {
         assert.equal(subNavs[0].id, 456);
         assert.equal(subNavs[0].style.visibility, 'hidden');
         done();
+    });
+    it('End-to-end: Binds Admin Map to autocomplete ', (done)=> {
+        var adminMap = shallow(<AdminMap google={google} />);
+        var input = global.document.createElement('input');
+        var mockDocument = {getElementById: function(id){return input;}};
+        document = mockDocument;
+        adminMap.instance().componentDidMount()
+        .then((autocomplete)=>{
+            var actual = Object.keys(autocomplete).sort().toString();
+            var expected = [ 'gm_accessors_', 'gm_bindings_', '__e3_' ];
+            expected = expected.sort().toString();
+            assert.equal(actual, expected);
+            done();
+        })
+    });
+    it('End-to-end: Main Map is initiliazed ', (done)=> {
+        this.timeout(999999);
+        var mainMap = shallow(<MainMap google={google}  />);
+        var mockData = [{ _id: '5b79c53de070f42d54017d10',
+        name: 'Obsidian Theatre',
+        category: 'entertainment',
+        placeID: 'ChIJH7nFX2nL1IkRU_vxSxnq7i8' }];
+        // must determine why Business Api is failing
+        var mockController = {getBusinesses: function(){return mockData }};
+        Controller.getBusinesses = mockController.getBusinesses;
+        Controller.visibleNewsfeed = function(){return null};
+        Controller.calcDistances = function(){return null};
+        Controller.markMyLocation = function(){return null};
+        mainMap.instance().componentDidMount()
+        .then((initiliazed)=>{
+            var actual = Object.keys(initiliazed).sort().toString();
+            var expected = ['allBusinesses', 'infowindows', 'map', 'markers'];
+            //console.log(initiliazed);
+            expected = expected.sort().toString();
+                assert.equal(actual, expected);
+            assert.equal(initiliazed['allBusinesses'].length, mockData.length);
+            assert.equal(initiliazed['markers'].length, mockData.length);
+            assert.equal(initiliazed['infowindows'].length, mockData.length);
+
+            assert.equal(initiliazed['map'].mapTypeId, 'roadmap' );
+
+            assert.equal(initiliazed['infowindows'].length, mockData.length);
+
+            assert.equal(initiliazed['markers'][0].getPosition().lat(), 43.6637987);
+            assert.equal(initiliazed['markers'][0].getPosition().lng(), -79.34360800000002);
+
+            var infoContent = '<span class="infoTitle">Obsidian Theatre Company</span><br/><div style="height:43px"><form action="/api/favourites" method="post"><div style="width:100%;background-color:black" class="star"><button style="width:80px"><img src="../images/favourite.png" style="width:30px;height:30px"/></button><span style="color:white;font-size:150%">  Nubian  </span></div><input name="id" type="hidden" value=5b79c53de070f42d54017d10 /></form>';
+            assert.equal(initiliazed['infowindows'][0]['content'], infoContent);
+            done();
+        })
     });
 })
 

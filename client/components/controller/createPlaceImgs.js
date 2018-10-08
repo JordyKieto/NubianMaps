@@ -29,4 +29,5 @@ module.exports = {
     self.setState({
         imgArray: imgArray
     });
+    return imgArray;
 }}

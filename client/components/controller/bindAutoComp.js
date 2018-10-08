@@ -35,5 +35,6 @@ module.exports = {
             marker.setVisible(true);
             infowindow.open(map, marker);
         });
+        return autocomplete;
 },
 }

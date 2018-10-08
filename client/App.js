@@ -403,6 +403,7 @@ module.exports = {
             marker.setVisible(true);
             infowindow.open(map, marker);
         });
+        return autocomplete;
 },
 }
 
@@ -449,6 +450,7 @@ module.exports = {
     self.setState({
         imgArray: imgArray
     });
+    return imgArray;
 }}
 
 },{}],7:[function(require,module,exports){
@@ -544,18 +546,18 @@ module.exports = {
 
 },{}],12:[function(require,module,exports){
 const getPlaces = {
-    getPlaces: async (allBusinesses, map)=>{
+    getPlaces: async (businesses, map)=>{
         var promise = new Promise(async(resolve, reject)=>{
         // slight delay in loading markers
         // this is so we can wait for ALL markers
         // must be better of loading markers
                 var imgArray = [];
-                myPlaces = [];
+                var myPlaces = [];
                 var bounds;
-                for ( business of allBusinesses) {
-                    var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
+                for (var i = 0; i <businesses.length; i++) {
+                    var request = {placeId: businesses[i].placeID,fields: ['name', 'geometry', 'photos']}; 
                     var subPromise = new Promise((resolve, reject)=>{
-                    service = new window.google.maps.places.PlacesService(map);
+                    var service = new window.google.maps.places.PlacesService(map);
                     service.getDetails(request, populate);
                     async function populate(place, status) {
                         if (status == window.google.maps.places.PlacesServiceStatus.OK) {
@@ -567,8 +569,8 @@ const getPlaces = {
                         //        var lng = place.geometry.location.lng();
                         //        bounds = new window.google.maps.LatLngBounds();
                         //        bounds.extend(new window.google.maps.LatLng(lat, lng));
-                                place.business = {};
-                                place.business._id = business._id;
+                            place.business = {};
+                            place.business._id = businesses[i]._id;
 
 
                                 myPlaces.push(place);
@@ -745,10 +747,15 @@ var Controller = require("../controller");
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     async componentDidMount() {
-        await Controller.setupAPI(this.props.google);
-        var map = await Controller.initMap();
-        Controller.visibleNewsfeed(false);
-        Controller.bindAutoComp(map);
+        
+        var promise = new Promise(async(resolve, reject)=>{
+            await Controller.setupAPI(this.props.google);
+            var map = await Controller.initMap();
+            Controller.visibleNewsfeed(false);
+            var autocomplete = Controller.bindAutoComp(map);
+            resolve(autocomplete);
+        });
+        return promise;
 };
 
     render() {
@@ -781,19 +788,28 @@ class MainMap extends React.Component {
         }
     };
     async componentDidMount() {
-        var self = this;
-        await Controller.setupAPI(this.props.google);
-        var map = await Controller.initMap();
-        var allBusinesses = await Controller.getBusinesses(this.props.category);
-        var allPlaces = await Controller.getPlaces(allBusinesses, map);
-        var markers =  await Controller.createMarkers(allPlaces, map);
-        var infowindows = Controller.createMainInfoWs(allPlaces);
-        markers = Controller.bindMarkersInfoW(markers, infowindows, map);
-        Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
-        Controller.visibleNewsfeed(true);
-        var myLocation = await Controller.getMyLocation();
-        var myLocationMarker = Controller.markMyLocation(myLocation, map);
-        Controller.calcDistances(myLocationMarker, markers);
+        var promise = new Promise(async(resolve, reject)=>{
+            var self = this;
+            await Controller.setupAPI(this.props.google);
+            var map = await Controller.initMap();
+            var allBusinesses = await Controller.getBusinesses(this.props.category);
+            var allPlaces = await Controller.getPlaces(allBusinesses, map);
+            var markers =  await Controller.createMarkers(allPlaces, map);
+            var infowindows = Controller.createMainInfoWs(allPlaces);
+            markers = Controller.bindMarkersInfoW(markers, infowindows, map);
+            Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
+        //    / Controller.visibleNewsfeed(true);
+            var myLocation = await Controller.getMyLocation();
+            var myLocationMarker = Controller.markMyLocation(myLocation, map);
+            Controller.calcDistances(myLocationMarker, markers);
+            resolve({
+                map: map,
+                allBusinesses: allBusinesses,
+                markers: markers,
+                infowindows: infowindows
+            });
+        });
+        return promise;
     };
     render() {
         return (

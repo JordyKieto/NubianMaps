@@ -1,16 +1,16 @@
 const getPlaces = {
-    getPlaces: async (allBusinesses, map)=>{
+    getPlaces: async (businesses, map)=>{
         var promise = new Promise(async(resolve, reject)=>{
         // slight delay in loading markers
         // this is so we can wait for ALL markers
         // must be better of loading markers
                 var imgArray = [];
-                myPlaces = [];
+                var myPlaces = [];
                 var bounds;
-                for ( business of allBusinesses) {
-                    var request = {placeId: business.placeID,fields: ['name', 'geometry', 'photos']}; 
+                for (var i = 0; i <businesses.length; i++) {
+                    var request = {placeId: businesses[i].placeID,fields: ['name', 'geometry', 'photos']}; 
                     var subPromise = new Promise((resolve, reject)=>{
-                    service = new window.google.maps.places.PlacesService(map);
+                    var service = new window.google.maps.places.PlacesService(map);
                     service.getDetails(request, populate);
                     async function populate(place, status) {
                         if (status == window.google.maps.places.PlacesServiceStatus.OK) {
@@ -22,8 +22,8 @@ const getPlaces = {
                         //        var lng = place.geometry.location.lng();
                         //        bounds = new window.google.maps.LatLngBounds();
                         //        bounds.extend(new window.google.maps.LatLng(lat, lng));
-                                place.business = {};
-                                place.business._id = business._id;
+                            place.business = {};
+                            place.business._id = businesses[i]._id;
 
 
                                 myPlaces.push(place);
