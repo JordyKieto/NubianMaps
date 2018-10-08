@@ -720,7 +720,6 @@ module.exports = {
 }
 
 },{}],19:[function(require,module,exports){
-var React = require('react');
 
 var styles = require("../../css/styles");
 
@@ -736,7 +735,7 @@ class Header extends React.Component {
 };
 module.exports = Header;
 
-},{"../../css/styles":25,"react":79}],20:[function(require,module,exports){
+},{"../../css/styles":25}],20:[function(require,module,exports){
 var GoogleMapsLoader = require('google-maps');
 GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 var {AdminListView} = require("../adminForms")
@@ -746,7 +745,7 @@ var Controller = require("../controller");
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     async componentDidMount() {
-        GoogleMapsLoader.KEY = await Controller.getMapsKey();
+        await Controller.setupAPI(this.props.google);
         var map = await Controller.initMap();
         Controller.visibleNewsfeed(false);
         Controller.bindAutoComp(map);

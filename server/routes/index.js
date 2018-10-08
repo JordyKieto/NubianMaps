@@ -142,9 +142,9 @@ var getFavourites = function(request, response) {
         })
     } else {response.redirect('/admin')}
 }
-// for all other requests, send index. allows react app too handle rest of routing
+// for all other requests, send index. allows react app to handle rest of routing
 router.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname, '../static/index.html'), function(err) {
+    res.sendFile(path.join(__dirname, '../../client/index.html'), function(err) {
       if (err) {
         res.status(500).send(err)
       }

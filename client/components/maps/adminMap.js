@@ -7,7 +7,7 @@ var Controller = require("../controller");
 class AdminMap extends React.Component {
     // creates a map with autocomplete search bar
     async componentDidMount() {
-        GoogleMapsLoader.KEY = await Controller.getMapsKey();
+        await Controller.setupAPI(this.props.google);
         var map = await Controller.initMap();
         Controller.visibleNewsfeed(false);
         Controller.bindAutoComp(map);
