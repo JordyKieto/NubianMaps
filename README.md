@@ -72,5 +72,6 @@ for local deployment, initialize an instance of
   - ~~Implement babel-plugin-react-require~~
   - ~~Create test for checking that index is always served~~
   - ~~Create test for checking Admin Maps component.didMount is succesful~~
-  - Seperate Client & Unit Tests is seperate files
+  - Seperate Client & Unit Tests is=nto seperate files
   - Change ports to allow simultaneous testing and running of server
+  - Test for Controller createPlaceImgs()

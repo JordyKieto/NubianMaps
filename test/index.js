@@ -33,7 +33,7 @@ Enzyme.configure({adapter: new Adapter()});
 describe('Server Tests', function () {
     beforeEach( async function() {
         await MongoClient.connect('mongodb://localhost').then( async (client) =>{
-        db = await client.db('blackBusinesses');
+            db = await client.db('blackBusinesses');
         });
     });
     afterEach(function () {
@@ -109,7 +109,16 @@ describe('Server Tests', function () {
                     done();
                 });
         });
-    }
+        
+    };
+    it('controller can get from server', function(done){
+        app.server = app.listen(8080, async function(){
+            console.log('Nubian Maps Again on '+ app.server.address().port)
+            var businesses = await Controller.getBusinesses('all');
+            assert.isArray(businesses);
+            done();
+        });
+    });
 });
 describe('Client Tests', function () {
     beforeEach( async function() {
@@ -140,7 +149,7 @@ describe('Client Tests', function () {
         const newsfeed = shallow(<Newsfeed imgArray={[{src: "https://i.imgur.com/WBp5bHD.jpg", id: "123"}]} />);
         assert.equal(newsfeed.find('img').first().prop("src"), 'https://i.imgur.com/WBp5bHD.jpg');
     });
-    it('Can recieve Maps Key', (done)=> {
+    it('can recieve Maps Key', (done)=> {
         app.listen(8080, async function () {
         const recievedKey = await Controller.getMapsKey();
         assert.equal(recievedKey, mapsKey);
@@ -193,7 +202,7 @@ describe('Client Tests', function () {
         assert.equal(subNavs[0].style.visibility, 'hidden');
         done();
     });
-    it('End-to-end: Binds Admin Map to autocomplete ', (done)=> {
+    it('end-to-end: binds Admin Map to autocomplete ', (done)=> {
         var adminMap = shallow(<AdminMap google={google} />);
         var input = global.document.createElement('input');
         var mockDocument = {getElementById: function(id){return input;}};
@@ -207,7 +216,7 @@ describe('Client Tests', function () {
             done();
         })
     });
-    it('End-to-end: Main Map is initiliazed ', (done)=> {
+    it('end-to-end: Main Map is initiliazed ', (done)=> {
         this.timeout(999999);
         var mainMap = shallow(<MainMap google={google}  />);
         var mockData = [{ _id: '5b79c53de070f42d54017d10',
