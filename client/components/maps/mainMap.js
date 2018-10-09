@@ -21,7 +21,7 @@ class MainMap extends React.Component {
             var infowindows = Controller.createMainInfoWs(allPlaces);
             markers = Controller.bindMarkersInfoW(markers, infowindows, map);
             Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
-        //    / Controller.visibleNewsfeed(true);
+            Controller.visibleNewsfeed(true);
             var myLocation = await Controller.getMyLocation();
             var myLocationMarker = Controller.markMyLocation(myLocation, map);
             Controller.calcDistances(myLocationMarker, markers);

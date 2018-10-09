@@ -66,12 +66,12 @@ for local deployment, initialize an instance of
 
 >Also must style login/register pages
 
->Add caching layer to reduce number of API calls to DB; store all businesnes aftef first page pageload, also must work with update
+>Add caching layer to reduce number of API calls to DB; store all businesnes after first page pageload, also must work with update
 
   - ~~Create Tests for Navbar select & deselect~~
   - ~~Implement babel-plugin-react-require~~
   - ~~Create test for checking that index is always served~~
   - ~~Create test for checking Admin Maps component.didMount is succesful~~
-  - Seperate Client & Unit Tests is=nto seperate files
+  - Seperate Client & Unit Tests into seperate files
   - Change ports to allow simultaneous testing and running of server
-  - Test for Controller createPlaceImgs()
+  - ~~Test for Controller createPlaceImgs()~~

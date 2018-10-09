@@ -1,22 +1,16 @@
 const app = require('../server/server').app;
 const assert = require('chai').assert;
 const mapsKey = process.env.MAPS_KEY
-const request = require('supertest');
 const MongoClient = require("mongodb").MongoClient;
-const uri = process.env.MONGOLAB_URI;
-const admin = require('../server/config/defaultAdmin').admin;
 const Enzyme = require("enzyme");
 const shallow = require("enzyme").shallow;
-const mount = require("enzyme").mount;
 const Adapter = require('enzyme-adapter-react-16');
-const React = require('react');
 const Header = require('../client/components/header');
 const Newsfeed = require('../client/components/newsfeed');
 const Controller = require('../client/components/controller');
 const Navbar = require('../client/components/navbar');
 const MainMap = require('../client/components/maps/mainMap');
 const AdminMap = require('../client/components/maps/adminMap');
-const HTMLParser = require('node-html-parser');
 
 const getGoogleApi = require('../test/config/mapsDom')
 const { JSDOM } = require('jsdom');
@@ -27,99 +21,7 @@ var google;
 let db;
 let cookie;
 
-
 Enzyme.configure({adapter: new Adapter()});
-
-describe('Server Tests', function () {
-    beforeEach( async function() {
-        await MongoClient.connect('mongodb://localhost').then( async (client) =>{
-            db = await client.db('blackBusinesses');
-        });
-    });
-    afterEach(function () {
-        app.server.close();
-    });
-    it('sends Maps Key', function(done){
-        request(app)
-            .get('/api/mapsKey')
-            .end(function(err, res) {
-                assert.equal(res.body, mapsKey, 'correct maps key is sent')
-                done()
-            });
-    });
-    it('database request returns Array', function(done){
-        request(app).get('/api/businesses?category=all')
-            .end(function(err, res) {
-                assert.isArray(res.body, 'Database response is  an Array');
-                done();
-            });
-    });
-    it('authenticates base admin', function(done){
-        request(app)
-        .get('/api/authenticate')
-        .send({username: admin.username, password: admin.password})
-        .then(function(res) {
-                // cookie patch to persist sessions https://github.com/visionmedia/supertest/issues/336
-            cookie = res.headers['set-cookie'];
-            request(app)
-            .get('/api/checkAuthentication')
-            .set('Cookie', cookie)
-            .end(function(err, res) {assert.equal(res.body, true, 'succesful authentication');
-            done();
-            });
-        });
-    });
-    it('can logout', function(done){
-        request(app)
-        .get('/api/authenticate')
-        .send({username: admin.username, password: admin.password})
-        .then( function(res) {
-                // cookie patch to persist sessions https://github.com/visionmedia/supertest/issues/336
-            cookie = res.headers['set-cookie'];
-            request(app)
-            .get('/api/checkAuthentication')
-            .set('Cookie', cookie)
-            .then(function(res) {assert.equal(res.body, true, 'successful authentication')})
-            .then(()=>{
-                request(app)
-                .get('/api/logout')  
-                .set('Cookie', cookie)
-                .then(function(res) {assert.equal(res.body, true, 'logout API was triggered');
-                    request(app)
-                    .get('/api/checkAuthentication')
-                    .set('Cookie', cookie)
-                    .end(function(err, res) {assert.equal(res.body, false, 'successfully logged out');
-                        done();
-                    });
-                });
-            })
-        });
-    });
-    for(let i =0; i < 4; i++) {
-        it('always sends index.html for random URLs', function(done){
-            const expectedTitle = '<title>Nubian Maps</title>';
-            let randomUrl = '/randomUrl' + Math.floor(Math.random() * 99999).toString();
-            request(app).get(randomUrl)
-                .end(function(err, res) {
-                    assert.notEqual(res.statusCode, 500);
-                    assert.notEqual(res.serverError, true);
-                    var resText = HTMLParser.parse(res.text);
-                    var currentTitle = resText.querySelector('title');
-                    assert.equal(currentTitle, expectedTitle);
-                    done();
-                });
-        });
-        
-    };
-    it('controller can get from server', function(done){
-        app.server = app.listen(8080, async function(){
-            console.log('Nubian Maps Again on '+ app.server.address().port)
-            var businesses = await Controller.getBusinesses('all');
-            assert.isArray(businesses);
-            done();
-        });
-    });
-});
 describe('Client Tests', function () {
     beforeEach( async function() {
         await MongoClient.connect('mongodb://localhost').then( async (client) =>{
@@ -202,6 +104,19 @@ describe('Client Tests', function () {
         assert.equal(subNavs[0].style.visibility, 'hidden');
         done();
     });
+    it('can create placeImgs ', (done)=> {
+        var places =[{name: 'NAACP'}];
+        var map = {setZoom: function(){return null;}, panTo: function(){return null;}}
+        var markers =[{}];
+        var infowindows =[{open: function(){return null;}, close: function(){return null;} }];
+        var self = {setState: function(){return null;}};
+        var imgs = Controller.createPlaceImgs(places, map, infowindows, markers, self);
+        assert.equal(imgs.length, places.length);
+        var defaultSrc = '../images/altLogo.png';
+        assert.equal(imgs[0].src, defaultSrc);
+        assert.equal(imgs[0].id, 'NAACP');
+        done();
+    });
     it('end-to-end: binds Admin Map to autocomplete ', (done)=> {
         var adminMap = shallow(<AdminMap google={google} />);
         var input = global.document.createElement('input');
@@ -223,19 +138,16 @@ describe('Client Tests', function () {
         name: 'Obsidian Theatre',
         category: 'entertainment',
         placeID: 'ChIJH7nFX2nL1IkRU_vxSxnq7i8' }];
-        // must determine why Business Api is failing
-        var mockController = {getBusinesses: function(){return mockData }};
-        Controller.getBusinesses = mockController.getBusinesses;
+        Controller.getBusinesses = function(){return mockData}
         Controller.visibleNewsfeed = function(){return null};
         Controller.calcDistances = function(){return null};
         Controller.markMyLocation = function(){return null};
         mainMap.instance().componentDidMount()
         .then((initiliazed)=>{
-            var actual = Object.keys(initiliazed).sort().toString();
-            var expected = ['allBusinesses', 'infowindows', 'map', 'markers'];
-            //console.log(initiliazed);
-            expected = expected.sort().toString();
-                assert.equal(actual, expected);
+            var actualKeys = Object.keys(initiliazed).sort().toString();
+            var expectedKeys = ['allBusinesses', 'infowindows', 'map', 'markers'];
+            expectedKeys = expectedKeys.sort().toString();
+            assert.equal(actualKeys, expectedKeys);
             assert.equal(initiliazed['allBusinesses'].length, mockData.length);
             assert.equal(initiliazed['markers'].length, mockData.length);
             assert.equal(initiliazed['infowindows'].length, mockData.length);
@@ -252,5 +164,6 @@ describe('Client Tests', function () {
             done();
         })
     });
+
 })
 

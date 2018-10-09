@@ -354,9 +354,6 @@ const host = process.env.CURRENT_DOMAIN || "" ;
 const accessApi = {
     getBusinesses:(category)=>{
     var promise = new Promise((resolve, reject)=>{
-        console.log(host +' host');
-        console.log(document.domain+ ' domain');
-        console.log(window.location.hostname+ ' hostname');
         fetch(`${host}/api/businesses?category=${category}`).then((response)=>{
         response.json().then((allBusinesses)=>{
             resolve(allBusinesses)});
@@ -801,7 +798,7 @@ class MainMap extends React.Component {
             var infowindows = Controller.createMainInfoWs(allPlaces);
             markers = Controller.bindMarkersInfoW(markers, infowindows, map);
             Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
-        //    / Controller.visibleNewsfeed(true);
+            Controller.visibleNewsfeed(true);
             var myLocation = await Controller.getMyLocation();
             var myLocationMarker = Controller.markMyLocation(myLocation, map);
             Controller.calcDistances(myLocationMarker, markers);

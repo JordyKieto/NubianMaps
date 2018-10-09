@@ -4,7 +4,9 @@
   "description": "Have different business categories, and buttons to change",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --require test/config/setup.js --compilers js:babel-core/register",
+    "test": "mocha --require test/config/setup.js --compilers js:babel-core/register --recursive",
+    "testClient": "mocha test/client.js --require test/config/setup.js --compilers js:babel-core/register",
+    "testServer": "mocha test/server.js --require test/config/setup.js --compilers js:babel-core/register",
     "start": "cd server && node server.js"
   },
   "author": "",
