@@ -137,3 +137,7 @@ html {
     display: block;
     width: 400px;
 }
+
+h1 {
+    font-family: "TimesNewRomnan", "Times New Roman";
+}
