@@ -144,6 +144,8 @@ describe('Client Tests', function () {
         Controller.markMyLocation = function(){return null};
         mainMap.instance().componentDidMount()
         .then((initiliazed)=>{
+            var expectedState = '[{"src":"../images/altLogo.png","id":"Obsidian-Theatre Company"}]';
+            assert.equal(JSON.stringify(mainMap.state().imgArray), expectedState)
             var actualKeys = Object.keys(initiliazed).sort().toString();
             var expectedKeys = ['allBusinesses', 'infowindows', 'map', 'markers'];
             expectedKeys = expectedKeys.sort().toString();

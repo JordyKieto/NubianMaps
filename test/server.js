@@ -7,6 +7,7 @@ const admin = require('../server/config/defaultAdmin').admin;
 const Enzyme = require("enzyme");
 const Adapter = require('enzyme-adapter-react-16');
 const Controller = require('../client/components/controller');
+var port = process.env.PORT || 8080;
 
 const HTMLParser = require('node-html-parser');
 
@@ -97,16 +98,6 @@ describe('Server Tests', function () {
                 });
         });
     };
-    it('controller can get from server', function(done){
-        request(app)
-        .get('/')
-        .end(async function() {
-            var businesses = await Controller.getBusinesses('all');
-            console.log(businesses);
-            assert.isArray(businesses);
-            done();
-        });
-    });
 });
 
 
