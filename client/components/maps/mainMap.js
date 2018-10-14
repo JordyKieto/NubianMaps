@@ -18,7 +18,8 @@ class MainMap extends React.Component {
             var allBusinesses = await Controller.getBusinesses(this.props.category);
             var allPlaces = await Controller.getPlaces(allBusinesses, map);
             var markers =  await Controller.createMarkers(allPlaces, map);
-            var infowindows = Controller.createMainInfoWs(allPlaces);
+            var infowindows = Controller.createFavInfoWs(allPlaces);
+            //var infowindows = Controller.createVoteWindows(allPlaces);
             markers = Controller.bindMarkersInfoW(markers, infowindows, map);
             Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
             Controller.visibleNewsfeed(true);

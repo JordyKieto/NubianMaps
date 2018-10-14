@@ -5,14 +5,16 @@ const createCircle = require('./createCircle');
 const createMarkers = require('./createMarkers');
 const getMyLocation = require('./getMyLocation');
 const markMyLocation = require('./markMyLocation');
-const createMainInfoW = require('./createMainInfoW');
+const createFavInfoWs = require('./createFavInfoWs');
 const bindMarkersInfoW = require('./bindMarkersInfoW')
+const createVoteWindows = require('./createVoteWindows')
 
 const editMap = _extends({}, 
     createMarkers, 
     getMyLocation, 
     markMyLocation,
-    createMainInfoW,
+    createFavInfoWs,
+    createVoteWindows,
     bindMarkersInfoW, 
     createCircle, 
     initMap, 

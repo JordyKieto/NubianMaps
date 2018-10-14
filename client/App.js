@@ -478,12 +478,13 @@ module.exports = {createCircle: (location, map)=>{
 
 },{}],9:[function(require,module,exports){
 module.exports = {    
-    createMainInfoWs: (places)=>{
+    createFavInfoWs: (places)=>{
         return places.map(place =>{
             let infowindowContent = '<span class="infoTitle">' + place.name 
             +'</span><br/><div style="height:43px">'
             +'<form action="/api/favourites" method="post">'
-            +'<div style="width:100%;background-color:black" class="star">'
+            +'<div class="favText"style="width:100%;background-color:black" class="star">'
+            +'<span style="color:white;font-size:120%;position:absolute:top:15px">Add To Favourites +</span>'
             +'<button style="width:80px">'
             +'<img src="../images/favourite.png" style="width:30px;height:30px"/></button>'
             +'<span style="color:white;font-size:150%">  Nubian  </span>'
@@ -617,7 +618,7 @@ const createCircle = require('./createCircle');
 const createMarkers = require('./createMarkers');
 const getMyLocation = require('./getMyLocation');
 const markMyLocation = require('./markMyLocation');
-const createMainInfoW = require('./createMainInfoW');
+const createFavInfoWs = require('./createFavInfoWs');
 const bindMarkersInfoW = require('./bindMarkersInfoW')
 const createVoteWindows = require('./createVoteWindows')
 
@@ -625,7 +626,7 @@ const editMap = _extends({},
     createMarkers, 
     getMyLocation, 
     markMyLocation,
-    createMainInfoW,
+    createFavInfoWs,
     createVoteWindows,
     bindMarkersInfoW, 
     createCircle, 
@@ -635,7 +636,7 @@ const editMap = _extends({},
 
 module.exports = editMap;
 
-},{"./bindMarkersInfoW":7,"./createCircle":8,"./createMainInfoW":9,"./createMarkers":10,"./createVoteWindows":11,"./getMyLocation":12,"./getPlaces":13,"./initMap":15,"./markMyLocation":16}],15:[function(require,module,exports){
+},{"./bindMarkersInfoW":7,"./createCircle":8,"./createFavInfoWs":9,"./createMarkers":10,"./createVoteWindows":11,"./getMyLocation":12,"./getPlaces":13,"./initMap":15,"./markMyLocation":16}],15:[function(require,module,exports){
 const initMap = {
     initMap    :async (lat, lng)=>{
         var promise = new Promise((resolve, reject)=>{
@@ -815,7 +816,7 @@ class MainMap extends React.Component {
             var allBusinesses = await Controller.getBusinesses(this.props.category);
             var allPlaces = await Controller.getPlaces(allBusinesses, map);
             var markers =  await Controller.createMarkers(allPlaces, map);
-            var infowindows = Controller.createMainInfoWs(allPlaces);
+            var infowindows = Controller.createFavInfoWs(allPlaces);
             //var infowindows = Controller.createVoteWindows(allPlaces);
             markers = Controller.bindMarkersInfoW(markers, infowindows, map);
             Controller.createPlaceImgs(allPlaces, map, infowindows, markers, self);
@@ -1087,7 +1088,7 @@ styles.nav = {
 
   styles.h1 = {
     textAlign: "left",
-    top: 3,
+    top: 2,
     width: "100%",
     left: "70px",
     zIndex: 1,
