@@ -1087,7 +1087,7 @@ styles.nav = {
 
   styles.h1 = {
     textAlign: "left",
-    top: -5,
+    top: 3,
     width: "100%",
     left: "70px",
     zIndex: 1,
