@@ -19,13 +19,11 @@ class Login extends React.Component{
         return(
             <div>
                 <form action="/api/login" method="get">
-                <label htmlFor="username">Username:</label>
-                    <input type="text" name="username" id="username"/>
+                    <input type="text" name="username" id="username" placeholder="Username" className="form-control"/>
                     <br/>
-                    <label htmlFor="password">Password:</label>
-                    <input type="password"  name="password" id="password"/>
+                    <input type="password"  name="password" id="password" placeholder="Password" className="form-control"/>
                     <br/>
-                    <input type="submit" value="Submit"/>
+                    <input type="submit" value="Submit" className="btn btn-dark" />
                 </form>
             </div>
         )
@@ -38,13 +36,11 @@ class Register extends React.Component{
         return(
             <div>
                 <form action="/api/register" method="get">
-                <label htmlFor="username">Username:</label>
-                    <input type="text" name="username" id="username"/>
+                    <input type="text" name="username" id="username" placeholder="Username" className="form-control"/>
                     <br/>
-                    <label htmlFor="password">Password:</label>
-                    <input type="password"  name="password" id="password"/>
+                    <input type="password"  name="password" id="password" placeholder="Password" className="form-control"/>
                     <br/>
-                    <input type="submit" value="Submit"/>
+                    <input type="submit" value="Submit" className="btn btn-dark"/>
                 </form>
             </div>
         )
@@ -59,7 +55,7 @@ class Authenticate extends React.Component{
                     <label htmlFor="password">Password:</label>
                     <input type="password"  name="password" id="password"/>
                     <input type="hidden" name="username" value="admin"/>
-                    <input type="submit" value="Submit"/>
+                    <input type="submit" value="Submit" className="btn btn-dark"/>
                 </form>
             </div>
         )

@@ -34,7 +34,7 @@
     position: absolute;
     top: 500px;
     left: -100px;
-    font-size: 200%;
+    font-size: 100%;
 }
 
 #root > div > div:nth-child(3) {
@@ -106,6 +106,7 @@ html {
 .star {
     margin:0 auto;
     display:block;
+    text-align: center;
 }
 
 .fav {
@@ -118,4 +119,21 @@ html {
 
 #adminNav:hover #cosNav{
     visibility: visible
+}
+#thumbsUp {
+    float: right;
+}
+#thumbsDown {
+    float: left;
+    transform: rotateX(180deg);
+}
+
+.form-control {
+    margin: auto;
+    width: 400px;
+}
+.btn-dark {
+    margin : auto;
+    display: block;
+    width: 400px;
 }

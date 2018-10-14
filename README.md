@@ -62,16 +62,29 @@ for local deployment, initialize an instance of
 >mongod
 
 ## Future Updates
->Implement a method to mark a locations as visited, & a view for favourite locations that users use to track locations they've been. 
+>Implement a method to mark a locations as visited, & a view for favourite locations that users use to track locations they've been. API & geolcation; change to user model
 
->Also must style login/register pages
+>~~Also must style login/register pages~~
 
 >Add caching layer to reduce number of API calls to DB; store all businesnes after first page pageload, also must work with update
+
+>Add voting infowindow, with voting API and validation and current rating; change to business model
+
 
   - ~~Create Tests for Navbar select & deselect~~
   - ~~Implement babel-plugin-react-require~~
   - ~~Create test for checking that index is always served~~
   - ~~Create test for checking Admin Maps component.didMount is succesful~~
-  - Seperate Client & Unit Tests into seperate files
-  - Change ports to allow simultaneous testing and running of server
+  - ~~CSeperate Client & Unit Tests into seperate files~~C
   - ~~Test for Controller createPlaceImgs()~~
+  - Write server tests for put route on business model
+  - Write server tests for post route on business model
+  - Write server tests for delete route on business 
+  - Write server tests for getting favourites
+  - Write server tests for posting favourites
+
+
+  
+
+
+
